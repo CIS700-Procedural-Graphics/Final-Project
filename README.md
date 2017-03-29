@@ -31,7 +31,7 @@ But overall, have fun! This is your opportunity to work on whatever procedural p
 
 ## Timeline
 
-- 4/11	Design doc due / Have met with procedural staff
+- 4/08	Design doc due / Have met with procedural staff
 - 4/18	Milestone 1 (short write-up + demo)
 - 4/25	Milestone 2 (short write-up + demo)
 - 5/3	Final presentations (3-5 pm, Siglab), final reports due
