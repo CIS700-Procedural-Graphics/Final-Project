@@ -26,7 +26,7 @@ Project Proposal: Music Visualizer
 - #### Specification:
   ###### Outline the main features of your project
 
-  * See notes below
+  * See timeline for feature and notes below for more information. [when i clean up this file for the final submission of the project the notes will be gone and the features will be properly detailed here instead of in the timeline area]
 
 - #### Techniques:
   ###### What are the main technical/algorithmic tools you’ll be using? Give an overview, citing  specific papers/articles
