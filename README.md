@@ -1,112 +1,113 @@
-# CIS700 Procedural Graphics: Final Project
+Hannah Bollar
+======================
 
-Time to show off your new bag of procedural tricks by creating one polished final project. For this assignment you will have four weeks to create and document a portfolio piece that demonstrates your mastery of procedural thinking and implementation. You may work in groups of up to three (working alone is fine too). You may use any language / platform you choose for this assignment (given our approval if it’s not JavaScript/WebGL or C++/OpenGL).
+<NEED TO ADD LINK TO ACTUAL GITHUB WHERE PROJ IS VIEWED>
 
-As usual with this class, we want to encourage you to take this opportunity to explore and experiment. To get you started, however, we’ve provided a few open-ended prompts below. Interesting and complex visuals are the goal in all of these prompts, but they encourage focus on different aspects of proceduralism.
+**University of Pennsylvania, CIS 700: Procedural Graphics, Final Project**
 
-## Prompts:
-
-- ### A classic 4k demo
-  * In the spirit of the demo scene, create an animation that fits into a 4k executable that runs in real-time. Feel free to take inspiration from the many existing demos. Focus on efficiency and elegance in your implementation.
-  * Examples: [cdak by Quite & orange](https://www.youtube.com/watch?v=RCh3Q08HMfs&list=PLA5E2FF8E143DA58C)
-
-- ### A forgery
-  * Taking inspiration from a particular natural phenomenon or distinctive set of visuals, implement a detailed, procedural recreation of that aesthetic. This includes modeling, texturing and object placement within your scene. Does not need to be real-time. Focus on detail and visual accuracy in your implementation.
-  * Examples:
-    - [Snail](https://www.shadertoy.com/view/ld3Gz2), [Journey](https://www.shadertoy.com/view/ldlcRf), Big Hero 6 Wormhole: [Image 1](http://2.bp.blogspot.com/-R-6AN2cWjwg/VTyIzIQSQfI/AAAAAAAABLA/GC0yzzz4wHw/s1600/big-hero-6-disneyscreencaps.com-10092.jpg) , [Image 2](https://i.stack.imgur.com/a9RGL.jpg)
-
-- ### A game level
-  * Like generations of game makers before us, create a game which generates an  navigable environment (eg. a roguelike dungeon, platforms) and some sort of goal or conflict (eg. enemy agents to avoid or items to collect). Must run in real-time. Aim to create an experience that will challenge players and vary noticeably in different playthroughs, whether that means complex dungeon generation, careful resource management or a sophisticated AI model. Focus on designing a system that will generate complex challenges and goals.
-  * Examples: Spore, Dwarf Fortress, Minecraft, Rogue
-
-- ### An animated environment / music visualizer
-  * Create an environment full of interactive procedural animation. The goal of this project is to create an environment that feels responsive and alive. Whether or not animations are musically-driven, sound should be an important component. Focus on user interactions, motion design and experimental interfaces.
-  * Examples: [Panoramical](https://www.youtube.com/watch?v=gBTTMNFXHTk), [Bound](https://www.youtube.com/watch?v=aE37l6RvF-c)
-- ### Own proposal
-  * You are of course **welcome to propose your own topic**. Regardless of what you choose, you and your team must research your topic and relevant techniques and come up with a detailed plan of execution. You will meet with some subset of the procedural staff before starting implementation for approval. 
-
-**Final grading will be individual** and will be based on both the final product and how well you were able to achieve your intended effect according to your execution plan. Plans change of course, and we don’t expect you to follow your execution plan to a T, but if your final project looks pretty good, but you cut corners and only did 30% of what you outlined in your design doc, you will be penalized.
-
-But overall, have fun! This is your opportunity to work on whatever procedural project inspires you. The best way to ensure a good result is to pick something you’re passionate about. :)
-
-## Timeline
-
-- 4/08	Design doc due / Have met with procedural staff
-- 4/18	Milestone 1 (short write-up + demo)
-- 4/25	Milestone 2 (short write-up + demo)
-- 5/3	Final presentations (3-5 pm, Siglab), final reports due
-
-## Design Doc
-
-Your design doc should follow the following template. Note, each section can be pretty short, but cover them all! This will serve as valuable documentation when showing this project off in the future AND doing a good job will make it much easier for you to succeed, so please take this seriously.
-
-### Design Doc Template:
+**Project Proposal: Music Visualizer**
 
 - #### Introduction
   * What motivates this project?
+
+  I've worked with learning a lot of different procedural techniques throughout this past semester now I want to see if I can combine parts of them with my interest in particle simulations.
+
 - #### Goal
   * What do you intend to achieve with this project?
+
+  Create a functioning music visualizer - aka entertainment for while im studying later 
+
 - #### Inspiration/reference: 
   * Attach some materials, visual or otherwise you intend as reference
+
+  See notes below - in particular the youtube videos
+
 - #### Specification:
   * Outline the main features of your project
+
+  See notes below
+
 - #### Techniques:
   * What are the main technical/algorithmic tools you’ll be using? Give an overview, citing  specific papers/articles
+
+  (1) Working on shaders and particle manipulations in the gpu (2) Varying noise functions (3) how to interpret midi file data so can visualize the music properly
+
 - #### Design:
   * How will your program fit together? Make a simple free-body diagram illustrating the pieces.
+
+
 - #### Timeline:
   * Create a week-by-week set of milestones for each person in your group.
 
+Milestone 1
+------------
+</br>Set up physical aspect of this:</br>
+- positioning of spots where balls shoot out
+- interpreting the music as data (but dont have to do anything with the data yet)
+- set up water plane in space, surrounding environment box [skybox]
+- gui to pick which music to play [for now just have it as a pause and play button for playing one set of music]
+- have all the shader materials set up for everything but the balls [balls will have gpu manipulations based on time so for now leave as default]
+- add box to pause and play
+- add box to maintain repeat for song or not
+- make so the loaded song plays out the speakers with the right timing [ie using same timer as gl]
 
-Along with your final project demo, you will submit a final report, in which you will update correct your original design doc as needed and add a few post-mortem items.
+Milestone 2
+------------
+- Set up using of music data for balls being shot out from particular location
+- make the wave bottom move/flow
+- add noise to the movement of the balls [ie the farther up they go the more the noise affects them]
+- add timer for life of the balls [life meaning being shown visually or not - to maintain the same number of balls overall]
 
-## Milestones
+Milestone 3 [ready for submission]
+------------
+- finish all parts of prev milestones not yet completed and see notes for additional features to implement 
+- note: should be fully functioning before this deadline
+- [if time] add ability for user to manipulate [ie click somewhere and the particles react - but only for clicking - could act as an attractor or a repellor
+- [if time] make it so users can input a midi file and that i can load from it [ ie can load the visualizer for any given file ] - set timer so that song loops continuously
 
-To keep you honest / on-track, we will be checking on your progress at weekly intervals, according to milestones you’ll define at the outset (pending our approval). For each of the two milestones prior to the final submission, you will submit a short write up explaining whether or not you individually achieved your goals (specifying the files where the work happened), along with a link to a demo / images. These don’t have to be super polished -- we just want to see that you’re getting things done.
+NOTES:
+------------
 
-Example:
+music visualizer:
 
-“Milestone 1:
-	Adam:
-Made some procedural terrain code in src/terrain.js. Implemented 3D simplex noise to do it. Also applied coloring via custom shader based on this cool paper X (see src/shaders/dirt.glsl). IMAGE
+particles, ribbon creation, shape visualization, using what shader
 
-Austin: 
-I managed to set up my voronoi diagram shader (see src/shaders/voronoi.glsl). 
-Experimented with different scattering techniques. It’s working with the euclidean distance metric. I’m using it in src/main.js to color stones. IMAGE
+2 diff variations at min
+3 diff variations of the visualizer at max [maybe dep on frequency]
 
-Rachel:
-I tried really hard to make my toon shader work (src/shaders/toon.glsl), but I still have a bug! T_T BUGGY IMAGE. DEMO LINK”
+can build texture in substance designer?
 
-## Final Report
+DO THE YOUTUBE VIDEO FOR PIANO MUSIC / piano interpretation of music based on keys
+https://www.youtube.com/watch?v=fpViZkhpPHk&list=PL_2OwBBRw9hDSXyaIPrCeKUCNnCrHAHEn
 
-In addition to your demo, you will create a final report documenting your project overall. This document should be clear enough to explain the value and details of your project to a random computer graphics person with no knowledge of this class.
+some particles just floating around and when hit by an object they bounce --> but they have an origin theyre supposed to try and get back to --> like nop's plane variation
 
-### Final Report Template:
+so particles coming from keys at the bottom hitting through the plane particles
 
-- #### Updated design doc: 
-  * All the sections of your original design doc, corrected if necessary
-- #### Results:
-  * Provide images of your finished project
-- #### Evaluation (this is a big one!):
-  * How well did you do? What parameters did you tune along the way? Include some WIP shots that compare intermediate results to your final. Explain why you made the decisions you did.
-- #### Future work:
-  * Given more time, what would you add/improve
-- #### Acknowledgements:
-  * Cite _EVERYTHING_. Implemented a paper? Used some royalty-free music? Talked to classmates / a professor in a way that influenced your project? Attribute everything!
+try and do it on the gpu? since just particles
+--> based on music input for specific values have the rgb color input stand as whether or not on plane or seen yet [note this is done with time] --> maybe have a loading screen while this computation is being done --> then once have all proper data from music for the gpu --> run as particle sim --> so can load up from two different piano music files to start with
+like this one: https://www.youtube.com/watch?v=KiRLdhnDKwc&list=PL_2OwBBRw9hDSXyaIPrCeKUCNnCrHAHEn&index=14 <- to demonstrate following mariano's technique of doing it as height for buildings
 
-## Logistics
+--> if do it on the gpu can have a max number of particles to begin with where input includes on/off/start time to visualize it --> note this is loaded up --> just loop through once start time becomes the max for the music vid and reloop back time to beg[like with mariano's cube anim --> just reloop as a vid]
 
-Like every prior project, your code will be submitted via github. Fork the empty final project repo and start your code base from there. Take this as an opportunity to practice using git properly in a team setting if you’re a new user.  For each weekly submission, provide a link to your pull request. Your repo will contain all the code and documentation associated with your project. The readme for your repo will eventually be your final report. At the top level, include a folder called “documentation”, where you’ll put your design doc and milestone write-ups.
+can do this at bottom with opacity in distance so cant see moving texture
+https://www.youtube.com/watch?v=82Q6DRqf9H4&list=PL_2OwBBRw9hDKSZvusG6aBFh6bx32E9i5
+have texture as color and opacity to be sent in for plane shader for where the particles come out at the bottom -- OR -- have it as the plane where once the particles cross through it --> go all crazy instead of in the plane music lines
+^^ from this following color scheme of starting at purple and that blue --> once across  the purple going to that blue to and that blue to yellow/limegreen? 
+-- to do this maybe have the third component of the color not used to be 0 or 1 for picking what color it will switch to and just grab from a vec2 in the gpu
 
-Don’t wait to merge your code! Seriously, there be dragons. Try to have a working version including all your code so that compatibility and merge issues don’t sneak up on you near the end.
+OR MAYBE ADD IN A FIREBALL GIF VISUALIZER??
 
-## Grading
+PARTICLES: tune / piano style based on keys
+BACKGROUND COLORING EFFECT: the beat itself of the music
 
-- 15% Design Doc (graded as a group)
-- 15% Milestone 1 (graded as a group)
-- 15% Milestone 2 (graded as a group)
-- 55% Final demo + report (graded individually)
+small balls each in a row --> once break through particle plane they explode into at least 5 smaller ball particles --> when outside particular spherical area [OR AFTER A PARTICULAR AMOUNT OF TIME IN EXISTANCE] -- also size of objects after hitting plane decreases based time of existance --> delete and bring back to orig so maintain total num of particles just with pos and seen/not
 
-NOTE: We’ve been pretty lax about our late policy throughout the semester, but our margins on the final project are tight, therefore late submissions will NOT be accepted. If you have a significant reason for being unable to complete your goals, talk to us, and we’ll discuss getting you an incomplete and figure out an adjusted work plan with your group.
+chromeexperiments --> CHECK OUT FOR WORK
 
+MIDI FILE TYPE
 
+MOUSE MANIPULATION WHEN CLICKING
+BARS ALWAYS MADE OF PARTICLES -  amount of influence they get by noise field --> increases dep on height
+
+TRUNG & NOP
