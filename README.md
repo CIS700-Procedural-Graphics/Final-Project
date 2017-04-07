@@ -31,19 +31,18 @@ Project Proposal: Music Visualizer
 - #### Techniques:
   ###### What are the main technical/algorithmic tools you’ll be using? Give an overview, citing  specific papers/articles
 
-  * (1) Working on shaders and particle manipulations in the gpu (2) Varying noise functions (3) how to interpret midi file data so can visualize the music properly
+  * Building this project as I have been doing with the others - entirely javascript based with noise manipulations from a helper file. 
+  * (1) Working on shaders and particle manipulations in the gpu
+  * (2) Varying noise functions
+  * (3) how to interpret midi file data so can visualize the music properly [https://chrisballprojects.wordpress.com/2013/03/17/midi-visualisations-in-processing/]
 
 - #### Design:
   ###### How will your program fit together? Make a simple free-body diagram illustrating the pieces.
-
-
-
-
-  
+  ![](./PicOfFileSetup.png)
 
 - #### Timeline:
   ###### Create a week-by-week set of milestones for each person in your group.
-
+  * See notes below
 
 Timeline
 ------------
