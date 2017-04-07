@@ -8,36 +8,36 @@ Hannah Bollar
 **Project Proposal: Music Visualizer**
 
 - #### Introduction
-  ## What motivates this project?
+  ###### What motivates this project?
 
   * I've worked with learning a lot of different procedural techniques throughout this past semester now I want to see if I can combine parts of them with my interest in particle simulations.
 
 - #### Goal
-  ## What do you intend to achieve with this project?
+  ###### What do you intend to achieve with this project?
 
   * Create a functioning music visualizer - aka entertainment for while im studying later 
 
 - #### Inspiration/reference: 
-  ## Attach some materials, visual or otherwise you intend as reference
+  ###### Attach some materials, visual or otherwise you intend as reference
 
   * See notes below - in particular the youtube videos
 
 - #### Specification:
-  ## Outline the main features of your project
+  ###### Outline the main features of your project
 
   * See notes below
 
 - #### Techniques:
-  ## What are the main technical/algorithmic tools you’ll be using? Give an overview, citing  specific papers/articles
+  ###### What are the main technical/algorithmic tools you’ll be using? Give an overview, citing  specific papers/articles
 
   * (1) Working on shaders and particle manipulations in the gpu (2) Varying noise functions (3) how to interpret midi file data so can visualize the music properly
 
 - #### Design:
-  ## How will your program fit together? Make a simple free-body diagram illustrating the pieces.
+  ###### How will your program fit together? Make a simple free-body diagram illustrating the pieces.
 
 
 - #### Timeline:
-  ## Create a week-by-week set of milestones for each person in your group.
+  ###### Create a week-by-week set of milestones for each person in your group.
 
 Milestone 1
 ------------
