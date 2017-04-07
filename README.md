@@ -1,4 +1,4 @@
-Hannah Bollar
+Hannah Bollar [Single Person Project]
 ======================
 
 <NEED TO ADD LINK TO ACTUAL GITHUB WHERE PROJ IS VIEWED>
@@ -16,7 +16,7 @@ Project Proposal: Music Visualizer
 - #### Goal
   ###### What do you intend to achieve with this project?
 
-  * Create a functioning music visualizer - aka entertainment for while im studying later 
+  * Creating a functioning music visualizer that not only has manipulations based on coloring/shader information but also noise and time manipulations to create the piece altogether.
 
 - #### Inspiration/reference: 
   ###### Attach some materials, visual or otherwise you intend as reference
