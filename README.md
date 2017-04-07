@@ -38,7 +38,7 @@ Project Proposal: Music Visualizer
 
 - #### Design:
   ###### How will your program fit together? Make a simple free-body diagram illustrating the pieces.
-  ![](./PicOfFileSetup.png)
+  ![](./PicOfFileSetup.png) test
 
 - #### Timeline:
   ###### Create a week-by-week set of milestones for each person in your group.
