@@ -5,7 +5,8 @@ Hannah Bollar
 
 **University of Pennsylvania, CIS 700: Procedural Graphics, Final Project**
 
-**Project Proposal: Music Visualizer**
+Project Proposal: Music Visualizer
+------------
 
 - #### Introduction
   ###### What motivates this project?
@@ -39,31 +40,30 @@ Hannah Bollar
 - #### Timeline:
   ###### Create a week-by-week set of milestones for each person in your group.
 
-Milestone 1
-------------
-</br>Set up physical aspect of this:</br>
-- positioning of spots where balls shoot out
-- interpreting the music as data (but dont have to do anything with the data yet)
-- set up water plane in space, surrounding environment box [skybox]
-- gui to pick which music to play [for now just have it as a pause and play button for playing one set of music]
-- have all the shader materials set up for everything but the balls [balls will have gpu manipulations based on time so for now leave as default]
-- add box to pause and play
-- add box to maintain repeat for song or not
-- make so the loaded song plays out the speakers with the right timing [ie using same timer as gl]
 
-Milestone 2
+Timeline
 ------------
-- Set up using of music data for balls being shot out from particular location
-- make the wave bottom move/flow
-- add noise to the movement of the balls [ie the farther up they go the more the noise affects them]
-- add timer for life of the balls [life meaning being shown visually or not - to maintain the same number of balls overall]
+- #### Milestone 1
+* positioning of spots where balls shoot out
+* interpreting the music as data (but dont have to do anything with the data yet)
+* set up water plane in space, surrounding environment box [skybox]
+* gui to pick which music to play [for now just have it as a pause and play button for playing one set of music]
+* have all the shader materials set up for everything but the balls [balls will have gpu manipulations based on time so for now leave as default]
+* add box to pause and play
+* add box to maintain repeat for song or not
+* make so the loaded song plays out the speakers with the right timing [ie using same timer as gl]
 
-Milestone 3 [ready for submission]
-------------
-- finish all parts of prev milestones not yet completed and see notes for additional features to implement 
-- note: should be fully functioning before this deadline
-- [if time] add ability for user to manipulate [ie click somewhere and the particles react - but only for clicking - could act as an attractor or a repellor
-- [if time] make it so users can input a midi file and that i can load from it [ ie can load the visualizer for any given file ] - set timer so that song loops continuously
+- #### Milestone 2
+* Set up using of music data for balls being shot out from particular location
+* make the wave bottom move/flow
+* add noise to the movement of the balls [ie the farther up they go the more the noise affects them]
+* add timer for life of the balls [life meaning being shown visually or not - to maintain the same number of balls overall]
+
+- #### Milestone 3 [ready for submission]
+* finish all parts of prev milestones not yet completed and see notes for additional features to implement 
+* note: should be fully functioning before this deadline
+* [if time] add ability for user to manipulate [ie click somewhere and the particles react - but only for clicking - could act as an attractor or a repellor
+* [if time] make it so users can input a midi file and that i can load from it [ ie can load the visualizer for any given file ] - set timer so that song loops continuously
 
 NOTES:
 ------------
