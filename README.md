@@ -45,7 +45,7 @@ I will try the various techniques and choose the one or ones that look the best 
 
 ## Timeline
 
-### Week of 04/10 to do
+### Week of 04/10
 * Create rough rock formation 
 * Choose a song and animate some aspect of environment
 * Move camera through the environment
