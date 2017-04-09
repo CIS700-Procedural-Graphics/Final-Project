@@ -1,151 +1,98 @@
-const THREE = require('three'); // older modules are imported like this. You shouldn't have to worry about this much
-//const OBJLoader = require('three-obj-loader');
-//OBJLoader(THREE)
+const THREE = require('three'); 
 const OrbitControls = require('three-orbit-controls')(THREE)
 
 import Framework from './framework'
-import BioCrowd from './bio_crowd.js'
+import {left_canyon_mat, right_canyon_mat, water_mat, sky_mat} from './materials'
 
-const DEFAULT_VISUAL_DEBUG = false;
-const DEFAULT_CELL_RES = 25;
-const DEFAULT_GRID_RES = 8;
-const DEFAULT_GRID_WIDTH = 8;
-const DEFAULT_GRID_HEIGHT = 8;
-const DEFAULT_NUM_AGENTS = 8;
-const DEFAULT_NUM_MARKERS = 1000;
-const DEFAULT_RADIUS = 0.5;
-const DEFAULT_OBSTACLES = 2;
-const DEFAULT_MAX_VELOCITY = 5;
+var time;
 
-var App = {
-  //
-  bioCrowd:             undefined,
-  agentGeometry:        new THREE.CylinderGeometry(0.1, 0.1, 0.5, 8).rotateX(Math.PI/2),
-  scenario:             'line',
-  obstacles:            DEFAULT_OBSTACLES,
-  config: {
-    visualDebug:      DEFAULT_VISUAL_DEBUG,
-    isPaused:         false,
-    gridRes:          DEFAULT_GRID_RES,
-    cellRes:          DEFAULT_CELL_RES, 
-
-    gridWidth:        DEFAULT_GRID_WIDTH,
-    gridHeight:       DEFAULT_GRID_HEIGHT,
-
-    maxMarkers:       DEFAULT_NUM_MARKERS,
-    numAgents:        DEFAULT_NUM_AGENTS,
-    agentRadius:      DEFAULT_RADIUS,
-    maxVelocity:      DEFAULT_MAX_VELOCITY 
-  },
-
-  // Scene's framework objects
-  camera:           undefined,
-  scene:            undefined,
-  renderer:         undefined,
-  controls:          undefined,
-  plane:            undefined
-};
+var variables = {
+  music : null,
+  audioAnalyser : null,
+  enableSound : false,
+  initialized : false
+}
 
 // called after the scene loads
 function onLoad(framework) {
+  time = 0;
+  var scene = framework.scene;
+  var camera = framework.camera;
+  var renderer = framework.renderer;
+  var gui = framework.gui;
+  var stats = framework.stats;
 
-  var {scene, camera, renderer, gui, stats, controls} = framework;
-  App.scene = scene;
-  App.camera = camera;
-  App.renderer = renderer;
-  App.controls = controls;
+  // objects and geometry
+  var left_plane_geo = new THREE.PlaneBufferGeometry(10, 10, 100, 100).rotateY(Math.PI/2).translate(-5,0,0);
+  var left_material = new THREE.MeshBasicMaterial( { color: 0x00FF00 , wireframe: true } );
+  var left_plane = new THREE.Mesh(left_plane_geo, left_material);
+  scene.add(left_plane);
 
-  renderer.setClearColor( 0x111111 );
+  var right_plane_geo = new THREE.PlaneBufferGeometry(10, 10, 100, 100).rotateY(-Math.PI/2).translate(5,0,0);
+  var right_material = new THREE.MeshBasicMaterial( { color: 0xFF0000 , wireframe: true} );
+  var right_plane = new THREE.Mesh(right_plane_geo, right_material);
+  scene.add(right_plane);
 
-  setupCamera(App.camera);
-  //setupLights(App.scene);
-  setupScene(App.scene);
-  setupGUI(gui);
+  var ground_geo = new THREE.PlaneBufferGeometry(10, 10, 100, 100).rotateX(-Math.PI/2).translate(0,-5,0);
+  var ground_material = new THREE.MeshBasicMaterial( { color: 0x444444 , wireframe: true} );
+  var ground = new THREE.Mesh(ground_geo, ground_material);
+  scene.add(ground);
+
+  var water_geo = new THREE.PlaneBufferGeometry(10, 10, 100, 100).rotateX(-Math.PI/2).translate(0,-4,0);
+  var water_material = new THREE.MeshBasicMaterial( { color: 0x0000FF , wireframe: true} );
+  var water = new THREE.Mesh(water_geo, water_material);
+  scene.add(water);
+
+  var sky_geo = new THREE.PlaneBufferGeometry(10, 10, 10, 10).translate(0,0,-10);
+  var sky_material = new THREE.ShaderMaterial(sky_mat);
+  var sky = new THREE.Mesh(sky_geo, sky_material);
+  scene.add(sky);
+
+  scene.add(new THREE.AxisHelper(20));
+
+  // audio
+  var listener = new THREE.AudioListener();
+  camera.add(listener);
+  variables.music = new THREE.Audio(listener);
+  var audioLoader = new THREE.AudioLoader();
+
+  audioLoader.load('./src/assets/song.mp3', function (buffer) {
+    variables.music.setBuffer( buffer );
+    variables.music.setLoop(true);
+    variables.music.setVolume(1.0);
+
+    if (variables.enableSound) variables.music.play();
+
+    variables.initialized = true;
+
+  });
+  variables.audioAnalyser = new THREE.AudioAnalyser( variables.music, 64 );
+
+  // set camera position
+  camera.position.set(1, 1, 10);
+  camera.lookAt(new THREE.Vector3(0,0,0));
+
+  // gui
+  gui.add(variables, 'enableSound').onChange(function(value) {
+    if (value) variables.music.play();
+    else variables.music.pause();
+  });
 }
 
 // called on frame updates
 function onUpdate(framework) {
-  if (App.bioCrowd) {
-    App.bioCrowd.update();
+  if (variables.initialized) {
+    time = (time + 1);
+
+    water_mat.uniforms.time.value = time;
+    left_canyon_mat.uniforms.time.value = time;
+    right_canyon_mat.uniforms.time.value = time;
+    sky_mat.uniforms.time.value = time;
+
+    var avgFreq = variables.audioAnalyser.getAverageFrequency() / 256.0;
+    var dataArray = variables.audioAnalyser.getFrequencyData();
   }
-}
 
-function setupCamera(camera) {
-  // set camera position
-  camera.position.set(App.config.gridWidth/2, App.config.gridHeight/2, App.config.gridWidth);
-  camera.lookAt(App.config.gridWidth/2, App.config.gridHeight/2, 0);
-  App.controls.target.set(App.config.gridWidth/2, App.config.gridHeight/2, 0);
-}
-
-function setupScene(scene) {
-  var geo = new THREE.PlaneGeometry(App.config.gridWidth, App.config.gridHeight, 
-  App.config.gridRes, App.config.gridRes);
-  geo.translate(App.config.gridWidth/2,App.config.gridHeight/2,-0.01);
-  var material = new THREE.MeshBasicMaterial( {color: 0xffffff, wireframe: true} );
-  App.plane = new THREE.Mesh( geo, material );
-  scene.add( App.plane );
-  App.bioCrowd = new BioCrowd(App);
-}
-
-function setupGUI(gui) {
-
-  var a = gui.addFolder('Agent_Controls');
-  var g = gui.addFolder('Grid_Controls');
-
-  gui.add(App.config, 'isPaused').onChange(function(value) {
-    App.isPaused = value;
-    if (value) App.bioCrowd.pause();
-    else App.bioCrowd.play();
-  });
-  gui.add(App.config, 'visualDebug').onChange(function(value) {
-    if (value) App.bioCrowd.show();
-    else App.bioCrowd.hide();
-  });
-  a.add(App.config, 'numAgents', 1, 50).step(1).onChange(function(value) {
-    App.bioCrowd.reset();
-    App.bioCrowd = new BioCrowd(App);
-  });
-  a.add(App.config, 'agentRadius', 0, 1).onChange(function(value) {
-    App.bioCrowd.reset();
-    App.bioCrowd = new BioCrowd(App);
-  });
-  a.add(App, 'scenario', ['line', 'quad', 'random']).onChange(function(val) {
-    App.bioCrowd.reset();
-    App.bioCrowd = new BioCrowd(App);
-  });
-  g.add(App.config, 'cellRes', 0, 100).step(1).onChange(function(value) {
-    App.bioCrowd.reset();
-    App.bioCrowd = new BioCrowd(App);
-  });
-  g.add(App.config, 'gridWidth', 0, 50).step(1).onChange(function(value) {
-    App.config.gridHeight = value;
-    App.scene.remove(App.plane);
-    App.plane.geometry.dispose(); App.plane.material.dispose(); 
-    App.bioCrowd.reset();
-    setupScene(App.scene);
-    setupCamera(App.camera);
-  });
-  g.add(App.config, 'gridRes', 0, 10).step(1).onChange(function(value) {
-    App.scene.remove(App.plane);
-    App.plane.geometry.dispose(); App.plane.material.dispose(); 
-    App.bioCrowd.reset();
-    setupScene(App.scene);
-  });
-  gui.add(App, 'obstacles', 0, 5).onChange(function(value) {
-    App.bioCrowd.reset();
-    App.bioCrowd = new BioCrowd(App);
-  }); 
-}
-
-function setupLights(scene) {
-
-  // Directional light
-  var directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
-  directionalLight.color.setHSL(0.1, 1, 0.95);
-  directionalLight.position.set(1, 10, 2);
-  directionalLight.position.multiplyScalar(10);
-
-  scene.add(directionalLight);
 }
 
 // when the scene is done initializing, it will call onLoad, then on frame updates, call onUpdate
