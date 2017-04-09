@@ -1,15 +1,21 @@
-uniform vec2 grads[8];
+uniform vec3 grads[12];
+
+uniform vec3 horizon;
+uniform vec3 mid;
+uniform vec3 sky;
+
 uniform float time;
 uniform float amplitude;
 uniform float frequency;
+uniform float audioFreq;
 uniform float buckets;
 
 varying vec2 vUv;
 
 #define PI 3.14159265
 
-int hash(vec2 p) {
-	return int(mod(sin(dot(p, vec2(78.233,1938.2)))*43758.5453,8.0));
+int hash(vec3 p) {
+	return int(mod(sin(dot(p, vec3(12.9898, 78.233,1938.2)))*43758.5453,12.0));
 }
 
 float new_t(float t) {
@@ -29,28 +35,41 @@ float blerp(float a, float b, float c, float d, float u, float v) {
 	return cos_lerp(cos_lerp(a, b, u), cos_lerp(c, d, u), v);
 }
 
-vec2 getData(int id) {
+float tlerp(float a, float b, float c, float d, float e, float f, float g, float h, float u, float v, float w) { 
+	return cos_lerp(blerp(a,b,c,d,u,v), blerp(e,f,g,h,u,v), w);
+}
+
+vec3 getData(int id) {
     for (int i=0; i<8; i++) {
         if (i == id) return grads[i];
     }
 }
 
 float p_noise(vec2 point, float freq, float amp, float t) {
-	vec2 p = freq * point/ 10.0;
-	vec2 square1 = floor(p); 
-	vec2 square2 = vec2(ceil(p.x), floor(p.y)); 
-	vec2 square3 = vec2(floor(p.x), ceil(p.y));
-	vec2 square4 = ceil(p);
+	vec3 p = freq * vec3(point, (t + audioFreq) / 1000.0)/ 10.0;
+	vec3 cube1 = floor(p); 
+	vec3 cube2 = vec3(ceil(p.x), floor(p.yz)); 
+	vec3 cube3 = vec3(floor(p.x), ceil(p.y), floor(p.z));
+	vec3 cube4 = vec3(ceil(p.xy), floor(p.z));
+	vec3 cube5 = vec3(floor(p.xy), ceil(p.z));
+	vec3 cube6 = vec3(ceil(p.x), floor(p.y), ceil(p.z));
+	vec3 cube7 = vec3(floor(p.x), ceil(p.yz));
+	vec3 cube8 = ceil(p);
 
-	float u = new_t((p-square1).x);
-	float v = new_t((p-square1).y);
+	float u = new_t((p-cube1).x);
+	float v = new_t((p-cube1).y);
+	float w = new_t((p-cube1).z);
 
-	float a = dot(p - square1, getData(hash(square1)));
-	float b = dot(p - square2, getData(hash(square2)));
-	float c = dot(p - square3, getData(hash(square3)));
-	float d = dot(p - square4, getData(hash(square4)));
+	float a = dot(p - cube1, getData(hash(cube1)));
+	float b = dot(p - cube2, getData(hash(cube2)));
+	float c = dot(p - cube3, getData(hash(cube3)));
+	float d = dot(p - cube4, getData(hash(cube4)));
+	float e = dot(p - cube5, getData(hash(cube5)));
+	float f = dot(p - cube6, getData(hash(cube6)));
+	float g = dot(p - cube7, getData(hash(cube7)));
+	float h = dot(p - cube8, getData(hash(cube8)));
 
-	return amp * blerp(a,b,c,d,u,v);
+	return amp * tlerp(a,b,c,d,e,f,g,h,u,v,w);
 }
 
 vec3 color_lerp(vec3 a, vec3 b, float t) {
@@ -68,10 +87,7 @@ vec3 grad_map(vec3 c1, vec3 c2, vec3 c3, float t) {
 void main() {
 
     float noise = p_noise(vUv, frequency, amplitude, time);
-    vec3 horizon = vec3(1.0, 0.855, 0.725);
-    vec3 mid = vec3(0.976, 0.537, 0.718);
-    vec3 sky = vec3(0.0745,0.0941,0.384);
-
+    
     float d = floor (buckets * noise) / buckets;
     vec3 sunset_from = grad_map(horizon, mid, sky, vUv.y/1.33);
     vec3 sunset_to = grad_map(horizon, mid, sky, vUv.y/1.33 + 0.25);

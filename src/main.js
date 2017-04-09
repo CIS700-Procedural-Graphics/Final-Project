@@ -9,7 +9,7 @@ var time;
 var variables = {
   music : null,
   audioAnalyser : null,
-  enableSound : false,
+  enableSound : true,
   initialized : false
 }
 
@@ -23,27 +23,27 @@ function onLoad(framework) {
   var stats = framework.stats;
 
   // objects and geometry
-  var left_plane_geo = new THREE.PlaneBufferGeometry(10, 10, 100, 100).rotateY(Math.PI/2).translate(-5,0,0);
+  var left_plane_geo = new THREE.PlaneBufferGeometry(10, 10, 100, 100).rotateY(Math.PI/2).translate(-2,2,0);
   var left_material = new THREE.MeshBasicMaterial( { color: 0x00FF00 , wireframe: true } );
   var left_plane = new THREE.Mesh(left_plane_geo, left_material);
   scene.add(left_plane);
 
-  var right_plane_geo = new THREE.PlaneBufferGeometry(10, 10, 100, 100).rotateY(-Math.PI/2).translate(5,0,0);
+  var right_plane_geo = new THREE.PlaneBufferGeometry(10, 10, 100, 100).rotateY(-Math.PI/2).translate(2,2,0);
   var right_material = new THREE.MeshBasicMaterial( { color: 0xFF0000 , wireframe: true} );
   var right_plane = new THREE.Mesh(right_plane_geo, right_material);
   scene.add(right_plane);
 
-  var ground_geo = new THREE.PlaneBufferGeometry(10, 10, 100, 100).rotateX(-Math.PI/2).translate(0,-5,0);
+  var ground_geo = new THREE.PlaneBufferGeometry(10, 10, 100, 100).rotateX(-Math.PI/2).translate(0,-2,0);
   var ground_material = new THREE.MeshBasicMaterial( { color: 0x444444 , wireframe: true} );
   var ground = new THREE.Mesh(ground_geo, ground_material);
   scene.add(ground);
 
-  var water_geo = new THREE.PlaneBufferGeometry(10, 10, 100, 100).rotateX(-Math.PI/2).translate(0,-4,0);
+  var water_geo = new THREE.PlaneBufferGeometry(10, 10, 100, 100).rotateX(-Math.PI/2).translate(0,-1,0);
   var water_material = new THREE.MeshBasicMaterial( { color: 0x0000FF , wireframe: true} );
   var water = new THREE.Mesh(water_geo, water_material);
   scene.add(water);
 
-  var sky_geo = new THREE.PlaneBufferGeometry(10, 10, 10, 10).translate(0,0,-10);
+  var sky_geo = new THREE.PlaneBufferGeometry(10,10).rotateX(Math.PI/8).translate(0,2,-10);
   var sky_material = new THREE.ShaderMaterial(sky_mat);
   var sky = new THREE.Mesh(sky_geo, sky_material);
   scene.add(sky);
@@ -69,8 +69,8 @@ function onLoad(framework) {
   variables.audioAnalyser = new THREE.AudioAnalyser( variables.music, 64 );
 
   // set camera position
-  camera.position.set(1, 1, 10);
-  camera.lookAt(new THREE.Vector3(0,0,0));
+  camera.position.set(0,0,0);
+  camera.lookAt(new THREE.Vector3(0,0,-1));
 
   // gui
   gui.add(variables, 'enableSound').onChange(function(value) {
@@ -91,6 +91,7 @@ function onUpdate(framework) {
 
     var avgFreq = variables.audioAnalyser.getAverageFrequency() / 256.0;
     var dataArray = variables.audioAnalyser.getFrequencyData();
+    sky_mat.uniforms.audioFreq.value = avgFreq;
   }
 
 }
