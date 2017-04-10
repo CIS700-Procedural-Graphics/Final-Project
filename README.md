@@ -1,9 +1,15 @@
 Hannah Bollar [Single Person Project]
 ======================
 
-<NEED TO ADD LINK TO ACTUAL GITHUB WHERE PROJ IS VIEWED>
-
 **University of Pennsylvania, CIS 700: Procedural Graphics, Final Project**
+
+## View the Project
+
+NOTE: PROJECT STILL IN PROGRESS
+
+# [Click Here](https://hanbollar.github.io/Final-Project/)
+
+## The Project
 
 Project Proposal: Music Visualizer
 ------------
