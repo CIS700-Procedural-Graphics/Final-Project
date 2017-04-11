@@ -3,16 +3,17 @@ const _ = require('lodash');
 import Cell from './cell'
 import Edge from './edge'
 import Node from './node'
+import HalfEdge from './halfedge'
 
-export default class Graph {
-  constructor() {
+export default class GraphManager {
+  constructor(map) {
+    this.map = map;
     this.nodes = [];
     this.edges = [];
     this.cells = [];
   }
 
-  static generateFromSquareGrid(numCells) {
-    var graph = new Graph();
+  generateFromSquareGrid(numCells) {
     var nodesMap = {};
     var edgesMap = {};
 
@@ -64,15 +65,24 @@ export default class Graph {
         var edgesMapIndexC = x + ' ' + (y+1) + ' ' + (x+1) + ' ' + (y+1);
         var edgesMapIndexD = (x+1) + ' ' + y + ' ' + (x+1) + ' ' + (y+1);
         var edgesMapIndices = [ edgesMapIndexA, edgesMapIndexB, edgesMapIndexC, edgesMapIndexD ];
+        var nodesMapIndices = [ (x+1) + ' ' + y, x + ' ' + y, x + ' ' + (y+1), (x+1) + ' ' + (y+1) ];
 
-        _.forEach(edgesMapIndices, function(edgesMapIndex) {
+        for (var i = 0; i < 4; i++) {
+          var edgesMapIndex = edgesMapIndices[i];
+          var nodesMapIndexA = nodesMapIndices[i];
+          var nodesMapIndexB = nodesMapIndices[(i+1) % 4];
+
           var edge = edgesMap[edgesMapIndex];
+          var nodeA = nodesMap[nodesMapIndexA];
+          var nodeB = nodesMap[nodesMapIndexB];
           var halfedge = new HalfEdge();
 
           halfedge.cell = cell;
           halfedge.edge = edge;
+          halfedge.nodeA = nodeA;
+          halfedge.nodeB = nodeB;
           cell.halfedges.push(halfedge);
-        });
+        }
 
         var numHalfEdges = cell.halfedges.length;
 
@@ -85,18 +95,16 @@ export default class Graph {
 
         cell.center.x = x+0.5;
         cell.center.y = y+0.5;
+
+        this.cells.push(cell);
       }
     }
 
-    graph.nodes = _.values(nodesMap);
-    graph.edges = _.values(edgesMap);
-
-    console.log(graph.nodes.length, graph.edges.length);
-
-    return graph;
+    this.nodes = _.values(nodesMap);
+    this.edges = _.values(edgesMap);
   }
 
-  static generateFromHexGrid(numCells) {
+  generateFromHexGrid(numCells) {
 
   }
 }
