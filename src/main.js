@@ -75,6 +75,10 @@ function onLoad(framework) {
 function onUpdate(framework) {
 	var newTime = Date.now();
 	var instrumentName = "acoustic_grand_piano";
+	var NOTES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+	var notes = NOTES.map(function (n, i) {
+	  return { time: i * 0.3, note: n + 60 }
+	})
 	if (newTime - t > 1500) {
 		// MIDI.loadPlugin({
 		// 	soundfontUrl: "./soundfont/",
@@ -97,11 +101,14 @@ function onUpdate(framework) {
 		// 	}
 		// });
 		Soundfont.instrument(ac, 'marimba', { soundfont: 'MusyngKite' }).then(function (marimba) {
-		  marimba.play('C4')
+			marimba.play('C4')
+			marimba.play('E4')
+			marimba.play('A3')
+		  	Soundfont.instrument(ac, 'cello', { soundfont: 'MusyngKite' }).then(function (marimba) {
+		  		marimba.schedule(ac.currentTime, notes);
+			})
 		})
-		Soundfont.instrument(ac, 'clarinet', { soundfont: 'MusyngKite' }).then(function (marimba) {
-		  marimba.play('D4')
-		})
+
 		t = newTime;
 	}
 
