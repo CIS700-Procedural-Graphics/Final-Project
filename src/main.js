@@ -1,6 +1,9 @@
 
 const THREE = require('three'); // older modules are imported like this. You shouldn't have to worry about this much
 import Framework from './framework'
+import MIDI from 'midi.js'
+import Soundfont from 'soundfont-player'
+var ac = new AudioContext()
 
 // Colors
 var additionalControls = {
@@ -17,6 +20,8 @@ var noiseCloud = {
 	mesh : {},
 };
 
+var t = Date.now();
+
 // called after the scene loads
 function onLoad(framework) {
 	var scene = framework.scene;
@@ -27,35 +32,10 @@ function onLoad(framework) {
 
 	// LOOK: the line below is synyatic sugar for the code above. Optional, but I sort of recommend it.
 	// var {scene, camera, renderer, gui, stats} = framework; 
- 	var adamMaterial = new THREE.ShaderMaterial({
-	  	uniforms: {
-	      image: { // Check the Three.JS documentation for the different allowed types and values
-	      	type: "t", 
-	      	value: THREE.ImageUtils.loadTexture('./adam.jpg')
-	      },
-	      inv_persistence: {
-	      	type: "f",
-	      	value: 2.0
-	      },
-	      time: {
-	      	type: "f",
-	      	value: 0.
-	      },
-	      music: {
-	      	type: "f",
-	      	value: 1.
-	      },
-	      music2: {
-	      	type: "f",
-	      	value: 1.
-	      },
-	      colorMult: {
-	      	value: new THREE.Vector3(additionalControls['Color'][0]/255, additionalControls['Color'][1]/255, additionalControls['Color'][2]/255,)
-	      }
-	  },
-	  vertexShader: require('./shaders/adam-vert.glsl'),
-	  fragmentShader: require('./shaders/adam-frag.glsl')
-	});
+ 	var adamMaterial = new THREE.MeshBasicMaterial({ 
+         color:0xFFFFFF, 
+         side:THREE.DoubleSide 
+     }); 
 
 	var iso = new THREE.IcosahedronBufferGeometry(0.7, 6);
 	noiseCloud.mesh = new THREE.Mesh(iso, adamMaterial);
@@ -66,6 +46,9 @@ function onLoad(framework) {
 	camera.lookAt(new THREE.Vector3(0,0,0));
 
 	scene.add(noiseCloud.mesh);
+
+
+
 
 	// edit params and listen to changes like this
 	// more information here: https://workshop.chromeexperiments.com/examples/gui/#1--Basic-Usage
@@ -86,83 +69,42 @@ function onLoad(framework) {
 		noiseCloud.mesh.material.uniforms.colorMult.value = new THREE.Vector3(newVal[0]/255, newVal[1]/255, newVal[2]/255,);
 	});
 
-
-	// Audio stuff below
-	// http://raathigesh.com/Audio-Visualization-with-Web-Audio-and-ThreeJS/
-	// http://stackoverflow.com/questions/27589179/basic-web-audio-api-not-playing-a-mp3-file
-	// http://stackoverflow.com/questions/3273552/html5-audio-looping
-	var context = new AudioContext();
-	var jsNode = context.createScriptProcessor(2048,1,1);
-	jsNode.connect(context.destination);
-
-	// Load file and set to repeat
-	var audio = new Audio();
-	audio.src = "./sounds/music2.mp3"; //https://www.jamendo.com/track/1350213/jumper
-	audio.controls = true;
-	audio.autoplay = true;
-	audio.addEventListener('ended', function(){
-		this.currentTime = 0;
-		this.play();
-	}, false);
-	audio.loop = true;
-
-	// Play file
-	var source = context.createMediaElementSource(audio);
-	source.connect(context.destination);
-	source.mediaElement.play();
-
-	// Analyze waveform data
-	var analyser = context.createAnalyser();
-	analyser.fftSize = 128;
-	analyser.smoothingTimeConstat = 0.8;
-	source.connect(analyser);
-
-	// Action to take with processed data
-	jsNode.onaudioprocess = function () {
-
-		// If music sync box is checked
-		if (additionalControls.music) {
-			var array = new Uint8Array(analyser.frequencyBinCount);
-			analyser.getByteFrequencyData(array);
-			// console.log(analyser.maxDecibels)
-
-		 	var Z = [array.slice(0, 9).reduce((a, b) => a + b, 0) / 10 /256, 
-		 	array.slice(10, 19).reduce((a, b) => a + b, 0) / 10 /256,
-		 	array.slice(20, 29).reduce((a, b) => a + b, 0) / 10 /256,
-		 	array.slice(30, 39).reduce((a, b) => a + b, 0) / 10 /256,
-		 	array.slice(40, 49).reduce((a, b) => a + b, 0) / 10 /256,
-		 	array.slice(50, 59).reduce((a, b) => a + b, 0) / 10 /256];
-			// console.log(Z);
-
-			noiseCloud.mesh.material.uniforms.music.value = Z[4];
-			noiseCloud.mesh.material.uniforms.music2.value = Z[1];
-		} else {
-			noiseCloud.mesh.material.uniforms.music.value = 1.;
-			noiseCloud.mesh.material.uniforms.music2.value = 0.;
-		}
-
-
-	}
-
-
 }
 
 // called on frame updates
 function onUpdate(framework) {
+	var newTime = Date.now();
+	var instrumentName = "acoustic_grand_piano";
+	if (newTime - t > 1500) {
+		// MIDI.loadPlugin({
+		// 	soundfontUrl: "./soundfont/",
+		// 	instrument: instrumentName,
+		// 	onprogress: function(state, progress) {
+		// 		console.log(state, progress);
+		// 	},
+		// 	onsuccess: function() {
+		// 		MIDI.programChange(0, MIDI.GM.byName[instrumentName].number); 
 
+		// 		var delay = 0; // play one note every quarter second
+		// 		var note = 50; // the MIDI note
+		// 		var velocity = 127; // how hard the note hits
+		// 		// play the note
+		// 		MIDI.setVolume(0, 127);
+		// 		MIDI.noteOn(0, note, velocity, delay);
+		// 		MIDI.noteOn(0, note + 2, velocity, delay);
+		// 		MIDI.noteOn(0, note + 5, velocity, delay);
+		// 		// MIDI.noteOff(0, note, delay + 0.75);
+		// 	}
+		// });
+		Soundfont.instrument(ac, 'marimba', { soundfont: 'MusyngKite' }).then(function (marimba) {
+		  marimba.play('C4')
+		})
+		Soundfont.instrument(ac, 'clarinet', { soundfont: 'MusyngKite' }).then(function (marimba) {
+		  marimba.play('D4')
+		})
+		t = newTime;
+	}
 
-	framework.scene.traverse(function (object)
-	{
-		if (object instanceof THREE.Mesh)
-		{
-			if (object.name === 'adamCube') {
-	        	// var d = new Date();
-	         	// console.log(`the time is ${(object.material.uniforms.time.value)}`);
-	         	object.material.uniforms.time.value += .01;
-
-	         }
-	     }
-	 });
 }
 
 // when the scene is done initializing, it will call onLoad, then on frame updates, call onUpdate

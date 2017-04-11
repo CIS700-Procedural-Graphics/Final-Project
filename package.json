@@ -16,7 +16,9 @@
     "stats-js": "^1.0.0-alpha1",
     "three": "^0.82.1",
     "three-orbit-controls": "^82.1.0",
-    "tonal": "^0.69.5"
+    "tonal": "^0.69.5",
+    "midi.js": "",
+    "soundfont-player": "^0.10.5"
   },
   "devDependencies": {
     "babel-core": "^6.18.2",
