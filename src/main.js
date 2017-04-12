@@ -12,23 +12,27 @@ function onLoad(framework) {
   var options = {
     graphManager: {
       numCells: 50
+    },
+    viewManager: {
+      debugOcean: false
     }
   }
 
   var map = new Map();
 
-  var graphManager = new GraphManager(map);
+  var graphManager = new GraphManager(options.graphManager, map);
   var geographyManager = new GeographyManager(map);
-  var viewManager = new ViewManager(map, scene);
+  var viewManager = new ViewManager(options.viewManager, map, scene);
 
   map.graphManager = graphManager;
   map.geographyManager = geographyManager;
   map.viewManager = viewManager;
 
-  graphManager.generateFromSquareGrid(options.graphManager.numCells);
-  geographyManager.generateElevationMap();
+  // graphManager.generateFromSquareGrid();
+  // geographyManager.generateElevationMap();
   viewManager.renderGraph();
-  viewManager.renderElevation();
+  // viewManager.renderElevation();
+  // viewManager.renderCoastline();
 
   camera.position.set(0, 0, 100);
   camera.lookAt(new THREE.Vector3(0,0,0));

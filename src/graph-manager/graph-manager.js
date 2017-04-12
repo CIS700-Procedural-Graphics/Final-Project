@@ -6,19 +6,20 @@ import Node from './node'
 import HalfEdge from './halfedge'
 
 export default class GraphManager {
-  constructor(map) {
+  constructor(options, map) {
+    this.numCells = options.numCells;
     this.map = map;
     this.nodes = [];
     this.edges = [];
     this.cells = [];
   }
 
-  generateFromSquareGrid(numCells) {
+  generateFromSquareGrid() {
     var nodesMap = {};
     var edgesMap = {};
 
-    for (var x = 0; x <= numCells; x++) {
-      for (var y = 0; y <= numCells; y++) {
+    for (var x = 0; x <= this.numCells; x++) {
+      for (var y = 0; y <= this.numCells; y++) {
         var node = new Node(x, y);
         var nodesMapIndex = x + ' ' + y;
 
@@ -26,18 +27,18 @@ export default class GraphManager {
       }
     }
 
-    for (var x = 0; x <= numCells; x++) {
-      for (var y = 0; y <= numCells; y++) {
+    for (var x = 0; x <= this.numCells; x++) {
+      for (var y = 0; y <= this.numCells; y++) {
         var nodesMapIndex = x + ' ' + y;
         var node = nodesMap[nodesMapIndex];
         var adjCoors = [ [ x-1, y ], [ x+1, y ], [ x, y-1 ], [ x, y+1 ] ];
 
-        _.forEach(adjCoors, function(coors) {
+        adjCoors.forEach(function(coors) {
           var xAdj = coors[0];
           var yAdj = coors[1];
 
-          if (xAdj >= 0 && xAdj <= numCells &&
-              yAdj >= 0 && yAdj <= numCells) {
+          if (xAdj >= 0 && xAdj <= this.numCells &&
+              yAdj >= 0 && yAdj <= this.numCells) {
             var adjNodeMapIndex = xAdj + ' ' + yAdj;
             var adjNode = nodesMap[adjNodeMapIndex];
             var edgesMapIndex = nodesMapIndex + ' ' + adjNodeMapIndex;
@@ -52,12 +53,12 @@ export default class GraphManager {
               adjNode.neighbors.push(node);
             }
           }
-        });
+        }, this);
       }
     }
 
-    for (var x = 0; x < numCells; x++) {
-      for (var y = 0; y < numCells; y++) {
+    for (var x = 0; x < this.numCells; x++) {
+      for (var y = 0; y < this.numCells; y++) {
         var cell = new Cell();
 
         var edgesMapIndexA = x + ' ' + y + ' ' + (x+1) + ' ' + y;
@@ -82,6 +83,7 @@ export default class GraphManager {
           halfedge.nodeA = nodeA;
           halfedge.nodeB = nodeB;
           cell.halfedges.push(halfedge);
+          cell.corners.push(nodeA);
         }
 
         var numHalfEdges = cell.halfedges.length;

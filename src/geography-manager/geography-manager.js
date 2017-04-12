@@ -9,17 +9,17 @@ export default class GeographyManager {
   }
 
   generateElevationMap() {
-    var cells = this.map.graphManager.cells;
-    var noise = new NOISEJS.Noise(Math.random());
+    var nodes = this.map.graphManager.nodes;
+    var seed = Math.random();
+    var noise = new NOISEJS.Noise(seed);
 
-    _.forEach(cells, function(cell) {
-      var center = cell.center;
-      var elevation = noise.simplex2(center.x / 100, center.y / 100);
+    _.forEach(nodes, function(node) {
+      var elevation = noise.simplex2(node.pos.x / 100, node.pos.y / 100);
 
       var f = CHROMA.scale(['yellow', '008ae5']).domain([-1, 1]);
 
-      cell.color = f(elevation);
-      cell.elevation = elevation;
+      node.color = f(elevation);
+      node.elevation = elevation;
     });
   }
 }
