@@ -78,6 +78,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\InspectPoint.cs" />
+    <Compile Include="Assets\Scripts\LUT.cs" />
     <Compile Include="Assets\Scripts\Metaball.cs" />
     <Compile Include="Assets\Scripts\MetaballController.cs" />
     <Compile Include="Assets\Scripts\Voxel.cs" />

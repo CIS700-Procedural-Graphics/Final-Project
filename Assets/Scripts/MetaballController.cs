@@ -28,6 +28,8 @@ public class MetaballController : MonoBehaviour {
     public GameObject[] labels;
     public List<Metaball> balls;
 
+    private Mesh metaballsMesh;
+
   
     void Awake()
     {
@@ -42,13 +44,59 @@ public class MetaballController : MonoBehaviour {
 	void Start () {
         Debug.Log("HI");
         setupCells();
+        setupWalls();
         setupMetaballs();
+        makeMesh();
 	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+
+    // Update is called once per frame
+    void Update() {
+
+        //Update isovalues of each voxel
+        for (int c = 0; c < this.res3; c++)
+        {
+            this.voxels[c].center.isovalue = this.sample
+                (this.voxels[c].center.gameObject.transform.position);
+
+            this.voxels[c].v1.isovalue = this.sample
+                (this.voxels[c].v1.gameObject.transform.position);
+
+            this.voxels[c].v2.isovalue = this.sample
+                (this.voxels[c].v2.gameObject.transform.position);
+
+            this.voxels[c].v3.isovalue = this.sample
+                (this.voxels[c].v3.gameObject.transform.position);
+
+            this.voxels[c].v4.isovalue = this.sample
+                (this.voxels[c].v4.gameObject.transform.position);
+
+            this.voxels[c].v5.isovalue = this.sample
+                (this.voxels[c].v5.gameObject.transform.position);
+
+            this.voxels[c].v6.isovalue = this.sample
+                (this.voxels[c].v6.gameObject.transform.position);
+
+            this.voxels[c].v7.isovalue = this.sample
+                (this.voxels[c].v7.gameObject.transform.position);
+
+            this.voxels[c].v8.isovalue = this.sample
+                (this.voxels[c].v8.gameObject.transform.position);
+
+            if (visualDebug)
+            {
+                if(this.voxels[c].center.isovalue > this.isoLevel)
+                {
+                    this.voxels[c].show();
+                }else
+                {
+                    this.voxels[c].hide();
+                }
+            }
+        }
+
+
+        updateMesh();
+    }
 
     void setupCells()
     {
@@ -57,19 +105,49 @@ public class MetaballController : MonoBehaviour {
         for (int i = 0; i < this.res3; i++)
         {
             GameObject voxel = Instantiate(Resources.Load("Voxel")) as GameObject;
+            voxel.isStatic = true;
             var i3 = this.i1toi3(i);
             Vector3 voxelPos = this.i3toPos(i3);
             voxel.transform.position = voxelPos;
             voxel.transform.localScale = Vector3.one * gridCellWidth;
             this.voxels.Add(voxel.GetComponent<Voxel>());
 
-            if (this.visualDebug)
+            if (visualDebug)
             {
                 voxel.GetComponent<MeshRenderer>().enabled = true;
             }
         }
 
      
+    }
+
+    //Constrains movement of metaballs
+    void setupWalls()
+    {
+
+        List<Vector3> wallPositions = new List<Vector3>();
+        wallPositions.Add(new Vector3(0.0f, 1.0f, 1.0f));
+        wallPositions.Add(new Vector3(1.0f, 1.0f, 0.0f));
+        wallPositions.Add(new Vector3(1.0f, 0.0f, 1.0f));
+        wallPositions.Add(new Vector3(2.0f,1.0f,1.0f));
+        wallPositions.Add(new Vector3(1.0f, 1.0f, 2.0f));
+        wallPositions.Add(new Vector3(1.0f, 2.0f, 1.0f));
+
+        List<Vector3> wallScales = new List<Vector3>();
+        wallScales.Add(new Vector3(0.0f, 1.0f, 1.0f));
+        wallScales.Add(new Vector3(1.0f, 1.0f, 0.0f));
+        wallScales.Add(new Vector3(1.0f, 0.0f, 1.0f));
+
+
+        for (int i = 0; i < wallPositions.Count; i++)
+        {
+            GameObject wall = Instantiate(Resources.Load("Wall")) as GameObject;
+            Vector3 pos = wallPositions[i] * this.gridWidth / 2.0f;
+            wall.transform.position = pos;
+            wall.transform.localScale = wallScales[i % 3] * this.gridWidth;
+        }
+
+
     }
 
     void setupMetaballs()
@@ -93,20 +171,95 @@ public class MetaballController : MonoBehaviour {
             velocity = new Vector3(vx, vy, vz);
 
             radius = Random.Range(0, 1.0f) * (this.maxRadius - this.minRadius) + this.minRadius;
+            //radius = 1.0f;
 
             GameObject metaball = Instantiate(Resources.Load("Metaball")) as GameObject;
             metaball.transform.localScale = Vector3.one * radius / 2.0f;
             metaball.transform.position = position;
-            metaball.GetComponent<Rigidbody>().velocity = velocity;
+            metaball.GetComponent<Rigidbody>().AddForce(velocity, ForceMode.Impulse);
 
-            this.balls.Add(metaball.GetComponent<Metaball>());
+            var ball = metaball.GetComponent<Metaball>();
+            ball.radius = radius;
 
-            if (this.visualDebug)
+            this.balls.Add(ball);
+
+            if (visualDebug)
             {
                 metaball.GetComponent<MeshRenderer>().enabled = true;
             }
 
         }
+    }
+
+    void makeMesh()
+    {
+       metaballsMesh = GetComponent<MeshFilter>().mesh;
+
+    }
+
+    void updateMesh()
+    {
+        List<Vector3> meshVertices = new List<Vector3>();
+
+        for (int i = 0; i < this.res3; i++)
+        {
+            var voxelPolygonMap = this.voxels[i].polygonize(this.isoLevel);
+            if (voxelPolygonMap["vertPositions"].Count > 0)
+            {
+                List<Vector3> voxelVertices = voxelPolygonMap["vertPositions"];
+
+                for (int c = 0; c < voxelVertices.Count; c++)
+                {
+                    meshVertices.Add(voxelVertices[c]);
+                }
+
+            }
+        }
+
+        //////add test vertices
+        //meshVertices.Add(new Vector3(0f, 0f, 0f));
+        //meshVertices.Add(new Vector3(0f, 1f, 0f));
+        //meshVertices.Add(new Vector3(1f, 1f, 0f));
+
+        //meshVertices.Add(new Vector3(2f, 0f, 0f));
+        //meshVertices.Add(new Vector3(2f, 1f, 0f));
+        //meshVertices.Add(new Vector3(3f, 1f, 0f));
+
+
+        //create triangle indices
+        int[] meshTriangles = new int[meshVertices.Count];
+        for (int i = 0; i < meshTriangles.Length; i++)
+        {
+            //index in order because we add vertices in order
+            meshTriangles[i] = i;
+        }
+
+
+        metaballsMesh.Clear();
+        metaballsMesh.vertices = meshVertices.ToArray();
+        metaballsMesh.triangles = meshTriangles;
+        metaballsMesh.RecalculateBounds();
+    }
+
+    float influence(Metaball ball, Vector3 point)
+    {
+        float rSquared = Mathf.Pow(ball.radius, 2.0f);
+        float xDiffSquared = Mathf.Pow(point.x - ball.transform.position.x, 2.0f);
+        float yDiffSquared = Mathf.Pow(point.y - ball.transform.position.y, 2.0f);
+        float zDiffSquared = Mathf.Pow(point.z - ball.transform.position.z, 2.0f);
+        return (rSquared / (xDiffSquared + yDiffSquared + zDiffSquared));
+    }
+
+      float sample(Vector3 point)
+    {
+        float isovalue = 0.0f;
+
+        for (int i = 0; i < this.balls.Count; i++)
+        {
+            isovalue += this.influence(this.balls[i], point);
+        }
+
+        return isovalue;
     }
 
     //convert 1 dimensional index to 3 dimensional index
