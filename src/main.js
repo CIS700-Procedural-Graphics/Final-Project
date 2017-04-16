@@ -35,8 +35,8 @@ var adamMaterial = new THREE.ShaderMaterial({
       value: THREE.ImageUtils.loadTexture('./adam.jpg')
     }
   },
-  vertexShader: require('./shaders/adam-vert.glsl'),
-  fragmentShader: require('./shaders/adam-frag.glsl')
+  vertexShader: require('./shaders/workingRef-vert.glsl'),
+  fragmentShader: require('./shaders/workingRef-frag.glsl')
 });
 
 var workingMaterial = new THREE.ShaderMaterial({
