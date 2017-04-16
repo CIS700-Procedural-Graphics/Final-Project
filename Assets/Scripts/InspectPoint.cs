@@ -11,13 +11,14 @@ public class InspectPoint : MonoBehaviour {
 	void Start () {
         textRenderer = this.GetComponent<MeshRenderer>();
         this.gameObject.isStatic = true;
+        this.enabled = false;
 	}
 	
 	// Update is called once per frame
-	void Update () {
-        if (textRenderer.enabled)
-        {
-            this.GetComponent<TextMesh>().text = isovalue.ToString();
-        }
-    }
+	//void Update () {
+ //       //if (textRenderer.enabled)
+ //       //{
+ //       //    this.GetComponent<TextMesh>().text = isovalue.ToString();
+ //       //}
+ //   }
 }

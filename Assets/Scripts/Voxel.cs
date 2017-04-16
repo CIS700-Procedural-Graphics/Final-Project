@@ -16,13 +16,9 @@ public class Voxel : MonoBehaviour {
         col.a = 0.0f;
         mat.color = col;
         this.GetComponent<Renderer>().material = mat;
+        this.enabled = false;
     
     }
-
-    // Update is called once per frame
-    void Update () {
-
-	}
 
     public void show()
     {
@@ -243,7 +239,6 @@ public class Voxel : MonoBehaviour {
         List<Vector3> vertPositions = new List<Vector3>();
         List<Vector3> vertNormals = new List<Vector3>();
 
-        int loopCount = 0;
         //Create triangles
         for (int i = 0; LUT.TRI_TABLE[cubeindex * 16 + i] != -1; i += 3)
         {            
@@ -253,8 +248,6 @@ public class Voxel : MonoBehaviour {
             vertPositions.Add(triV0);
             vertPositions.Add(triV1);
             vertPositions.Add(triV2);
-            //Debug.Log("loop count = " + i);
-            loopCount++;
         }
 
         polyMap["vertPositions"] = vertPositions;

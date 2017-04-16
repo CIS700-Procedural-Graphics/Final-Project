@@ -42,7 +42,6 @@ public class MetaballController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        Debug.Log("HI");
         setupCells();
         setupWalls();
         setupMetaballs();
