@@ -12,7 +12,7 @@ import Framework from './framework';
 var icosahedron = new THREE.IcosahedronGeometry(1, 5); //THREE.IcosahedronBufferGeometry(1, 0); //-HB
 
 var visElements = {
-  volume: 0,
+  volume: 2,
   loop: false,
   sound: null,
   play: true

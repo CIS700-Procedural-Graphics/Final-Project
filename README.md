@@ -5,15 +5,15 @@ Hannah Bollar [Single Person Project]
 
 ## View the Project
 
-NOTE: PROJECT STILL IN PROGRESS
+NOTE: PROJECT STILL IN PROGRESS. Turn volume on and possibly wear headphones to hear the sound.
 
-###### [Click Here](https://hanbollar.github.io/Final-Project/)
+###### [Click Here to View the Project](https://hanbollar.github.io/Final-Project/)
 
 ## The Audio
 
 Maple Story Music - Ellinia
 
-###### [Click Here](https://www.youtube.com/watch?v=_M-ytoRguS8)
+###### [Click Here to View the Source Video](https://www.youtube.com/watch?v=_M-ytoRguS8)
 
 ## The Project
 
