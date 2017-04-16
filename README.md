@@ -7,13 +7,13 @@ Hannah Bollar [Single Person Project]
 
 NOTE: PROJECT STILL IN PROGRESS
 
-# [Click Here](https://hanbollar.github.io/Final-Project/)
+###### [Click Here](https://hanbollar.github.io/Final-Project/)
 
 ## The Audio
 
 Maple Story Music - Ellinia
 
-# [Click Here](https://www.youtube.com/watch?v=_M-ytoRguS8)
+###### [Click Here](https://www.youtube.com/watch?v=_M-ytoRguS8)
 
 ## The Project
 
