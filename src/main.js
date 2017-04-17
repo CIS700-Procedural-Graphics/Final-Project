@@ -3,6 +3,9 @@ const THREE = require('three'); // older modules are imported like this. You sho
 import Framework from './framework'
 import MIDI from 'midi.js'
 import Soundfont from 'soundfont-player'
+import {euclid} from './utils/euclid.js'
+import beatGenerator from './utils/musicGenerator.js'
+
 var ac = new AudioContext()
 
 // Colors
@@ -24,6 +27,9 @@ var t = Date.now();
 
 // called after the scene loads
 function onLoad(framework) {
+	console.log(euclid(5,16));
+	console.log(beatGenerator(euclid(5,16), 120))
+
 	var scene = framework.scene;
 	var camera = framework.camera;
 	var renderer = framework.renderer;
@@ -79,34 +85,17 @@ function onUpdate(framework) {
 	var notes = NOTES.map(function (n, i) {
 	  return { time: i * 0.3, note: n + 60 }
 	})
-	if (newTime - t > 1500) {
-		// MIDI.loadPlugin({
-		// 	soundfontUrl: "./soundfont/",
-		// 	instrument: instrumentName,
-		// 	onprogress: function(state, progress) {
-		// 		console.log(state, progress);
-		// 	},
-		// 	onsuccess: function() {
-		// 		MIDI.programChange(0, MIDI.GM.byName[instrumentName].number); 
 
-		// 		var delay = 0; // play one note every quarter second
-		// 		var note = 50; // the MIDI note
-		// 		var velocity = 127; // how hard the note hits
-		// 		// play the note
-		// 		MIDI.setVolume(0, 127);
-		// 		MIDI.noteOn(0, note, velocity, delay);
-		// 		MIDI.noteOn(0, note + 2, velocity, delay);
-		// 		MIDI.noteOn(0, note + 5, velocity, delay);
-		// 		// MIDI.noteOff(0, note, delay + 0.75);
-		// 	}
-		// });
-		Soundfont.instrument(ac, 'marimba', { soundfont: 'MusyngKite' }).then(function (marimba) {
-			marimba.play('C4')
-			marimba.play('E4')
-			marimba.play('A3')
-		  	Soundfont.instrument(ac, 'cello', { soundfont: 'MusyngKite' }).then(function (marimba) {
-		  		marimba.schedule(ac.currentTime, notes);
-			})
+	// console.log(notes);
+	if (newTime - t > 3000) {
+
+		Soundfont.instrument(ac, 'pad_6_metallic', { soundfont: 'MusyngKite' }).then(function (marimba) {
+			marimba.schedule(ac.currentTime, beatGenerator(euclid(7,16), 120));
+			// marimba.play('E4')
+			// marimba.play('A3')
+		 //  	Soundfont.instrument(ac, 'cello', { soundfont: 'MusyngKite' }).then(function (marimba) {
+		 //  		marimba.schedule(ac.currentTime, notes);
+			// })
 		})
 
 		t = newTime;
