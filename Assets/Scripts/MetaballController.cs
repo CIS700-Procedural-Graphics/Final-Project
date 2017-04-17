@@ -55,42 +55,42 @@ public class MetaballController : MonoBehaviour {
         for (int c = 0; c < this.res3; c++)
         {
             this.voxels[c].center.isovalue = this.sample
-                (this.voxels[c].center.gameObject.transform.position);
+                (this.voxels[c].center.position);
 
             this.voxels[c].v1.isovalue = this.sample
-                (this.voxels[c].v1.gameObject.transform.position);
+                (this.voxels[c].v1.position);
 
             this.voxels[c].v2.isovalue = this.sample
-                (this.voxels[c].v2.gameObject.transform.position);
+                (this.voxels[c].v2.position);
 
             this.voxels[c].v3.isovalue = this.sample
-                (this.voxels[c].v3.gameObject.transform.position);
+                (this.voxels[c].v3.position);
 
             this.voxels[c].v4.isovalue = this.sample
-                (this.voxels[c].v4.gameObject.transform.position);
+                (this.voxels[c].v4.position);
 
             this.voxels[c].v5.isovalue = this.sample
-                (this.voxels[c].v5.gameObject.transform.position);
+                (this.voxels[c].v5.position);
 
             this.voxels[c].v6.isovalue = this.sample
-                (this.voxels[c].v6.gameObject.transform.position);
+                (this.voxels[c].v6.position);
 
             this.voxels[c].v7.isovalue = this.sample
-                (this.voxels[c].v7.gameObject.transform.position);
+                (this.voxels[c].v7.position);
 
             this.voxels[c].v8.isovalue = this.sample
-                (this.voxels[c].v8.gameObject.transform.position);
+                (this.voxels[c].v8.position);
 
-            if (visualDebug)
-            {
-                if(this.voxels[c].center.isovalue > this.isoLevel)
-                {
-                    this.voxels[c].show();
-                }else
-                {
-                    this.voxels[c].hide();
-                }
-            }
+            //if (visualDebug)
+            //{
+            //    if(this.voxels[c].center.isovalue > this.isoLevel)
+            //    {
+            //        this.voxels[c].show();
+            //    }else
+            //    {
+            //        this.voxels[c].hide();
+            //    }
+            //}
         }
 
 
@@ -103,18 +103,18 @@ public class MetaballController : MonoBehaviour {
         this.voxels = new List<Voxel>();
         for (int i = 0; i < this.res3; i++)
         {
-            GameObject voxel = Instantiate(Resources.Load("Voxel")) as GameObject;
-            voxel.isStatic = true;
+            //GameObject voxel = Instantiate(Resources.Load("Voxel")) as GameObject;
+            //voxel.isStatic = true;
             var i3 = this.i1toi3(i);
             Vector3 voxelPos = this.i3toPos(i3);
-            voxel.transform.position = voxelPos;
-            voxel.transform.localScale = Vector3.one * gridCellWidth;
-            this.voxels.Add(voxel.GetComponent<Voxel>());
-
-            if (visualDebug)
-            {
-                voxel.GetComponent<MeshRenderer>().enabled = true;
-            }
+            Voxel voxel = new Voxel(voxelPos, this.gridCellWidth);
+            //voxel.transform.localScale = Vector3.one * gridCellWidth;
+            //this.voxels.Add(voxel.GetComponent<Voxel>());
+            this.voxels.Add(voxel);
+            //if (visualDebug)
+            //{
+            //    voxel.GetComponent<MeshRenderer>().enabled = true;
+            //}
         }
 
      

@@ -2,67 +2,125 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Voxel {
+public class VoxelGO : MonoBehaviour {
 
-    public Vector3 position;
     public InspectPoint center, v1, v2, v3, v4, v5, v6, v7, v8;
-    public float width = 1f;
+    private Material mat;
+    private Color col;
+	// Use this for initialization
+	void Start () {
 
-    public Voxel(Vector3 pos, float cellWidth)
-    {
-        this.position = pos;
-        this.width = cellWidth;
         makeInspectPoints();
+        mat = new Material(Shader.Find("Transparent/Diffuse"));
+        col = Color.green;
+        col.a = 0.0f;
+        mat.color = col;
+        this.GetComponent<Renderer>().material = mat;
+        this.enabled = false;
+    
+    }
+
+    public void show()
+    {
+        col.a = 0.80f;
+        mat.color = col;
+    }
+
+    public void hide()
+    {
+        col.a = 0f;
+        mat.color = col;
     }
 
     void makeInspectPoints()
     {
-        float halfGridCellWidth = width / 2f;
+        float halfGridCellWidth = 0.5f;
 
-        float x = this.position.x;
-        float y = this.position.y;
-        float z = this.position.z;
-        this.center = new InspectPoint(x, y, z);
+        GameObject centerInspect = Instantiate(Resources.Load("InspectPoint")) as GameObject;
+        centerInspect.transform.parent = this.gameObject.transform;
+        float x = 0.0f;
+        float y = 0.0f;
+        float z = 0.0f;
+        centerInspect.transform.localPosition = new Vector3(x,y,z);
+        this.center = centerInspect.GetComponent<InspectPoint>();
 
+        GameObject v1Inspect = Instantiate(Resources.Load("InspectPoint")) as GameObject;
+        v1Inspect.transform.parent = this.gameObject.transform;
         float v1x = x - halfGridCellWidth;
-        float v1y = y + halfGridCellWidth;
-        float v1z = z - halfGridCellWidth;
-        this.v1 = new InspectPoint(v1x, v1y, v1z);
+        float v1y = x + halfGridCellWidth;
+        float v1z = x - halfGridCellWidth;
+        v1Inspect.transform.localPosition = new Vector3(v1x, v1y, v1z);
+        this.v1 = v1Inspect.GetComponent<InspectPoint>();
 
+        GameObject v2Inspect = Instantiate(Resources.Load("InspectPoint")) as GameObject;
+        v2Inspect.transform.parent = this.gameObject.transform;
         float v2x = v1x;
         float v2y = v1y;
-        float v2z = z + halfGridCellWidth;
-        this.v2 = new InspectPoint(v2x, v2y, v2z);
+        float v2z = x + halfGridCellWidth;
+        v2Inspect.transform.localPosition = new Vector3(v2x, v2y, v2z);
+        this.v2 = v2Inspect.GetComponent<InspectPoint>();
 
+        GameObject v3Inspect = Instantiate(Resources.Load("InspectPoint")) as GameObject;
+        v3Inspect.transform.parent = this.gameObject.transform;
         float v3x = x + halfGridCellWidth;
         float v3y = v2y;
         float v3z = v2z;
-        this.v3 = new InspectPoint(v3x, v3y, v3z);
+        v3Inspect.transform.localPosition = new Vector3(v3x, v3y, v3z);
+        this.v3 = v3Inspect.GetComponent<InspectPoint>();
 
+        GameObject v4Inspect = Instantiate(Resources.Load("InspectPoint")) as GameObject;
+        v4Inspect.transform.parent = this.gameObject.transform;
         float v4x = v3x;
         float v4y = v3y;
         float v4z = v1z;
-        this.v4 = new InspectPoint(v4x, v4y, v4z);
+        v4Inspect.transform.localPosition = new Vector3(v4x, v4y, v4z);
+        this.v4 = v4Inspect.GetComponent<InspectPoint>();
 
+        GameObject v5Inspect = Instantiate(Resources.Load("InspectPoint")) as GameObject;
+        v5Inspect.transform.parent = this.gameObject.transform;
         float v5x = v1x;
         float v5y = y - halfGridCellWidth;
         float v5z = v1z;
-        this.v5 = new InspectPoint(v5x, v5y, v5z);
+        v5Inspect.transform.localPosition = new Vector3(v5x, v5y, v5z);
+        this.v5 = v5Inspect.GetComponent<InspectPoint>();
 
+        GameObject v6Inspect = Instantiate(Resources.Load("InspectPoint")) as GameObject;
+        v6Inspect.transform.parent = this.gameObject.transform;
         float v6x = v5x;
         float v6y = v5y;
         float v6z = v2z;
-        this.v6 = new InspectPoint(v6x, v6y, v6z);
+        v6Inspect.transform.localPosition = new Vector3(v6x, v6y, v6z);
+        this.v6 = v6Inspect.GetComponent<InspectPoint>();
 
+        GameObject v7Inspect = Instantiate(Resources.Load("InspectPoint")) as GameObject;
+        v7Inspect.transform.parent = this.gameObject.transform;
         float v7x = v3x;
         float v7y = v6y;
         float v7z = v6z;
-        this.v7 = new InspectPoint(v7x, v7y, v7z);
+        v7Inspect.transform.localPosition = new Vector3(v7x, v7y, v7z);
+        this.v7 = v7Inspect.GetComponent<InspectPoint>();
 
+        GameObject v8Inspect = Instantiate(Resources.Load("InspectPoint")) as GameObject;
+        v8Inspect.transform.parent = this.gameObject.transform;
         float v8x = v7x;
         float v8y = v7y;
         float v8z = v4z;
-        this.v8 = new InspectPoint(v8x, v8y, v8z);
+        v8Inspect.transform.localPosition = new Vector3(v8x, v8y, v8z);
+        this.v8 = v8Inspect.GetComponent<InspectPoint>();
+
+        if (this.GetComponent<Renderer>().enabled)//if we're debugging show them
+        {
+            this.center.GetComponent<MeshRenderer>().enabled = true;
+            this.v1.GetComponent<MeshRenderer>().enabled = true;
+            this.v2.GetComponent<MeshRenderer>().enabled = true;
+            this.v3.GetComponent<MeshRenderer>().enabled = true;
+            this.v4.GetComponent<MeshRenderer>().enabled = true;
+            this.v5.GetComponent<MeshRenderer>().enabled = true;
+            this.v6.GetComponent<MeshRenderer>().enabled = true;
+            this.v7.GetComponent<MeshRenderer>().enabled = true;
+            this.v8.GetComponent<MeshRenderer>().enabled = true;
+
+        }
     }
 
     public Dictionary<string, List<Vector3>> polygonize(float isolevel)
@@ -183,7 +241,7 @@ public class Voxel {
 
         //Create triangles
         for (int i = 0; LUT.TRI_TABLE[cubeindex * 16 + i] != -1; i += 3)
-        {
+        {            
             var triV0 = vertexList[LUT.TRI_TABLE[cubeindex * 16 + i]];
             var triV1 = vertexList[LUT.TRI_TABLE[cubeindex * 16 + i + 1]];
             var triV2 = vertexList[LUT.TRI_TABLE[cubeindex * 16 + i + 2]];
@@ -205,22 +263,22 @@ public class Voxel {
         Vector3 lerpPos = new Vector3();
 
         if (Mathf.Abs(isolevel - vertA.isovalue) < 0.00001)
-            return vertA.position;
+            return vertA.gameObject.transform.position;
         if (Mathf.Abs(isolevel - vertB.isovalue) < 0.00001)
-            return vertB.position;
+            return vertB.gameObject.transform.position;
         if (Mathf.Abs(vertA.isovalue - vertB.isovalue) < 0.00001)
-            return vertA.position;
+            return vertA.gameObject.transform.position;
 
         mu = (isolevel - vertA.isovalue) / (vertB.isovalue - vertA.isovalue);
 
-        lerpPos.x = vertA.position.x + mu *
-            (vertB.position.x - vertA.position.x);
+        lerpPos.x = vertA.gameObject.transform.position.x + mu * 
+            (vertB.gameObject.transform.position.x - vertA.gameObject.transform.position.x);
 
-        lerpPos.y = vertA.position.y + mu *
-            (vertB.position.y - vertA.position.y);
+        lerpPos.y = vertA.gameObject.transform.position.y + mu * 
+            (vertB.gameObject.transform.position.y - vertA.gameObject.transform.position.y);
 
-        lerpPos.z = vertA.position.z + mu *
-            (vertB.position.z - vertA.position.z);
+        lerpPos.z = vertA.gameObject.transform.position.z + mu * 
+            (vertB.gameObject.transform.position.z - vertA.gameObject.transform.position.z);
 
         return lerpPos;
     }
