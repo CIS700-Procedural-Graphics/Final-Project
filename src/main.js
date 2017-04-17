@@ -11,28 +11,32 @@ function onLoad(framework) {
 
   var options = {
     graphManager: {
+      cellType: 'hex', // 'square', 'hex'
       numCells: 50
     },
+    geographyManager: {},
     viewManager: {
-      debugOcean: false
+      renderGraph: true,
+      renderElevation: true,
+      renderCoastline: true,
+      debugOcean: false,
+      debugShowNodes: false
     }
-  }
+  };
 
   var map = new Map();
 
   var graphManager = new GraphManager(options.graphManager, map);
-  var geographyManager = new GeographyManager(map);
+  var geographyManager = new GeographyManager(options.geographyManager, map);
   var viewManager = new ViewManager(options.viewManager, map, scene);
 
   map.graphManager = graphManager;
   map.geographyManager = geographyManager;
   map.viewManager = viewManager;
 
-  // graphManager.generateFromSquareGrid();
-  // geographyManager.generateElevationMap();
-  viewManager.renderGraph();
-  // viewManager.renderElevation();
-  // viewManager.renderCoastline();
+  graphManager.generateGrid()
+  geographyManager.generateElevationMap();
+  viewManager.renderMap();
 
   camera.position.set(0, 0, 100);
   camera.lookAt(new THREE.Vector3(0,0,0));
