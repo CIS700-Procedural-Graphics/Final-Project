@@ -1,10 +1,14 @@
 
 const THREE = require('three'); // older modules are imported like this. You shouldn't have to worry about this much
+const tonal = require('tonal')
+
 import Framework from './framework'
 import MIDI from 'midi.js'
 import Soundfont from 'soundfont-player'
 import {euclid} from './utils/euclid.js'
-import beatGenerator from './utils/musicGenerator.js'
+import {beatGenerator, MorseThue} from './utils/musicGenerator.js'
+import Lsystem from './fractals/lsystem.js'
+
 
 var ac = new AudioContext()
 
@@ -29,6 +33,16 @@ var t = Date.now();
 function onLoad(framework) {
 	console.log(euclid(5,16));
 	console.log(beatGenerator(euclid(5,16), 120))
+
+	var grammar = {};
+	grammar['0'] = {probability: 1.0, successorString: '01'};
+	grammar['1'] = {probability: 1.0, successorString: '10'};
+	var L = new Lsystem('0',grammar, 2);
+	console.log(L.doIterations(3));
+
+	var s = tonal.scale.get('major', 'C4');
+	console.log(s)
+	console.log(tonal.transpose(s[0], 'P8'))
 
 	var scene = framework.scene;
 	var camera = framework.camera;
@@ -89,13 +103,11 @@ function onUpdate(framework) {
 	// console.log(notes);
 	if (newTime - t > 3000) {
 
-		Soundfont.instrument(ac, 'pad_6_metallic', { soundfont: 'MusyngKite' }).then(function (marimba) {
-			marimba.schedule(ac.currentTime, beatGenerator(euclid(7,16), 120));
-			// marimba.play('E4')
-			// marimba.play('A3')
-		 //  	Soundfont.instrument(ac, 'cello', { soundfont: 'MusyngKite' }).then(function (marimba) {
-		 //  		marimba.schedule(ac.currentTime, notes);
-			// })
+		// Soundfont.instrument(ac, 'acoustic_grand_piano', { soundfont: 'MusyngKite' }).then(function (marimba) {
+		// 	marimba.schedule(ac.currentTime, MorseThue(2,1,8,120));
+		// })
+		Soundfont.instrument(ac, 'acoustic_grand_piano', { soundfont: 'MusyngKite' }).then(function (marimba) {
+			marimba.schedule(ac.currentTime, beatGenerator(euclid(9,16), 120));
 		})
 
 		t = newTime;

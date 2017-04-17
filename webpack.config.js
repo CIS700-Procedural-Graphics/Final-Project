@@ -19,10 +19,18 @@ module.exports = {
         test: /\.glsl$/,
         loader: "webpack-glsl"
       },
+      {
+        test: /\.json$/,
+        loader: "json"
+      }
     ]
   },
   devtool: 'source-map',
   devServer: {
     port: 7000
+  },
+  resolve : {
+    root : __dirname,
+    moduleDirectories : ["node_modules/tonal"]
   }
 }
