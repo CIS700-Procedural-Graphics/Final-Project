@@ -16,11 +16,15 @@ var planeBottom;
 var mesh1;
 var mesh2;
 
+var defaultMaterial;
+
 var planeMatOne;
 var planeMatTwo;
 
 var ballBrightBlue;
 var ballBright;
+
+var stepTime = 0.0;
 
 var icosahedron = new THREE.IcosahedronGeometry(0.5, 5);
 var icosahedron0 = new THREE.IcosahedronGeometry(0.5, 5);
@@ -34,13 +38,16 @@ var icosahedron7 = new THREE.IcosahedronGeometry(0.5, 5);
 
 var planeDim = 20;
 
+var songLen = 3*60+8;
+
 var visElements = {
   volume: 2,
   loop: false,
   sound: null,
   play: true,
   materialOne: planeMatOne,
-  materialTwo: planeMatTwo
+  materialTwo: planeMatTwo,
+  playTime: songLen//0.0
 }
 
 /******************/
@@ -63,6 +70,16 @@ function loadMusic()
 }
 
 function createMaterials() {
+  defaultMaterial = new THREE.ShaderMaterial({
+    uniforms: {
+      image: { // Check the Three.JS documentation for the different allowed types and values
+        type: "t", 
+        value: THREE.ImageUtils.loadTexture('./images/adam.jpg')
+      }
+    },
+    vertexShader: require('./shaders/workingRef-vert.glsl'),
+    fragmentShader: require('./shaders/workingRef-frag.glsl')
+  });
   planeMatOne = new THREE.ShaderMaterial({
     uniforms: {
       image: { // Check the Three.JS documentation for the different allowed types and values
@@ -166,14 +183,14 @@ function onLoad(framework) {
   var {scene, camera, renderer, gui, stats} = framework; 
 
   // set skybox
-  var loader = new THREE.CubeTextureLoader();
-  var urlPrefix = './images/skymap/';
-  var skymap = new THREE.CubeTextureLoader().load([
-      urlPrefix + 'px.jpg', urlPrefix + 'nx.jpg',
-      urlPrefix + 'py.jpg', urlPrefix + 'ny.jpg',
-      urlPrefix + 'pz.jpg', urlPrefix + 'nz.jpg'
-  ] );
-  scene.background = skymap;
+  // var loader = new THREE.CubeTextureLoader();
+  // var urlPrefix = './images/skymap/';
+  // var skymap = new THREE.CubeTextureLoader().load([
+  //     urlPrefix + 'px.jpg', urlPrefix + 'nx.jpg',
+  //     urlPrefix + 'py.jpg', urlPrefix + 'ny.jpg',
+  //     urlPrefix + 'pz.jpg', urlPrefix + 'nz.jpg'
+  // ] );
+  // scene.background = skymap;
   
   /*****************************/
   /* PUTTING MATERIALS ON OBJS */
@@ -251,6 +268,8 @@ function onLoad(framework) {
     // otherwise do nothing
   });
 
+  gui.add(visElements, 'playTime').listen(); //
+
   // start music
   loadMusic();
   
@@ -261,7 +280,15 @@ function onLoad(framework) {
 /*************/
 // called on frame updates
 function onUpdate(framework) {
+  var count = 60.0
 
+  stepTime += 1.0;
+  if (stepTime % 60.0 == 0 && visElements.sound.isPlaying) {
+    if (visElements.loop && visElements.playTime < 0) {
+      visElements.playTime += songLen;
+    }
+    visElements.playTime -= 1.0;
+  }
 
 }
 
