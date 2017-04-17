@@ -28,13 +28,13 @@ Generating Fantasy Maps:
 Core features:
  - Users can efficiently create and customize procedurally generated maps
  - Users can select methods of generating the continent’s shape
-  - Points structure (e.g. Voronoi diagram, square grid, hexagon grid, etc…)
-  - Noise function
-  - Other minor parameters (e.g. number of points)
+   - Points structure (e.g. Voronoi diagram, square grid, hexagon grid, etc…)
+   - Noise function
+   - Other minor parameters (e.g. number of points)
  - Users can apply additional levels of detail onto the map
-  - Elevation
-  - Biomes
-  - Rivers and lakes
+   - Elevation
+   - Biomes
+   - Rivers and lakes
  - Users can select to view the map in 3D
   - Tessellation process transforms the 2D map along with its elevation to a 3D representation
 
@@ -46,18 +46,18 @@ Additional features:
 
 Below are a list of techniques and concepts I have learned in CIS 700.  Below each concept are specific ways that use it in my project.
  - Noise functions
-  - Generate and fine tune geography
-  - Generate and fine tune topography
-  - Distribute biomes
+   - Generate and fine tune geography
+   - Generate and fine tune topography
+   - Distribute biomes
  - Voronoi diagrams
-  - Generate underlying geography
-  - Traverse with traditional graph algorithms
+   - Generate underlying geography
+   - Traverse with traditional graph algorithms
  - Gradient maps
-  - Color regions of the map by biome and topography
-  - Enable different gradient maps depending on the map view (elevation, moisture, etc…)
-  - Use shaders to efficiently color the map by various metrics
+   - Color regions of the map by biome and topography
+   - Enable different gradient maps depending on the map view (elevation, moisture, etc…)
+   - Use shaders to efficiently color the map by various metrics
  - 3D rendering
-  - Implement a polygonised 3D view of the generated map
+   - Implement a polygonised 3D view of the generated map
 
 ### Design:
 
@@ -66,15 +66,15 @@ Below are a list of techniques and concepts I have learned in CIS 700.  Below ea
 ### Timeline:
 
  - Week of 4/3
-  - Setup basic project framework (using HW base code) and user interface (DAT.GUI)
-  - Implement the Grid Manager (responsible for generating the base grid)
+   - Setup basic project framework (using HW base code) and user interface (DAT.GUI)
+   - Implement the Grid Manager (responsible for generating the base grid)
  - Week of 4/10
-  - Implement the Continent Manager (responsible for defining the base coastlines and shape of the continent)
-  - Implement basic rendering
+   - Implement the Continent Manager (responsible for defining the base coastlines and shape of the continent)
+   - Implement basic rendering
  - Week of 4/17
-  - Implement components of the Geography Manager (elevation, biomes, rivers, lakes, etc…) and the View Manager in conjunction.  This will be necessary as in order to debug aspects of the Geography Manager, I will need to be able to properly render them.
+   - Implement components of the Geography Manager (elevation, biomes, rivers, lakes, etc…) and the View Manager in conjunction.  This will be necessary as in order to debug aspects of the Geography Manager, I will need to be able to properly render them.
  - Week of 4/24
-  - Continue with the week of 4/17 task
+   - Continue with the week of 4/17 task
  - Week of 5/1
-  - Fine tune and polish project
-  - If time, implement Erosion Manager (erodes basic continent & coastline)
+   - Fine tune and polish project
+   - If time, implement Erosion Manager (erodes basic continent & coastline)
