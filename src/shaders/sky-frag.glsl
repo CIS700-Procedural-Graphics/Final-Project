@@ -10,7 +10,7 @@ uniform float frequency;
 uniform float audioFreq;
 uniform float buckets;
 
-varying vec2 vUv;
+varying vec3 point;
 
 #define PI 3.14159265
 
@@ -45,8 +45,8 @@ vec3 getData(int id) {
     }
 }
 
-float p_noise(vec2 point, float freq, float amp, float t) {
-	vec3 p = freq * vec3(point, (t + audioFreq) / 1000.0)/ 10.0;
+float p_noise(vec3 point, float freq, float amp, float t) {
+	vec3 p = freq * point/ 10.0 + vec3(t/500.0);
 	vec3 cube1 = floor(p); 
 	vec3 cube2 = vec3(ceil(p.x), floor(p.yz)); 
 	vec3 cube3 = vec3(floor(p.x), ceil(p.y), floor(p.z));
@@ -86,13 +86,14 @@ vec3 grad_map(vec3 c1, vec3 c2, vec3 c3, float t) {
 
 void main() {
 
-    float noise = p_noise(vUv, frequency, amplitude, time);
+    float noise = p_noise(point, frequency, amplitude, time);
     
     float d = floor (buckets * noise) / buckets;
-    vec3 sunset_from = grad_map(horizon, mid, sky, vUv.y/1.33);
-    vec3 sunset_to = grad_map(horizon, mid, sky, vUv.y/1.33 + 0.25);
+    float height = (point.y + 500.0)/1000.0;
+    vec3 sunset_from = grad_map(horizon, mid, sky, height/1.33);
+    vec3 sunset_to = grad_map(horizon, mid, sky, height/1.33 + 0.25);
     
     vec3 color = color_lerp(sunset_from, sunset_to, d);
-
-    gl_FragColor = vec4( color.rgb, 1.0 );
+	gl_FragColor = vec4( color.rgb, 1.0 );
+    
 }
