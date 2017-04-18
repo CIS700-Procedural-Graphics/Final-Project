@@ -42,7 +42,7 @@ function onLoad(framework) {
 	// var s = tonal.scale.get('major', 'C4');
 	// console.log(s)
 	console.log(tonal.transpose('C2', 'P8'))
-	console.log(tonal.ivl.invert('P8'))
+	console.log(tonal.ivl.invert(['C4', 'E4']))
 	// console.log(tonal.chord.names())
 
 	var scene = framework.scene;
@@ -69,12 +69,13 @@ function onLoad(framework) {
 	scene.add(noiseCloud.mesh);
 
 	var music = melodyGenerator(50, 120);
-	// Soundfont.instrument(ac, 'acoustic_grand_piano', { soundfont: 'MusyngKite', gain: 2 }).then(function (marimba) {
-	// 	marimba.schedule(ac.currentTime, music[0]);
-	// })
-	Soundfont.instrument(ac, 'acoustic_grand_piano', { soundfont: 'MusyngKite' }).then(function (marimba) {
+	Soundfont.instrument(ac, 'acoustic_grand_piano', { soundfont: 'MusyngKite', gain: 2 }).then(function (marimba) {
+		marimba.schedule(ac.currentTime, music[0]);
 		marimba.schedule(ac.currentTime, music[1]);
 	})
+	// Soundfont.instrument(ac, 'acoustic_grand_piano', { soundfont: 'MusyngKite' }).then(function (marimba) {
+	// 	marimba.schedule(ac.currentTime, music[1]);
+	// })
 
 	// edit params and listen to changes like this
 	// more information here: https://workshop.chromeexperiments.com/examples/gui/#1--Basic-Usage

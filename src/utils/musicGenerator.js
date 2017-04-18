@@ -49,38 +49,94 @@ export function MorseThue(base, multi, n, tempo) {
 // n is total number of notes
 export function melodyGenerator(n, tempo) {
 	var unitTime = 60 / tempo;
+	// var scaleTypes = tonal.scale.names();
+	// var scaleIdx = Math.floor( Math.random() * scaleTypes.length );
+	// var s = tonal.scale.get(scaleTypes[scaleIdx], 'C2');
+	// s.reverse();
+
+	// var chordTypes = tonal.chord.names();
+	// var chordIdx = Math.floor( Math.random() * chordTypes.length );	
+
+	// var notes = [[],[]];
+	// for ( var i = 0; i < n; i++ ) {
+	// 	var note = MorseThueSingle( 6, 7, i, s )
+	// 	notes[0].push( {note: note, time: i * unitTime} );
+
+
+	// 	// Transpose note up 3 octaves for the arpeggios.
+	// 	var tNote = note;
+	// 	tNote = tonal.transpose( tNote, '8P' );
+	// 	tNote = tonal.transpose( tNote, '8P' );
+	// 	// tNote = tonal.transpose( tNote, '8P' );
+
+	// 	// Create a chord
+	// 	var chord = tonal.chord.get( chordTypes[chordIdx], tNote );
+	// 	// chord = tonal.chord.inversion(0, chord);
+
+	// 	// Adjust arpeggio pattern if 3 note chord.
+	// 	if ( chord.length == 3 ) { chord.push(chord[1]); }
+
+	// 	// Push notes at 16th time
+	// 	for ( var j = 0; j < 4; j++ ) {
+	// 		notes[1].push( {note: chord[j], time: i * unitTime + j * unitTime / 4} );
+	// 	}
+	// }
+	var notes = [[],[]];
+	var mel = melodyNotes(n);
+	for ( var i = 0; i < mel[0].length; i++ ) {
+		notes[0].push( {note: mel[0][i], time: i * unitTime})
+	}
+	for ( var i = 0; i < mel[1].length; i++ ) {
+		notes[1].push( {note: mel[1][i], time: i * unitTime / 4})
+	}
+
+	return notes;
+}
+
+function melodyNotes(n) {
 	var scaleTypes = tonal.scale.names();
 	var scaleIdx = Math.floor( Math.random() * scaleTypes.length );
-	var s = tonal.scale.get(scaleTypes[scaleIdx], 'C2');
+	var s = tonal.scale.get(scaleTypes[scaleIdx], 'C4');
+	s.reverse();
 
 	var chordTypes = tonal.chord.names();
 	var chordIdx = Math.floor( Math.random() * chordTypes.length );	
 
 	var notes = [[],[]];
 	for ( var i = 0; i < n; i++ ) {
-		var note = MorseThueSingle( 3, 5, i, s )
-		notes[0].push( {note: note, time: i * unitTime} );
-
+		var note = MorseThueSingle( 3, 4, i, s )
+		notes[0].push( note );
 
 		// Transpose note up 3 octaves for the arpeggios.
 		var tNote = note;
-		tNote = tonal.transpose( tNote, '8P' );
-		tNote = tonal.transpose( tNote, '8P' );
+		tNote = tonal.transpose( tNote, '3M' );
+		// tNote = tonal.transpose( tNote, '8P' );
 		// tNote = tonal.transpose( tNote, '8P' );
 
 		// Create a chord
-		var chord = tonal.chord.get( chordTypes[chordIdx], tNote );
+		// var chord = tonal.chord.get( chordTypes[chordIdx], tNote );
+		var chord = createChord(tNote);
+		// chord = tonal.chord.inversion(0, chord);
 
 		// Adjust arpeggio pattern if 3 note chord.
 		if ( chord.length == 3 ) { chord.push(chord[1]); }
 
 		// Push notes at 16th time
 		for ( var j = 0; j < 4; j++ ) {
-			notes[1].push( {note: chord[j], time: i * unitTime + j * unitTime / 4} );
+			notes[1].push( chord[j] );
 		}
 	}
 
 	return notes;
+}
+
+// Alternative chord creation
+// https://github.com/devinroth/GenerativeMusic/blob/master/Moonlight.playground/Contents.swift
+function createChord(note) {
+	var midiNote = tonal.note.midi(note);
+	var third = midiNote + 3 + Math.round(Math.random() * 2);
+	var fifth = midiNote + 7;
+	return [midiNote, third, fifth];
 }
 
 function MorseThueSingle(base, multi, n, scale) {
