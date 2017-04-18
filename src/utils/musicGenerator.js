@@ -13,11 +13,23 @@ export function beatGenerator(rhythm, tempo) {
 	analogRhythm.push(rhythm.length - 1);
 	// console.log(analogRhythm)
 
-	var notes = [];
-	var s = tonal.scale.get('major', 'C4');
+	var notes = [[],[],[],[]];
+	var s = tonal.scale.get('minor', 'C4');
+	var chordTypes = tonal.chord.names();
+	var chordIdx = Math.floor(Math.random() * chordTypes.length);
+	// console.log(tonal.chord.get('Maj7','C4'))
 	for (var i = 0; i < analogRhythm.length; i++) {
 		// notes.push({note : (i==0 ? 20:31), time : analogRhythm[i] * unitTime});
-		notes.push({note : MorseThueSingle(2, 1, i, s), time : analogRhythm[i] * unitTime});
+		var baseNote = MorseThueSingle(6, 7, i, s);
+		var thisChord = tonal.chord.get(chordTypes[chordIdx], baseNote);
+		notes[0].push({note : thisChord[0], time : analogRhythm[i] * unitTime});
+		if (i % 4 == 0) {
+			notes[1].push({note : thisChord[1], time : analogRhythm[i] * unitTime});
+			notes[2].push({note : thisChord[2], time : analogRhythm[i] * unitTime});
+			if (thisChord.length > 3)
+				notes[3].push({note : thisChord[3], time : analogRhythm[i] * unitTime});
+		}
+
 	}
 	// console.log(notes)
 	return notes;
@@ -31,6 +43,43 @@ export function MorseThue(base, multi, n, tempo) {
 	for (var i = 0; i < n; i++) {
 		notes.push({note: MorseThueSingle(base, multi, i, s), time: i * unitTime});
 	}
+	return notes;
+}
+
+// n is total number of notes
+export function melodyGenerator(n, tempo) {
+	var unitTime = 60 / tempo;
+	var scaleTypes = tonal.scale.names();
+	var scaleIdx = Math.floor( Math.random() * scaleTypes.length );
+	var s = tonal.scale.get(scaleTypes[scaleIdx], 'C2');
+
+	var chordTypes = tonal.chord.names();
+	var chordIdx = Math.floor( Math.random() * chordTypes.length );	
+
+	var notes = [[],[]];
+	for ( var i = 0; i < n; i++ ) {
+		var note = MorseThueSingle( 3, 5, i, s )
+		notes[0].push( {note: note, time: i * unitTime} );
+
+
+		// Transpose note up 3 octaves for the arpeggios.
+		var tNote = note;
+		tNote = tonal.transpose( tNote, '8P' );
+		tNote = tonal.transpose( tNote, '8P' );
+		// tNote = tonal.transpose( tNote, '8P' );
+
+		// Create a chord
+		var chord = tonal.chord.get( chordTypes[chordIdx], tNote );
+
+		// Adjust arpeggio pattern if 3 note chord.
+		if ( chord.length == 3 ) { chord.push(chord[1]); }
+
+		// Push notes at 16th time
+		for ( var j = 0; j < 4; j++ ) {
+			notes[1].push( {note: chord[j], time: i * unitTime + j * unitTime / 4} );
+		}
+	}
+
 	return notes;
 }
 

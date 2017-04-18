@@ -24,6 +24,8 @@ function euclid(m, k) {
 		// Create new tail of 1's
 		for (var i = 0; i < m - overflow; i++) { tail.push(1) };
 	}
+	
+	if (head.length == 0) { head = [[]]; }
 
 	// Run algorithm as usual.
 	var result = euclidHelper(head, tail);

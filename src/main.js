@@ -6,7 +6,7 @@ import Framework from './framework'
 import MIDI from 'midi.js'
 import Soundfont from 'soundfont-player'
 import {euclid} from './utils/euclid.js'
-import {beatGenerator, MorseThue} from './utils/musicGenerator.js'
+import {beatGenerator, MorseThue, melodyGenerator} from './utils/musicGenerator.js'
 import Lsystem from './fractals/lsystem.js'
 
 
@@ -31,18 +31,19 @@ var t = Date.now();
 
 // called after the scene loads
 function onLoad(framework) {
-	console.log(euclid(5,16));
-	console.log(beatGenerator(euclid(5,16), 120))
+	console.log(euclid(8,8));
 
 	var grammar = {};
 	grammar['0'] = {probability: 1.0, successorString: '01'};
 	grammar['1'] = {probability: 1.0, successorString: '10'};
 	var L = new Lsystem('0',grammar, 2);
-	console.log(L.doIterations(3));
+	// console.log(L.doIterations(3));
 
-	var s = tonal.scale.get('major', 'C4');
-	console.log(s)
-	console.log(tonal.transpose(s[0], 'P8'))
+	// var s = tonal.scale.get('major', 'C4');
+	// console.log(s)
+	console.log(tonal.transpose('C2', 'P8'))
+	console.log(tonal.ivl.invert('P8'))
+	// console.log(tonal.chord.names())
 
 	var scene = framework.scene;
 	var camera = framework.camera;
@@ -67,8 +68,13 @@ function onLoad(framework) {
 
 	scene.add(noiseCloud.mesh);
 
-
-
+	var music = melodyGenerator(50, 120);
+	// Soundfont.instrument(ac, 'acoustic_grand_piano', { soundfont: 'MusyngKite', gain: 2 }).then(function (marimba) {
+	// 	marimba.schedule(ac.currentTime, music[0]);
+	// })
+	Soundfont.instrument(ac, 'acoustic_grand_piano', { soundfont: 'MusyngKite' }).then(function (marimba) {
+		marimba.schedule(ac.currentTime, music[1]);
+	})
 
 	// edit params and listen to changes like this
 	// more information here: https://workshop.chromeexperiments.com/examples/gui/#1--Basic-Usage
@@ -93,26 +99,6 @@ function onLoad(framework) {
 
 // called on frame updates
 function onUpdate(framework) {
-	var newTime = Date.now();
-	var instrumentName = "acoustic_grand_piano";
-	var NOTES = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-	var notes = NOTES.map(function (n, i) {
-	  return { time: i * 0.3, note: n + 60 }
-	})
-
-	// console.log(notes);
-	if (newTime - t > 3000) {
-
-		// Soundfont.instrument(ac, 'acoustic_grand_piano', { soundfont: 'MusyngKite' }).then(function (marimba) {
-		// 	marimba.schedule(ac.currentTime, MorseThue(2,1,8,120));
-		// })
-		Soundfont.instrument(ac, 'acoustic_grand_piano', { soundfont: 'MusyngKite' }).then(function (marimba) {
-			marimba.schedule(ac.currentTime, beatGenerator(euclid(9,16), 120));
-		})
-
-		t = newTime;
-	}
-
 }
 
 // when the scene is done initializing, it will call onLoad, then on frame updates, call onUpdate
