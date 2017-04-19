@@ -2,7 +2,7 @@
   "scripts": {
     "build": "webpack",
     "start": "webpack-dev-server --hot --inline",
-    "deploy": "git push origin `git subtree split --prefix build master`:gh-pages --force"
+    "deploy": "node deploy.js"
   },
   "dependencies": {
     "babel-core": "^6.24.1",
@@ -14,6 +14,8 @@
     "webpack-glsl-loader": "^1.0.1",
     "webgl-utils": "^1.0.1",
     "dat-gui": "^0.5.0",
-    "stats-js": "^1.0.0-alpha1"
+    "stats-js": "^1.0.0-alpha1",
+    "simple-git": "^1.65.0",
+    "gh-pages-deploy": "^0.4.2"
   }
 }

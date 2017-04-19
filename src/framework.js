@@ -10,13 +10,13 @@ function init(callback, update) {
   stats.domElement.style.position = 'absolute';
   stats.domElement.style.left = '0px';
   stats.domElement.style.top = '0px';
-  document.body.appendChild(stats.domElement);
+  //document.body.appendChild(stats.domElement);
 
   //var gui = new DAT.GUI();
 
   var framework = {
     //gui: gui,
-    stats: stats
+    //stats: stats
   };
 
   window.addEventListener('load', function() {
