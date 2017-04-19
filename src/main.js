@@ -184,15 +184,15 @@ function onUpdate(framework) {
 
 		synthDrums.then(function (marimba) {
 			marimba.stop();
-			// marimba.schedule(ac.currentTime, beats[0]);
-			// marimba.schedule(ac.currentTime, beats[1]);
+			marimba.schedule(ac.currentTime, beats[0]);
+			marimba.schedule(ac.currentTime, beats[1]);
 			// marimba.schedule(ac.currentTime, beat3);
 		})
 
 		instrument2.then(function (marimba) {
 			marimba.stop();
 			// console.log(music2)
-			// marimba.schedule(ac.currentTime, music[0]);
+			marimba.schedule(ac.currentTime, music[0]);
 		})
 
 		update = false;
@@ -203,27 +203,27 @@ function onUpdate(framework) {
 	var times = [1, 1/60, 1/180, 1/120, 1/180];
 	var deltaT = (nTime - time) / 1000;
 
-	// console.log(indices[0])
-	if (deltaT > times[0] && indices[0] < music[0].length) {
+	// // console.log(indices[0])
+	// if (deltaT > times[0] && indices[0] < music[0].length) {
 
-		testInstrument.then(function(piano){
-			piano.play(music[1][0][indices[0]].note);
-		})
+	// 	testInstrument.then(function(piano){
+	// 		piano.play(music[1][0][indices[0]].note);
+	// 	})
 
-		instrument2.then(function(synth) {
-			synth.play(music[0][indices[1]].note);
-		})
+	// 	instrument2.then(function(synth) {
+	// 		synth.play(music[0][indices[1]].note);
+	// 	})
 
-		synthDrums.then(function (drums) {
-			drums.stop();
-			drums.play(beats[0][indices[2]].note);
-		})
+	// 	synthDrums.then(function (drums) {
+	// 		drums.stop();
+	// 		drums.play(beats[0][indices[2]].note);
+	// 	})
 
-		indices[0]++;
-		indices[1]++;
-		indices[2]++;
-		time = nTime;
-	}
+	// 	indices[0]++;
+	// 	indices[1]++;
+	// 	indices[2]++;
+	// 	time = nTime;
+	// }
 
 	// Visual
 	var camera = framework.camera;
