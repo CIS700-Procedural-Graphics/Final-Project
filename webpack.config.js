@@ -3,8 +3,7 @@ const path = require('path');
 module.exports = {
   entry: path.join(__dirname, "src/main"),
   output: {
-    path: path.join(__dirname, "build"),
-    filename: "bundle.js"
+    filename: "./bundle.js"
   },
   module: {
     loaders: [
@@ -20,10 +19,6 @@ module.exports = {
         test: /\.glsl$/,
         loader: "webpack-glsl"
       },
-      {
-        test: /\.(obj|bmp|gif|png)$/,
-        loader: 'file-loader?name=./assets/[name]-[hash:6].[ext]'
-      }
     ]
   },
   devtool: 'source-map',
