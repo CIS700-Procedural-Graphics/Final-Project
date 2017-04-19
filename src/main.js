@@ -1,15 +1,22 @@
 
 const THREE = require('three'); // older modules are imported like this. You shouldn't have to worry about this much
 import Framework from './framework'
-import Lsystem, {linkedListToString} from './grid.js'
-import Turtle from './cube.js'
+import Grid from './grid.js'
+import Player from './player.js'
 
-var turtle;
+var player;
 
 var Sliders = function() {
   this.anglefactor = 1.0;
 };
 var sliders = new Sliders();
+
+function palette(t) {
+  return new THREE.Color(
+    0.5 + 0.3*Math.cos( 6.28318*(1.0*t+0.0) ), 
+    0.5 + 0.3*Math.cos( 6.28318*(1.0*t+0.1) ), 
+    0.5 + 0.3*Math.cos( 6.28318*(1.0*t+0.2) ));
+}
 
 // called after the scene loads
 function onLoad(framework) {
@@ -31,30 +38,34 @@ function onLoad(framework) {
   camera.position.set(1, 1, 2);
   camera.lookAt(new THREE.Vector3(0,0,0));
 
+  
   // CUBE
   var cubeGeometry = new THREE.CubeGeometry(2,2,2);
   var cubeMaterials = [ 
-      new THREE.MeshBasicMaterial({color:0xf21d12, transparent:true, opacity:0.8, side: THREE.DoubleSide}),
-      new THREE.MeshBasicMaterial({color:0xff9933, transparent:true, opacity:0.8, side: THREE.DoubleSide}), 
-      new THREE.MeshBasicMaterial({color:0xf2cc2f, transparent:true, opacity:0.8, side: THREE.DoubleSide}),
-      new THREE.MeshBasicMaterial({color:0xa2e66c, transparent:true, opacity:0.8, side: THREE.DoubleSide}), 
-      new THREE.MeshBasicMaterial({color:0x74abdc, transparent:true, opacity:0.8, side: THREE.DoubleSide}), 
-      new THREE.MeshBasicMaterial({color:0xed1e80, transparent:true, opacity:0.8, side: THREE.DoubleSide}), 
+      new THREE.MeshBasicMaterial({color:palette(0.0), transparent:true, opacity:0.8, side: THREE.DoubleSide}),
+      new THREE.MeshBasicMaterial({color:palette(0.167), transparent:true, opacity:0.8, side: THREE.DoubleSide}), 
+      new THREE.MeshBasicMaterial({color:palette(0.333), transparent:true, opacity:0.8, side: THREE.DoubleSide}),
+      new THREE.MeshBasicMaterial({color:palette(0.5), transparent:true, opacity:0.8, side: THREE.DoubleSide}), 
+      new THREE.MeshBasicMaterial({color:palette(0.666), transparent:true, opacity:0.8, side: THREE.DoubleSide}), 
+      new THREE.MeshBasicMaterial({color:palette(0.833), transparent:true, opacity:0.8, side: THREE.DoubleSide}), 
   ]; 
   // Create a MeshFaceMaterial, which allows the cube to have different materials on each face 
-  var cubeMaterial = new THREE.MeshFaceMaterial(cubeMaterials); 
-  var cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-  cube.position.y += 1;
-  scene.add( cube );
+  //var cubeMaterial = new THREE.MeshFaceMaterial(cubeMaterials); 
+  //var cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
+  //cube.position.y += 1;
+  //scene.add( cube );
+  
+  player = new Player(palette(0.0), palette(0.167), palette(0.333), palette(0.5), palette(0.666), palette(0.833), new THREE.Vector3(0.5, 0.5, 0.5));
+  scene.add(player.cube);
 
   // PLANE
-  var gridDimension = 14;
-  var cellDimension = 2;
+  var gridDimension = 6;
+  var cellDimension = 1;
   for (var x = -gridDimension/2.0; x < gridDimension/2.0; x += cellDimension) {
     for (var z = -gridDimension/2.0; z < gridDimension/2.0; z += cellDimension) {
       var planeGeometry = new THREE.PlaneGeometry( cellDimension, cellDimension, 1, 1);
       //var planeMaterial = new THREE.MeshLambertMaterial(cubeMaterials[Math.floor(Math.random()*6.0)]);
-      var planeMaterial = new THREE.MeshLambertMaterial({color: cubeMaterials[Math.floor(Math.random()*6.0)].color, transparent:true, opacity:1.0, side: THREE.DoubleSide});
+      var planeMaterial = new THREE.MeshBasicMaterial({color: cubeMaterials[Math.floor(Math.random()*6.0)].color, transparent:true, opacity:1.0, side: THREE.DoubleSide});
       planeMaterial.opacity = 1.0;
       var plane = new THREE.Mesh( planeGeometry, planeMaterial );
       plane.position.x = x+cellDimension/2.0;
@@ -92,6 +103,28 @@ function onLoad(framework) {
   */
 }
 
+document.onkeydown = checkKey;
+function checkKey(e) {
+    e = e || window.event;
+    if (e.keyCode == '38') {
+        // up arrow
+        player.rotateZCounter();
+    }
+    else if (e.keyCode == '40') {
+        // down arrow
+        player.rotateZClockwise();
+    }
+    else if (e.keyCode == '37') {
+       // left arrow
+       player.rotateXCounter();
+    }
+    else if (e.keyCode == '39') {
+       // right arrow
+       player.rotateXClockwise();
+    }
+}
+
+/*
 // clears the scene by removing all geometries added by turtle.js
 function clearScene(turtle) {
   var obj;
@@ -107,9 +140,11 @@ function doLsystem(lsystem, iterations, turtle, anglefactor) {
     turtle = new Turtle(turtle.scene, iterations, anglefactor);
     turtle.renderSymbols(result);
 }
+*/
 
 // called on frame updates
 function onUpdate(framework) {
+  
 }
 
 // when the scene is done initializing, it will call onLoad, then on frame updates, call onUpdate

@@ -39,6 +39,7 @@ function init(callback, update) {
     controls.rotateSpeed = 0.3;
     controls.zoomSpeed = 1.0;
     controls.panSpeed = 2.0;
+    controls.enablePan = false;
 
     document.body.appendChild(renderer.domElement);
 
