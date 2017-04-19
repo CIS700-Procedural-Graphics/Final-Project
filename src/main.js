@@ -11,7 +11,9 @@ import {beatGenerator, MorseThue, melodyGenerator, rhythmicMelodyGenerator, Eart
 import Lsystem from './fractals/lsystem.js'
 
 // Visual
-import Visual from './visual'
+import Scene1 from './scene1'
+import Scene2 from './scene2'
+var Visual = Scene1;
 
 /******************************************************************************/
 
@@ -145,12 +147,7 @@ function onLoad(framework) {
 		update = true;
 	}));
 
-	// Visual
-	camera.position.set(50, 0, 0);
-	camera.lookAt(new THREE.Vector3(0,0,0));
-	scene.background = new THREE.Color( 0xffffff );
-
-  Visual.initScene(scene, visualConfig);
+  Visual.initScene(framework, visualConfig);
 
   initInputHandler(framework);
 
@@ -239,8 +236,10 @@ function onUpdate(framework) {
 	visualConfig.camera.pos = visualConfig.camera.pos.clone().add(visualConfig.camera.vel.clone().multiplyScalar(delta));
 	if (Visual.changeTrigger(visualConfig)) {
 		visualConfig.camera.vel = new THREE.Vector3( 0,0,0 );
-		visualConfig.camera.pos = new THREE.Vector3( 0,0,0 );
+		visualConfig.camera.acc = new THREE.Vector3( 0,0,0 );
 		Visual.cleanupScene(scene);
+		Visual = Scene2;
+		Visual.initScene(framework, visualConfig);
 	}
 	camera.position.set( visualConfig.camera.pos.x, visualConfig.camera.pos.y, visualConfig.camera.pos.z );
 }

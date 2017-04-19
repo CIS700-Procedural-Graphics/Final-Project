@@ -2,14 +2,26 @@
 const THREE = require('three'); // older modules are imported like this. You shouldn't have to worry about this much
 const MeshLine = require( 'three.meshline' );
 
+
+
 // Each scene uses the following API:
 //        initScene()
 //        updateScene()
 //        changeTrigger()
 //        cleanupScene()
 
+
+
 /*********************************** VISUAL ***********************************/
-function initScene(scene, visualConfig) {
+function initScene(framework, visualConfig) {
+    var camera = framework.camera;
+    var scene = framework.scene;
+
+    visualConfig.camera.pos = new THREE.Vector3( 50,0,0 );
+  	camera.position.set(visualConfig.camera.pos.x, visualConfig.camera.pos.y, visualConfig.camera.pos.z);
+  	camera.lookAt(new THREE.Vector3(0,0,0));
+  	scene.background = new THREE.Color( 0xffffff );
+
     var geometry = new THREE.IcosahedronGeometry(5,4);
     var material = new THREE.MeshBasicMaterial({ color: 0, side: THREE.DoubleSide  });
     var mesh = new THREE.Mesh(geometry, material);
@@ -22,6 +34,8 @@ function initScene(scene, visualConfig) {
 
 function updateScene(scene, visualConfig, delta) {
   if (visualConfig.sceneReady) {
+    console.log("wat")
+
     for (var i = 0; i < visualConfig.sceneProps.particles.length; i++) {
       visualConfig.sceneProps.particles[i].update(0.01);
       visualConfig.sceneProps.particles[i].meshLine.advance(visualConfig.sceneProps.particles[i].pos);
