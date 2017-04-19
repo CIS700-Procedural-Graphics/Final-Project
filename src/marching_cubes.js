@@ -5,11 +5,17 @@ import InspectPoint from './inspect_point.js'
 import LUT from './marching_cube_LUT.js';
 var VISUAL_DEBUG = true;
 
+
+// ================================================ SHADERS ================================================ //
 const LAMBERT_WHITE = new THREE.MeshLambertMaterial({ color: 0xeeeeee });
 
-const LAMBERT_GREEN = new THREE.MeshLambertMaterial({ color: 0xeeeeee });
-//const LAMBERT_GREEN = new THREE.MeshBasicMaterial( { color: 0x00ee00, transparent: true, opacity: 0.5 });
+const LAMBERT_GREEN = new THREE.MeshLambertMaterial({ color: 0xeeeeee, side: THREE.DoubleSide});
+//const LAMBERT_GREEN = new THREE.MeshBasicMaterial( { color: 0x00ee00, transparent: false, opacity: 0.75, side: THREE.DoubleSide });
 const WIREFRAME_MAT = new THREE.LineBasicMaterial( { color: 0xffffff, linewidth: 10 } );
+
+const LAMBERT_BLUE = new THREE.MeshBasicMaterial( { color: 0x0000ee, transparent: false, opacity: 0.75, side: THREE.DoubleSide });
+
+const TOON = toonShader(2.5);
 
 var options = {
     albedo: '#dddddd'
@@ -31,6 +37,8 @@ const IRIDESCENCE = new THREE.ShaderMaterial({
   fragmentShader: require('./glsl/iridescent-frag.glsl')
 });
 
+
+// ================================================ MARCHING CUBE CLASS ================================================ //
 export default class MarchingCubes {
 
   constructor(App) {
@@ -67,13 +75,8 @@ export default class MarchingCubes {
     this.labels = [];
     this.balls = [];
 
-
-    //CREATING MESH OBJECT
-    //var geom = new THREE.Geometry();
-    //var object = new THREE.Mesh( new THREE.Geometry(), IRIDESCENCE);//new THREE.MeshNormalMaterial() );
-    //this.meshGeom = object;
-    this.meshGeom = new THREE.Mesh( new THREE.Geometry(), LAMBERT_GREEN);//IRIDESCENCE);
-
+    //CREATING MESH OBJECT MEMBER VARIABLE
+    this.meshGeom = new THREE.Mesh( new THREE.Geometry(), LAMBERT_GREEN);
 
 
     this.showSpheres = true;
@@ -136,39 +139,129 @@ export default class MarchingCubes {
         this.scene.add(voxel.mesh);
       }
     }
-  }
+  };
 
   setupMetaballs() {
 
     this.balls = [];
-
     var x, y, z, vx, vy, vz, radius, pos, vel;
-    var matLambertWhite = LAMBERT_WHITE;
-    var maxRadiusTRippled = this.maxRadius * 3;
-    var maxRadiusDoubled = this.maxRadius * 2;
+    var spawn_x, spawn_y, spawn_z, spawnLoc, spawnVel, accel;
 
+    //var matLambertWhite = LAMBERT_WHITE;
+    //var maxRadiusTrippled = this.maxRadius * 3;
+    //var maxRadiusDoubled = this.maxRadius * 2;
+
+    //GENERATE STARTING POSITION AND VELOCITY
     // Randomly generate metaballs with different sizes and velocities
-    for (var i = 0; i < this.numMetaballs; i++) {
-      x = this.gridWidth / 2;
-      y = this.gridWidth / 2;
-      z = this.gridWidth / 2;
-      pos = new THREE.Vector3(x, y, z);
 
-      vx = (Math.random() * 2 - 1) * this.maxSpeed;
-      vy = (Math.random() * 2 - 1) * this.maxSpeed;
-      vz = (Math.random() * 2 - 1) * this.maxSpeed;
-      vel = new THREE.Vector3(vx, vy, vz);
+    for (var i = 0; i < this.numMetaballs; i++)
+    {
+      /*
+        var setupBallOutput = setupBall();
+        for example --> x = setupBallOutput.x
+      */
 
-      radius = Math.random() * (this.maxRadius - this.minRadius) + this.minRadius;
+        // -------- Position --------
+        x = this.gridWidth - 2;
+        y = this.gridWidth - 2;
+        z = this.gridWidth / 2;
+        pos = new THREE.Vector3(x, y, z);
 
-      var ball = new Metaball(pos, radius, vel, this.gridWidth, VISUAL_DEBUG);
-      this.balls.push(ball);
+        // -------- Velocity --------
+        vx = (Math.random() * 2 - 1) * this.maxSpeed;
+        vy = (Math.random() * 2 - 1) * this.maxSpeed;
+        vz = (Math.random() * 2 - 1) * this.maxSpeed;
+        vel = new THREE.Vector3(vx, vy, vz);
 
-      if (VISUAL_DEBUG) {
-        this.scene.add(ball.mesh);
-      }
-    }
-  }
+        radius = Math.random() * (this.maxRadius - this.minRadius) + this.minRadius;
+
+        spawn_x = this.gridWidth - 2;
+        spawn_y = this.gridWidth - 2;
+        spawn_z = this.gridWidth / 2;
+        spawnLoc = new THREE.Vector3(spawn_x, spawn_y, spawn_z);
+        spawnVel = new THREE.Vector3(-1.0, vy, vz);
+        accel = new THREE.Vector3(0.0, -1.0, 0.0);
+
+        //another spawn location
+      // spawn_x = this.gridWidth / 2;
+      // spawn_y = this.gridWidth - 2;
+      // spawn_z = this.gridWidth - 2;
+      // spawnVel = new THREE.Vector3(vx, vy, -1.0);
+
+
+        var ball = new Metaball(pos, radius, vel, this.gridWidth, VISUAL_DEBUG, spawnLoc, spawnVel, accel);
+        this.balls.push(ball);
+
+        if (VISUAL_DEBUG) {
+          this.scene.add(ball.mesh);
+        }//end if
+      }//end for
+
+
+      //THIS ONE APPEARS BUT WONT MOVE FOR SOME REASON. WHY?!?! IS IT NOT BEING UPDATED????
+      // var _x, _y, _z, _vx, _vy, _vz, _radius, _pos, _vel;
+      // var _spawn_x, _spawn_y, _spawn_z, _spawnLoc, _spawnVel, _accel;
+      //
+      // for (var i = 0; i < this.numMetaballs; i++)
+      // {
+      //   console.log("IM IN THE SECOND FOR LOOP")
+      //   /*
+      //     var setupBallOutput = setupBall();
+      //     for example --> x = setupBallOutput.x
+      //   */
+      //
+      //     // -------- Position --------
+      //     _x = this.gridWidth / 2;
+      //     _y = this.gridWidth - 2;
+      //     _z = this.gridWidth - 2;
+      //     _pos = new THREE.Vector3(_x, _y, _z);
+      //
+      //     // -------- Velocity --------
+      //     _vx = (Math.random() * 2 - 1) * this.maxSpeed;
+      //     _vy = (Math.random() * 2 - 1) * this.maxSpeed;
+      //     _vz = (Math.random() * 2 - 1) * this.maxSpeed;
+      //     _vel = new THREE.Vector3(_vx, _vy, _vz);
+      //
+      //     _radius = Math.random() * (this.maxRadius - this.minRadius) + this.minRadius;
+      //
+      //     _spawn_x = this.gridWidth / 2;
+      //     _spawn_y = this.gridWidth - 2;
+      //     _spawn_z = this.gridWidth - 2;
+      //     _spawnLoc = new THREE.Vector3(_spawn_x, _spawn_y, _spawn_z);
+      //     _spawnVel = new THREE.Vector3(_vx, _vy, -1.0);
+      //     _accel = new THREE.Vector3(0.0, -1.0, 0.0);
+      //
+      //     var ball = new Metaball(_pos, _radius, _vel, this.gridWidth, VISUAL_DEBUG, _spawnLoc, _spawnVel, _accel);
+      //     this.balls.push(ball);
+      //
+      //     if (VISUAL_DEBUG) {
+      //       this.scene.add(ball.mesh);
+      //     }//end if
+      //
+      //   }//end for
+
+
+  };//end setupMetaballs
+
+  //use this to spawn multiple metaballs in various locations
+  setupBall()
+  {
+    var x, y, z, vx, vy, vz, radius, pos, vel;
+    var spawn_x, spawn_y, spawn_z, spawnLoc, spawnVel, accel;
+
+    return {
+      x : x,
+      y : y,
+      z : z,
+      vx : vx,
+      vy : vy,
+      vz : vz,
+      radius : radius,
+      pos : pos,
+      vel : vel
+    };
+
+  };
 
 
 //THE POINT YOU PASS INTO SAMPLE IS POINT ON THE GRID OR SPACE THAT YOU'RE DOING SIMULATION IN
@@ -178,53 +271,27 @@ export default class MarchingCubes {
 // THIRD ORDER EQUATION WILL GIVE MORE WAVY LOOK, AND LINEAR WILL GIVE SHARPER LOOK
 
 
+  /*  METABALL FUNCTION (2 POINTS)
+  An isosurface is created whenever the metaball function crosses a certain threshold, called isolevel.
+  The metaball function describes the total influences of each metaball to a given points.
+  A metaball influence is a function between its radius and distance to the point:
+
+    f(point) = (radius * radius) / (distance * distance)
+
+  By summing up all these influences, you effectively describes all the points that are greater than
+  the isolevel as inside, and less than the isolevel as outside (or vice versa).
+  As an observation, the bigger the metaball's radius is, the bigger its influence is.
 
   // This function samples a point from the metaball's density function
   // Implement a function that returns the value of the all metaballs influence to a given point.
-  // Please follow the resources given in the write-up for details.
+  */
   sample(point) {
     // @TODO
-    /*  METABALL FUNCTION (2 POINTS)
-    Metaballs are organic-looking n-dimensional objects. We will be implementing a 3-dimensional metaballs.
-    They are great to make bloppy shapes. An isosurface is created whenever the metaball function
-    crosses a certain threshold, called isolevel. The metaball function describes the total influences
-    of each metaball to a given points. A metaball influence is a function between its radius and distance to the point:
 
-      f(point) = (radius * radius) / (distance * distance)
-
-    By summing up all these influences, you effectively describes all the points that are greater than
-    the isolevel as inside, and less than the isolevel as outside (or vice versa).
-    As an observation, the bigger the metaball's radius is, the bigger its influence is.
-    --------------------------------------------------------------------------------------------------
-    */
-
-    var isovalue = 0.0;//1.1; //BRINGING IT TO 0 WILL ONLY SHOW THE GRID CELL CUBES WHERE THE ISOVALUE IS >= 1 (but this doesn't always work?)
-
-    for(var i = 0; i < this.numMetaballs; i++)
-    {
-      var currBall = this.balls[i];
-      var dist = point.distanceToSquared(currBall.pos);//Math.sqrt(Math.pow(currBall.pos.x - point.x, 2) + Math.pow(currBall.pos.y - point.y, 2) + Math.pow(currBall.pos.z - point.z, 2));
-
-       isovalue += (currBall.radius * currBall.radius) / dist;
-      //isovalue += ((currBall.radius) / (dist * dist));
-    }
-
-
-    //Adding influence from a ground plane
-    var groundPlaneRadius = 2; //influence
-    var y = 0;
-    for(var x = 0; x < 10; x+=4)
-    {
-      for(var z = 0; z < 10; z+=4)
-      {
-        //var groundPlanePoint = new THREE.Vector3(x, -1, z);
-        var dist = point.distanceToSquared(new THREE.Vector3(x,y,z));// Math.sqrt(Math.pow(x - point.x, 2) + Math.pow(y - point.y, 2) + Math.pow(z - point.z, 2));
-
-        isovalue += groundPlaneRadius / dist;
-      }
-    }
+    var isovalue = 0.0;
+    isovalue = sampleIsoValue(point, this.balls);
     return isovalue;
-  }//end sample function
+  };//end sample function
 
 
   update() {
@@ -297,15 +364,15 @@ export default class MarchingCubes {
     }
 
     this.updateMesh();
-  }
+  };
 
   pause() {
     this.isPaused = true;
-  }
+  };
 
   play() {
     this.isPaused = false;
-  }
+  };
 
   show() {
     for (var i = 0; i < this.res3; i++) {
@@ -332,11 +399,10 @@ export default class MarchingCubes {
   makeMesh() {
     // @TODO
 
-    this.meshGeom = new THREE.Mesh( new THREE.Geometry(), LAMBERT_GREEN);//IRIDESCENCE );
-    // this.meshGeom.verticesNeedUpdate = true;
+    this.meshGeom = new THREE.Mesh( new THREE.Geometry(), LAMBERT_GREEN);
     this.meshGeom.dynamic = true;
     this.scene.add(this.meshGeom);
-  }//end makeMesh
+  };//end makeMesh
 
   updateMesh() {
     // @TODO
@@ -350,9 +416,6 @@ export default class MarchingCubes {
       var polygonizeResult = this.voxels[c].polygonize(this.isolevel, this.balls);
       var vertList = polygonizeResult.vertPositions;
       var normList = polygonizeResult.vertNormals;
-      // console.log("PRINTING NORM LIST: ")
-      // console.log(normList);
-      // console.log(vertList);
 
       //sanity check to make sure vertList is correct
       if(vertList.length % 3 !== 0)
@@ -365,7 +428,6 @@ export default class MarchingCubes {
         var _len = newVerticesList.length;
         for(var i = 0; i < vertList.length; i += 3)
         {
-          //var newVert = new THREE.Vector3(vertList[i].x, vertList[i].y, vertList[i].z);
           var v1 = vertList[i];
           var v2 = vertList[i + 1];
           var v3 = vertList[i + 2];
@@ -384,56 +446,15 @@ export default class MarchingCubes {
       }//end if vertlist
     }//end for every voxel loop
 
-    //WILL THIS WORK??
-    // if(this.meshGeom)
-    // {
-    //   this.scene.remove(this.meshGeom);
-    // }
-
-
-
-    // var geom = new THREE.Geometry();
-    // geom.vertices = newVerticesList;
-    // geom.faces = newFacesList;
-    // var object = new THREE.Mesh( geom, IRIDESCENCE );
-    // this.meshGeom = object;
-    //
-    // this.meshGeom.dynamic = true;
-    // this.meshGeom.elementsNeedUpdate = true;
-    // this.meshGeom.verticesNeedUpdate = true;
-    // this.scene.add(this.meshGeom);
-
-
-    // WHY IS THIS NOT WORKING?!?!?!
-    // this.meshGeom.dynamic = true;
     this.meshGeom.geometry.vertices = newVerticesList;
     this.meshGeom.geometry.faces = newFacesList;
     this.meshGeom.geometry.elementsNeedUpdate = true;
     this.meshGeom.geometry.verticesNeedUpdate = true;
-    //this.scene.add(this.meshGeom);
-
-
-
-
-
-
-    //WILL THIS WORK??
-    // this.meshGeom.dynamic = true;
-    // var geom = new THREE.Geometry();
-    // geom.vertices = newVerticesList;
-    // geom.faces = newFacesList;
-    // this.meshGeom.geometry = geom;
-    //
-    // this.meshGeom.elementsNeedUpdate = true;
-    // this.meshGeom.verticesNeedUpdate = true;
-    // this.scene.add(this.meshGeom);
-
-
-  }//end updateMesh
+  };//end updateMesh
 
 };//end MarchingCube class
 
-// ------------------------------------------- //
+// ================================================ VOXEL CLASS ================================================ //
 
 class Voxel {
 
@@ -576,34 +597,22 @@ class Voxel {
 
     var lerpPos = new THREE.Vector3(0.0, 0.0, 0.0);
 
-    // console.log("PRINTING THE 2 POS: ");
-    // console.log(posA);
-    // console.log(posB);
-
     var posAiso = posA.isovalue;
     var posBiso = posB.isovalue;
     var posApos = posA.pos;
     var posBpos = posB.pos;
 
-    // console.log("posAISO: " + posAiso);
-    // console.log("posBISO: " + posBiso);
-
     var mu = 0.0;
-    //var p = THREE.Vector3(0.0);
 
     if(Math.abs(isolevel - posAiso) < 0.00001) {return posApos;}
     if(Math.abs(isolevel - posBiso) < 0.00001) {return posBpos;}
     if(Math.abs(posAiso - posBiso) < 0.00001) {return posApos;}
 
     mu = (isolevel - posAiso) / (posBiso - posAiso);
-    // console.log("MU:" + mu);
 
     lerpPos.x = posApos.x + mu * (posBpos.x - posApos.x);
     lerpPos.y = posApos.y + mu * (posBpos.y - posApos.y);
     lerpPos.z = posApos.z + mu * (posBpos.z - posApos.z);
-
-    // console.log("IM IN VERTEX INTERP: ");
-    // console.log(lerpPos);
 
     return lerpPos;
   }
@@ -611,10 +620,6 @@ class Voxel {
   polygonize(isolevel, metaBallsList) {
 
     // @TODO
-
-    // console.log("IM IN POLYGONIZE");
-    // console.log("Metaballs list length: ");
-    // console.log(metaBallsList.length);
 
     var vertexList = [];
     var normalList = [];
@@ -629,17 +634,6 @@ class Voxel {
     //|= --> bitwise or
     //EX --> 5 | 1 --> 0101 | 0001 --> 0101 (anywhere there's a 1, result will be 1)
 
-    // console.log(this.BLowerLeft.isovalue);
-    // console.log(this.BLowerRight.isovalue);
-    // console.log(this.FLowerRight.isovalue);
-    // console.log(this.FLowerLeft.isovalue);
-    //
-    // console.log(this.BUpperLeft.isovalue);
-    // console.log(this.BUpperRight.isovalue);
-    // console.log(this.FUpperRight.isovalue);
-    // console.log(this.FUpperLeft.isovalue);
-    //
-    // console.log(isolevel);
     if(this.BLowerLeft.isovalue < isolevel) {cubeIndex |= 1;}   //grid[0]
     if(this.BLowerRight.isovalue < isolevel) {cubeIndex |= 2;}  //grid[1]
     if(this.FLowerRight.isovalue < isolevel) {cubeIndex |= 4;}  //grid[2]
@@ -649,7 +643,6 @@ class Voxel {
     if(this.FUpperRight.isovalue < isolevel) {cubeIndex |= 64;} //grid[6]
     if(this.FUpperLeft.isovalue < isolevel) {cubeIndex |= 128;} //grid[7]
 
-    // console.log("CUBE INDEX: " + cubeIndex);
 
     //FIND OUT WHICH BITS OF EDGETABLE VALUE TO RUN VERTEXINTERPOLATION ON
     //if cubeIndex == 9, edgetable[9] = 1001 0000 0101
@@ -658,9 +651,6 @@ class Voxel {
     //cube is completely inside or outside the isosurface
     if(LUT.EDGE_TABLE[cubeIndex] == 0)
     {
-      //return 0;
-      // vertPositions = [];
-      // vertNormals = [];
       return {
         vertPositions: vertPositions,
         vertNormals: vertNormals
@@ -669,119 +659,76 @@ class Voxel {
     if(LUT.EDGE_TABLE[cubeIndex] & 1)
     {
       var pt1 = this.vertexInterpolation(isolevel, this.BLowerLeft, this.BLowerRight);
-      // vertexList.push(pt1);
-      // var nor1 = this.calculateNormal(pt1, metaBallsList);
-      // normalList.push(nor1);
       vertexList[0] = pt1;
       normalList[0] = this.calculateNormal(pt1, metaBallsList);
     }   //0, 1
     if(LUT.EDGE_TABLE[cubeIndex] & 2)
     {
       var pt2 = this.vertexInterpolation(isolevel, this.BLowerRight, this.FLowerRight);
-      // vertexList.push(pt2);
-      // var nor2 = this.calculateNormal(pt2, metaBallsList);
-      // normalList.push(nor2);
       vertexList[1] = pt2;
       normalList[1] = this.calculateNormal(pt2, metaBallsList);
     }  //1, 2
     if(LUT.EDGE_TABLE[cubeIndex] & 4)
     {
       var pt3 = this.vertexInterpolation(isolevel, this.FLowerRight, this.FLowerLeft);
-      // vertexList.push(pt3);
-      // var nor3 = this.calculateNormal(pt3, metaBallsList);
-      // normalList.push(nor3);
       vertexList[2] = pt3;
       normalList[2] = this.calculateNormal(pt3, metaBallsList);
     }   //2, 3
     if(LUT.EDGE_TABLE[cubeIndex] & 8)
     {
       var pt4 = this.vertexInterpolation(isolevel, this.FLowerLeft, this.BLowerLeft);
-      // vertexList.push(pt4);
-      // var nor4 = this.calculateNormal(pt4, metaBallsList);
-      // normalList.push(nor4);
       vertexList[3] = pt4;
       normalList[3] = this.calculateNormal(pt4, metaBallsList);
     }    //3, 0
     if(LUT.EDGE_TABLE[cubeIndex] & 16)
     {
       var pt5 = this.vertexInterpolation(isolevel, this.BUpperLeft, this.BUpperRight);
-      // vertexList.push(pt5);
-      // var nor5 = this.calculateNormal(pt5, metaBallsList);
-      // normalList.push(nor5);
       vertexList[4] = pt5;
       normalList[4] = this.calculateNormal(pt5, metaBallsList);
     }  //4, 5
     if(LUT.EDGE_TABLE[cubeIndex] & 32)
     {
       var pt6 = this.vertexInterpolation(isolevel, this.BUpperRight, this.FUpperRight);
-      // vertexList.push(pt6);
-      // var nor6 = this.calculateNormal(pt6, metaBallsList);
-      // normalList.push(nor6);
       vertexList[5] = pt6;
       normalList[5] = this.calculateNormal(pt6, metaBallsList);
     } //5,6
     if(LUT.EDGE_TABLE[cubeIndex] & 64)
     {
       var pt7 = this.vertexInterpolation(isolevel, this.FUpperRight, this.FUpperLeft);
-      // vertexList.push(pt7);
-      // var nor7 = this.calculateNormal(pt7, metaBallsList);
-      // normalList.push(nor7);
       vertexList[6] = pt7;
       normalList[6] = this.calculateNormal(pt7, metaBallsList);
     }  //6, 7
     if(LUT.EDGE_TABLE[cubeIndex] & 128)
     {
       var pt8 = this.vertexInterpolation(isolevel, this.BUpperLeft, this.FUpperLeft);
-      // vertexList.push(pt8);
-      // var nor8 = this.calculateNormal(pt8, metaBallsList);
-      // normalList.push(nor8);
       vertexList[7] = pt8;
       normalList[7] = this.calculateNormal(pt8, metaBallsList);
     }  //7, 4
     if(LUT.EDGE_TABLE[cubeIndex] & 256)
     {
       var pt9 = this.vertexInterpolation(isolevel, this.BLowerLeft, this.BUpperLeft);
-      // vertexList.push(pt9);
-      // var nor9 = this.calculateNormal(pt9, metaBallsList);
-      // normalList.push(nor9);
       vertexList[8] = pt9;
       normalList[8] = this.calculateNormal(pt9, metaBallsList);
     }  //0, 4
     if(LUT.EDGE_TABLE[cubeIndex] & 512)
     {
       var pt10 = this.vertexInterpolation(isolevel, this.BLowerRight, this.BUpperRight);
-      // vertexList.push(pt10);
-      // var nor10 = this.calculateNormal(pt10, metaBallsList);
-      // normalList.push(nor10);
       vertexList[9] = pt10;
       normalList[9] = this.calculateNormal(pt10, metaBallsList);
     }  //1, 5
     if(LUT.EDGE_TABLE[cubeIndex] & 1024)
     {
       var pt11 = this.vertexInterpolation(isolevel, this.FLowerRight, this.FUpperRight);
-      // vertexList.push(pt11);
-      // var nor11 = this.calculateNormal(pt11, metaBallsList);
-      // normalList.push(nor11);
       vertexList[10] = pt11;
       normalList[10] = this.calculateNormal(pt11, metaBallsList);
     }  //2, 6
     if(LUT.EDGE_TABLE[cubeIndex] & 2048)
     {
       var pt12 = this.vertexInterpolation(isolevel, this.FLowerLeft, this.FUpperLeft);
-      // vertexList.push(pt12);
-      // var nor12 = this.calculateNormal(pt12, metaBallsList);
-      // normalList.push(nor12);
       vertexList[11] = pt12;
       normalList[11] = this.calculateNormal(pt12, metaBallsList);
     }  //3, 7
 
-    // console.log("IM HERE AFTER 15 IF STATEMENTS");
-
-    // var currTriTableRow = LUT.TRI_TABLE[cubeIndex];
-    // console.log(currTriTableRow);
-
-    // console.log("IM PRINTING THE VERT LIST AFTER INTERPOLATING: ");
-    // console.log(vertexList);
 
 
     //var tri = LUT.TRI_TABLE[cubeIndex * 16 + j];
@@ -790,9 +737,6 @@ class Voxel {
       // if(LUT.TRI_TABLE[cubeIndex * 16 + i] != -1)
       // {
         //get the 3 triangle points and put them in vertPositions
-
-        // console.log("IM IN OKAY TRI TABLE CASE: ");
-        // console.log(LUT.TRI_TABLE[cubeIndex * 16 + i]);
 
         var p1 = vertexList[LUT.TRI_TABLE[cubeIndex * 16 + i]];
         var p2 = vertexList[LUT.TRI_TABLE[cubeIndex * 16 + i + 1]];
@@ -811,9 +755,6 @@ class Voxel {
       // }
     }//end for loop
 
-    // console.log("IM HERE AFTER TRIANGLE FOR LOOP");
-    // console.log("PRINTING VERT POSITIONS: ")
-    // console.log(vertPositions);
 
     return {
       vertPositions: vertPositions,
@@ -824,7 +765,7 @@ class Voxel {
   calculateNormal(point, ballList)
   {
     var grad = new THREE.Vector3(0.0, 0.0, 0.0);
-    var offset = 0.0001;
+    var offset = 0.01;
 
     var p1x = new THREE.Vector3(point.x + offset, point.y, point.z);
     var p2x = new THREE.Vector3(point.x - offset, point.y, point.z);
@@ -838,26 +779,86 @@ class Voxel {
     var p2z = new THREE.Vector3(point.x, point.y, point.z - offset);
     grad.z = this.sampleNormal(p1z, ballList) - this.sampleNormal(p2z, ballList);
 
-    //var _len = grad.length();
-    //var outputNormal = new THREE.Vector3(-grad.x / _len, -grad.y / _len, -grad.z / _len);
-    //return outputNormal;
+    // return -grad.normalize();
     return grad.normalize();
   };
 
   sampleNormal(point, _ballList)
   {
-    //console.log("IM IN SAMPLENORMAL");
     var isovalue = 0.0;
-    //var pt = new THREE.Vector3(point[0], point[1], point[2])
-
-    for(var i = 0; i < _ballList.length; i++)
-    {
-      var currBall = _ballList[i];
-      //var dist = Math.sqrt(Math.pow(currBall.pos.x - point.x, 2) + Math.pow(currBall.pos.y - point.y, 2) + Math.pow(currBall.pos.z - point.z, 2));
-      var dist = point.distanceToSquared(currBall.pos);
-
-      isovalue += ((currBall.radius * currBall.radius) / (dist * dist));
-    }
+    isovalue = sampleIsoValue(point, _ballList);
     return isovalue;
   };
+}//end Voxel Class
+
+
+// ================================================ EXTERNAL FUNCTIONS ================================================ //
+
+function sampleIsoValue(point, ballsList)
+{
+  var isovalue = 0.0;
+
+  for(var i = 0; i < ballsList.length; i++)
+  {
+    var currBall = ballsList[i];
+    var dist = point.distanceToSquared(currBall.pos);
+    isovalue += currBall.radius2 / dist;
+  }
+
+
+  //Adding influence from a ground plane
+
+  var groundPlaneRadius = 1.5; //influence
+  var y = -2;
+  for(var x = 0; x < 10; x += 3)
+  {
+    for(var z = 0; z < 10; z += 3)
+    {
+      var dist = point.distanceToSquared(new THREE.Vector3(x,y,z));
+      isovalue += groundPlaneRadius / dist;
+    }
+  }
+
+  // var groundPlaneRadius = 1.5; //influence
+  // var y = 0;
+  // for(var x = 0; x < 10; x += 4)  //dependent on grid size
+  // {
+  //   for(var z = 0; z < 10; z += 4)
+  //   {
+  //     var dist = point.distanceToSquared(new THREE.Vector3(x,y,z));
+  //     isovalue += groundPlaneRadius / dist;
+  //   }
+  // }
+
+  return isovalue;
+}
+
+
+//defining toon shader
+function toonShader(colorOffset) {
+    var toonGreenMaterial;
+    var stepSize = 1.0/5.0;
+
+    for ( var alpha = 0, alphaIndex = 0; alpha <= 1.0; alpha += stepSize, alphaIndex ++ ) {
+          var specularShininess = Math.pow(2.0 , alpha * 10.0 );
+
+          for ( var beta = 0; beta <= 1.0; beta += stepSize ) {
+              var specularColor = new THREE.Color( beta * 0.2, beta * 0.2, beta * 0.2 );
+
+              for ( var gamma = 0; gamma <= 1.0; gamma += stepSize ) {
+                  var offset = colorOffset;
+                  var diffuseColor = new THREE.Color().setHSL( alpha * offset, 0.5, gamma * 0.5 ).multiplyScalar( 1.0 - beta * 0.2 );
+
+                  toonGreenMaterial = new THREE.MeshToonMaterial( {
+                        color: diffuseColor,
+                        specular: specularColor,
+                        reflectivity: beta,
+                        shininess: specularShininess,
+                        shading: THREE.SmoothShading
+                  } );//end var toon material
+              }//end for gamma
+          }//end for beta
+    }//end for alpha
+
+    return toonGreenMaterial;
 }
