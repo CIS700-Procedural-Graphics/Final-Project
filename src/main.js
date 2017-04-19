@@ -5,6 +5,7 @@ import Grid from './grid.js'
 import Player from './player.js'
 
 var player;
+var grid;
 
 var Sliders = function() {
   this.anglefactor = 1.0;
@@ -38,34 +39,24 @@ function onLoad(framework) {
   camera.position.set(1, 1, 2);
   camera.lookAt(new THREE.Vector3(0,0,0));
 
+  var colors = [];
+  colors.push(palette(0.0));
+  colors.push(palette(0.167));
+  colors.push(palette(0.333));
+  colors.push(palette(0.5));
+  colors.push(palette(0.666));
+  colors.push(palette(0.833));
+  //[ palette(0.0), palette(0.167), palette(0.333), palette(0.5), palette(0.666), palette(0.833) ];
   
-  // CUBE
-  var cubeGeometry = new THREE.CubeGeometry(2,2,2);
-  var cubeMaterials = [ 
-      new THREE.MeshBasicMaterial({color:palette(0.0), transparent:true, opacity:0.8, side: THREE.DoubleSide}),
-      new THREE.MeshBasicMaterial({color:palette(0.167), transparent:true, opacity:0.8, side: THREE.DoubleSide}), 
-      new THREE.MeshBasicMaterial({color:palette(0.333), transparent:true, opacity:0.8, side: THREE.DoubleSide}),
-      new THREE.MeshBasicMaterial({color:palette(0.5), transparent:true, opacity:0.8, side: THREE.DoubleSide}), 
-      new THREE.MeshBasicMaterial({color:palette(0.666), transparent:true, opacity:0.8, side: THREE.DoubleSide}), 
-      new THREE.MeshBasicMaterial({color:palette(0.833), transparent:true, opacity:0.8, side: THREE.DoubleSide}), 
-  ]; 
-  // Create a MeshFaceMaterial, which allows the cube to have different materials on each face 
-  //var cubeMaterial = new THREE.MeshFaceMaterial(cubeMaterials); 
-  //var cube = new THREE.Mesh(cubeGeometry, cubeMaterial);
-  //cube.position.y += 1;
-  //scene.add( cube );
-  
-  player = new Player(palette(0.0), palette(0.167), palette(0.333), palette(0.5), palette(0.666), palette(0.833), new THREE.Vector3(0.5, 0.5, 0.5));
-  scene.add(player.cube);
-
-  // PLANE
-  var gridDimension = 6;
+  // GRID
+  /*
+  var gridDimension = 7;
   var cellDimension = 1;
-  for (var x = -gridDimension/2.0; x < gridDimension/2.0; x += cellDimension) {
-    for (var z = -gridDimension/2.0; z < gridDimension/2.0; z += cellDimension) {
+  for (var x = 0.0; x < gridDimension; x += cellDimension) {
+    for (var z = 0.0; z < gridDimension; z += cellDimension) {
       var planeGeometry = new THREE.PlaneGeometry( cellDimension, cellDimension, 1, 1);
       //var planeMaterial = new THREE.MeshLambertMaterial(cubeMaterials[Math.floor(Math.random()*6.0)]);
-      var planeMaterial = new THREE.MeshBasicMaterial({color: cubeMaterials[Math.floor(Math.random()*6.0)].color, transparent:true, opacity:1.0, side: THREE.DoubleSide});
+      var planeMaterial = new THREE.MeshBasicMaterial({color: colors[Math.floor(Math.random()*6.0)], transparent:true, opacity:1.0, side: THREE.DoubleSide});
       planeMaterial.opacity = 1.0;
       var plane = new THREE.Mesh( planeGeometry, planeMaterial );
       plane.position.x = x+cellDimension/2.0;
@@ -74,6 +65,15 @@ function onLoad(framework) {
       scene.add( plane );
     }
   }
+  */
+  var gridDimension = 7;
+  grid = new Grid(scene, new THREE.Vector3(gridDimension-1, 0.5, gridDimension-1), colors);
+
+  // PLAYER
+  player = new Player(new THREE.Vector3(gridDimension-1, 0.5, gridDimension-1), colors);
+  scene.add(player.cube);
+
+  
 
   /*
   // initialize LSystem and a Turtle to draw
@@ -144,7 +144,7 @@ function doLsystem(lsystem, iterations, turtle, anglefactor) {
 
 // called on frame updates
 function onUpdate(framework) {
-  
+
 }
 
 // when the scene is done initializing, it will call onLoad, then on frame updates, call onUpdate

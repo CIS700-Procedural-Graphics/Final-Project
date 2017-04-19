@@ -1,228 +1,175 @@
-export default class Grid {
-	
+class GridCell {
+	constructor() {
+		this.isMarked = false;
+		this.color = null;
+	}
 }
 
+class FakePlayer {
+	//col0 is the face color for global POSITIVE X axis
+    //col1 is the face color for global NEGATIVE X axis
+    //col2 is the face color for global POSITIVE Y axis
+    //col3 is the face color for global NEGATIVE Y axis
+    //col4 is the face color for global POSITIVE Z axis
+    //col5 is the face color for global NEGATIVE Z axis
+    constructor(pos, colors) {
+        this.faceXPositive = colors[0];
+        this.faceXNegative = colors[1];
+        this.faceYPositive = colors[2];
+        this.faceYNegative = colors[3];
+        this.faceZPositive = colors[4];
+        this.faceZNegative = colors[5];
+        this.position = new THREE.Vector3(pos.x, pos.y, pos.z);
+    }
 
+    rotateZClockwise() {
+        this.position.x += 1;
+        //faceYPositive -> faceXPositive
+        //faceXPositive -> faceYNegative
+        //faceYNegative -> faceXNegative
+        //faceXNegative -> faceYPositive
+        var tempColor = new THREE.Color(this.faceYPositive);
+        this.faceYPositive = new THREE.Color(this.faceXPositive);
+        this.faceXPositive = new THREE.Color(this.faceYNegative);
+        this.faceYNegative = new THREE.Color(this.faceXNegative);
+        this.faceXNegative = tempColor;
+    };
 
+    rotateZCounter() {
+        this.position.x += -1;
+        //faceYPositive -> faceXNegative
+        //faceXNegative -> faceYNegative
+        //faceYNegative -> faceXPositive
+        //faceXPositive -> faceYPositive
+        var tempColor = new THREE.Color(this.faceYPositive);
+        this.faceYPositive = new THREE.Color(this.faceXNegative);
+        this.faceXNegative = new THREE.Color(this.faceYNegative);
+        this.faceYNegative = new THREE.Color(this.faceXPositive);
+        this.faceXPositive = tempColor;
+    };
 
+    rotateXCounter() {
+        this.position.z += 1;
+        //faceYPositive -> faceZPositive
+        //faceZPositive -> faceYNegative
+        //faceYNegative -> faceZNegative
+        //faceZNegative -> faceYPositive
+        var tempColor = new THREE.Color(this.faceYPositive);
+        this.faceYPositive = new THREE.Color(this.faceZPositive);
+        this.faceZPositive = new THREE.Color(this.faceYNegative);
+        this.faceYNegative = new THREE.Color(this.faceZNegative);
+        this.faceZNegative = tempColor;
+    };
 
-// // A class that represents a symbol replacement rule to
-// // be used when expanding an L-system grammar.
-// function Rule(prob, str) {
-// 	this.probability = prob; // The probability that this Rule will be used when replacing a character in the grammar string
-// 	this.successorString = str; // The string that will replace the char that maps to this Rule
-// }
+    rotateXClockwise() {
+        this.position.z += -1;
+        //faceYPositive -> faceZNegative
+        //faceZNegative -> faceYNegative
+        //faceYNegative -> faceZPositive
+        //faceZPositive -> faceYPositive
+        var tempColor = new THREE.Color(this.faceYPositive);
+        this.faceYPositive = new THREE.Color(this.faceZNegative);
+        this.faceZNegative = new THREE.Color(this.faceYNegative);
+        this.faceYNegative = new THREE.Color(this.faceZPositive);
+        this.faceZPositive = tempColor;
+    };
+}
 
-// // TODO: Implement a linked list class and its requisite functions
-// // as described in the homework writeup
-// function Node(symbol) {
-//     this.symbol = symbol;
-//     this.next = null;
-//     this.prev = null;
-// }
+export default class Grid {
 
-// function LinkedList() {
-// 	this.head = null;
-// 	this.length = 0;
+	constructor(scene, gridDimension, start, colors) {
+		
+		var gridArray = [];
+		//initialize grid
+		for (var i = 0; i < gridDimension; i++) {
+			grid[i] = [];
+			for (var j = 0; j < gridDimension; j++) {
+				gridArray[i][j] = new GridCell();
+			}
+		}
 
-// 	//adds the node to end of linkedlist
-// 	this.add = function(node) {
-// 		var currentNode = this.head;
-// 		if (currentNode === null) {
-// 	        this.head = node;
-// 	        this.length++;
-// 	        return;
-// 	    }
-// 	    while (currentNode.next != null) {
-// 	        currentNode = currentNode.next;
-// 	    }
-// 	    currentNode.next = node;
-// 	    node.prev = currentNode;
-// 	    this.length++;
-// 	}
-// }
+		//DEPTH FIRST SEARCH LEVEL GENERATION into gridArray
+		var fakePlayer = new FakePlayer( start, colors );
+		gridArray[start.x][start.z].isMarked = true;
+		gridArray[start.x][start.z].color = fakePlayer.faceYNegative;
+		var stack = [];
+		stack.push(new THREE.Vector3(start.x, 0.5, start.z));
+		while (stack.length != 0) {
 
-// // TODO: Turn the string into linked list 
-// function stringToLinkedList(input_string) {
-// 	// ex. assuming input_string = "F+X"
-// 	// you should return a linked list where the head is 
-// 	// at Node('F') and the tail is at Node('X')
-// 	var ll = new LinkedList();
-// 	for (var i = 0; i < input_string.length; i++) {
-// 		var n = new Node(input_string[i]);
-// 		ll.add(n);
-// 	}
-// 	return ll;
-// }
+			//check the 4 directions the fake player can move, add it to possible options
+			var currPos = stack[stack.length-1];
+			var options = [];
+			if (currPos.x+1 > 0 && currPos.x+1 <= gridDimension-1 && gridArray[currPos.x+1][currPos.z].isMarked == false) {
+				options.push( new THREE.Vector3(currPos.x+1, 0.5, currPos.z) );
+				//rotate Z clockwise
+			}
+			if (currPos.x-1 > 0 && currPos.x-1 <= gridDimension-1 && gridArray[currPos.x-1][currPos.z].isMarked == false) {
+				options.push( new THREE.Vector3(currPos.x-1, 0.5, currPos.z) );
+				//rotate Z counterclockwise
+			}
+			if (currPos.z+1 > 0 && currPos.z+1 <= gridDimension-1 && gridArray[currPos.x][currPos.z+1].isMarked == false) {
+				options.push( new THREE.Vector3(currPos.x, 0.5, currPos.z+1) );
+				//rotate X counterclockwise
+			}
+			if (currPos.z-1 > 0 && currPos.z-1 <= gridDimension -1 && gridArray[currPos.x][currPos.z-1].isMarked == false) {
+				options.push( new THREE.Vector3(currPos.x, 0.5, currPos.z-1) );
+				//rotate X clockwise
+			}
 
-// // TODO: Return a string form of the LinkedList
-// function linkedListToString(linkedList) {
-// 	// ex. Node1("F")->Node2("X") should be "FX"
-// 	var result = "";
-// 	if (linkedList.length != 0) {
-// 		var currentNode = linkedList.head;
-// 		while (currentNode != null) {
-// 			result = result + currentNode.symbol;
-// 			currentNode = currentNode.next;
-// 		}
-// 	}
-// 	return result;
-// }
+			if (options.length > 0) {
+				//randomly pick a move option and move fakePlayer
+				var pickedOption = options[Math.floor(Math.random()*stack.length)];
+				if (pickedOption.x > currPos.x) {
+					fakePlayer.rotateZClockwise();
+				}
+				else if (pickedOption.x < currPos.x) {
+					fakePlayer.rotateZCounter();
+				}
+				else if (pickedOption.z > currPos.z) {
+					fakePlayer.rotateXCounter();
+				}
+				else {
+					fakePlayer.rotateXClockwise();
+				}
 
-// // TODO: Given the node to be replaced, 
-// // insert a sub-linked-list that represents replacementString
-// function replaceNode(linkedList, node, replacementString) {
-	
-// 	var prevNode;
-// 	var nextNode;
+				//add new position to stack, set gridCell to marked, and color to bottom of cube
+				stack.push(new THREE.Vector3(fakePlayer.position.x, fakePlayer.position.y, fakePlayer.position.z));
+				gridArray[fakePlayer.position.x][fakePlayer.position.z].isMarked = true;
+				gridArray[fakePlayer.position.x][fakePlayer.position.z].color = fakePlayer.faceYNegative;
+			}
+			else {
+				//no options, step back one
+				stack.pop();
+				var stepBack = stack[stack.length-1];
+				if (stepBack.x > currPos.x) {
+					fakePlayer.rotateZClockwise();
+				}
+				else if (stepBack.x < currPos.x) {
+					fakePlayer.rotateZCounter();
+				}
+				else if (stepBack.z > currPos.z) {
+					fakePlayer.rotateXCounter();
+				}
+				else {
+					fakePlayer.rotateXClockwise();
+				}
+			}
+		}
 
-// 	//check if node to replace is the only node on the list
-// 	if (node.prev === null && node.next == null) {
-// 		prevNode = null;
-// 		nextNode = null;
-// 	}
-// 	//check if node to replace is head of list
-// 	else if (node.prev === null) {
-// 		prevNode = null;
-// 		nextNode = node.next;
-// 	}
-// 	//check if node to replace is tail of list
-// 	else if (node.next === null) {
-// 		prevNode = node.prev;
-// 		nextNode = null;
-// 	}
-// 	else {
-// 		prevNode = node.prev;
-// 		nextNode = node.next;
-// 	}
+		//add planes to grid
+		for (var x = 0.0; x < gridDimension; x += 1) {
+			for (var z = 0.0; z < gridDimension; z += 1) {
+				var planeGeometry = new THREE.PlaneGeometry( 1, 1, 1, 1);
+				var planeMaterial = new THREE.MeshBasicMaterial({color: gridArray[x][z].color, transparent:true, opacity:1.0, side: THREE.DoubleSide});
+				var plane = new THREE.Mesh( planeGeometry, planeMaterial );
+				plane.position.x = x+0.5;
+				plane.position.z = z+0.5;
+				plane.rotation.x = Math.PI/2.0;
+				scene.add( plane );
+			}
+		}
 
-// 	//create a chain of notes given replacement string
-// 	var newStartNode = new Node(replacementString[0]);
-// 	var newEndNode = newStartNode;
-// 	for (var i = 1; i < replacementString.length; i++) {
-// 		var tempNode = new Node(replacementString[i]);
-// 		newEndNode.next = tempNode;
-// 		tempNode.prev = newEndNode;
-// 		newEndNode = tempNode;
-// 	}
+	}
 
-// 	if (prevNode == null && nextNode == null) {
-// 		linkedList.head = newStartNode;
-// 	}
-// 	//replaced node that is at head of list
-// 	else if (prevNode == null) {
-// 		linkedList.head = newStartNode;
-// 		newEndNode.next = nextNode;
-// 		nextNode.prev = newEndNode;
-// 	}
-// 	//replaced node that is at tail of list
-// 	else if (nextNode == null) {
-// 		prevNode.next = newStartNode;
-// 		newStartNode.prev = prevNode;
-// 	}
-// 	else {
-// 		prevNode.next = newStartNode;
-// 		newStartNode.prev = prevNode;
-// 		newEndNode.next = nextNode;
-// 		nextNode.prev = newEndNode;
-// 	}
+}
 
-// 	linkedList.length += replacementString.length - 1.0;
-// }
-
-// export default function Lsystem(axiom, grammar, iterations) {
-// 	this.axiom = "X";
-// 	this.grammar = {};
-// 	this.grammar['X'] = [
-// 		//original symmetric tree
-// 		//new Rule(0.25, 'F[+AD][&+AD][&&+AS][&&&+AD][&&&&+AS][FXD]'),
-// 		//new Rule(0.25, 'F[+AS][&+AD][&&+AS][&&&+AD][&&&&+AD][FXS]')
-// 		new Rule(0.25, 'F[+AD][&+AD][&&+AS][&&&+AD][&&&&+AS][&&FXD]'),
-// 		new Rule(0.25, 'F[+AS][&+AD][&&+AS][&&&+AD][&&&&+AD][&&FXS]'),
-// 		new Rule(0.25, 'F[+AD][&+AD][&&+AS][&&&+AD][&&&&+AS][FXD]'),
-// 		new Rule(0.25, 'F[+AS][&+AD][&&+AS][&&&+AD][&&&&+AD][FXS]')
-// 	];
-// 	this.grammar['F'] = [
-// 		//original symmetric tree
-// 		//new Rule(1.0, 'FF')
-// 		new Rule(1.0, 'F$F%'),
-// 		new Rule(1.0, 'FF')
-// 	];
-// 	this.grammar['A']  = [
-// 		new Rule(0.5, 'F[AD][+AS][&+AS][&&+AD][&&&+AD][&&&&+AS]'),
-// 		new Rule(0.5, 'F[AS][+AS][&+AD][&&+AS][&&&+AD][&&&&+AS]')
-// 	];
-// 	this.iterations = 0; 
-	
-// 	// Set up the axiom string
-// 	if (typeof axiom !== "undefined") {
-// 		this.axiom = axiom;
-// 	}
-
-// 	// Set up the grammar as a dictionary that 
-// 	// maps a single character (symbol) to a Rule.
-// 	if (typeof grammar !== "undefined") {
-// 		this.grammar = Object.assign({}, grammar);
-// 	}
-	
-// 	// Set up iterations (the number of times you 
-// 	// should expand the axiom in DoIterations)
-// 	if (typeof iterations !== "undefined") {
-// 		this.iterations = iterations;
-// 	}
-
-// 	// A function to alter the axiom string stored 
-// 	// in the L-system
-// 	this.updateAxiom = function(axiom) {
-// 		// Setup axiom
-// 		if (typeof axiom !== "undefined") {
-// 			this.axiom = axiom;
-// 		}
-// 	}
-
-// 	// TODO
-// 	// This function returns a linked list that is the result 
-// 	// of expanding the L-system's axiom n times.
-// 	// The implementation we have provided you just returns a linked
-// 	// list of the axiom.
-// 	this.doIterations = function(n) {	
-// 		var lSystemLL = stringToLinkedList(this.axiom);
-
-// 		var count = 0;
-// 		while (count < n) {
-// 			//iterate through the current linked list
-// 			for(var currentNode = lSystemLL.head; currentNode != null; ) {
-				
-// 				var nextNode = currentNode.next;
-// 				var symbol = currentNode.symbol;
-
-// 				//iterate through the grammar to find matching symbol
-// 				for (var key in this.grammar) {
-					
-// 					if (symbol === key) {
-// 						var seed = Math.random();
-// 						var sumProbability = 0.0;
-// 						//iterate through the rules for the symbol, using probability to pick a rule
-// 						for (var i = 0; i < this.grammar[key].length; i++) {
-// 							var rule = this.grammar[key][i];
-// 							sumProbability += rule.probability;
-// 							if (seed <= sumProbability) {
-// 								//console.log(seed);
-// 								//console.log(rule.successorString);
-// 								replaceNode(lSystemLL, currentNode, rule.successorString);
-// 								break;
-// 							}
-// 						}
-// 					}
-					
-// 				}
-
-// 				currentNode = nextNode;
-// 	        }
-// 	        count++;
-//     	}
-        
-//         //console.log(linkedListToString(lSystemLL));
-// 		return lSystemLL;
-// 	}
-// }
