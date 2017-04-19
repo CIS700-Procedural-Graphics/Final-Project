@@ -73,4 +73,4 @@ Example texture with terrain:
 
 ![](../images/WFT2.png)
 
-- Demo: Rudraksha20.github.io/Final-Project/
+- Demo: https://rudraksha20.github.io/Final-Project/
