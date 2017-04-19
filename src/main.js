@@ -26,9 +26,9 @@ var noiseCloud = {
 	mesh : {},
 };
 
-var testInstrument = Soundfont.instrument(ac, 'acoustic_grand_piano', { soundfont: 'MusyngKite', gain: 1.25, adsr: [0.5, 0.8, 1, 0.7] });
-var instrument2 = Soundfont.instrument(ac, 'acoustic_grand_piano', { soundfont: 'MusyngKite', gain: 1 });
-var synthDrums = Soundfont.instrument(ac, 'synth_drum', { soundfont: 'MusyngKite', gain: 0.5 });
+var testInstrument = Soundfont.instrument(ac, 'acoustic_grand_piano', { soundfont: 'MusyngKite', gain: 1.0 });//
+var instrument2 = Soundfont.instrument(ac, 'pad_3_polysynth', { soundfont: 'MusyngKite', adsr: [0,0,0,0], gain: 0.5 });
+var synthDrums = Soundfont.instrument(ac, 'synth_drum', { soundfont: 'MusyngKite', gain: 1.0 });
 
 function rate_limit(func) {
     var running = false;
@@ -66,19 +66,6 @@ function rate_limit(func) {
 
 // called after the scene loads
 function onLoad(framework) {
-	// console.log(euclid(8,8));
-
-	// var grammar = {};
-	// grammar['0'] = {probability: 1.0, successorString: '01'};
-	// grammar['1'] = {probability: 1.0, successorString: '10'};
-	// var L = new Lsystem('0',grammar, 2);
-	// console.log(L.doIterations(3));
-
-	// var s = tonal.scale.get('major', 'C4');
-	// console.log(s)
-	// console.log(tonal.transpose('C2', 'P8'))
-	// console.log(tonal.ivl.invert(['C4', 'E4']))
-	// console.log(tonal.chord.names())
 
 	var scene = framework.scene;
 	var camera = framework.camera;
@@ -121,34 +108,50 @@ function onLoad(framework) {
 	}));
 }
 
+var music = [];
+var beats = [];
+var time = Date.now();
+
 // called on frame updates
 function onUpdate(framework) {
 	if (update) {
-		var music = melodyGenerator(100, 120, additionalControls.base, additionalControls.multi);
-		var music2 = EarthWorm(345,17,5,100,120);
-		var rMusic = rhythmicMelodyGenerator(100, euclid(3,8), 60, additionalControls.base, additionalControls.multi);
-		var rMusic2 = rhythmicMelodyGenerator(200, euclid(6,8), 240, additionalControls.base + 3, additionalControls.multi + 4);
-		var beat = beatGenerator(euclid(4,6), 120, 100);
+		// var music = melodyGenerator(100, 120,  2, 3);
+		music.push(EarthWorm(343, 13, 4, 140, 240));
+		music.push(rhythmicMelodyGenerator(40, euclid(5,8), 60, additionalControls.base, additionalControls.multi));
+		// var rMusic2 = rhythmicMelodyGenerator(200, euclid(6,8), 240, additionalControls.base + 3, additionalControls.multi + 4);
+		beats.push(beatGenerator(euclid(5,7), 180, 100));
+		beats.push(beatGenerator(euclid(3,7), 120, 70, 'C4'));
+		beats.push(beatGenerator(euclid(6,9), 180, 100, 'G2'));
 
-		var t = 10;
+		// console.log(euclid(5,7))
 
 		testInstrument.then(function (marimba) {
 			marimba.stop();
-			marimba.schedule(ac.currentTime, music[0]);
-
+			marimba.schedule(ac.currentTime, music[1][0]);
 		})
+
 		synthDrums.then(function (marimba) {
 			marimba.stop();
-			marimba.schedule(ac.currentTime, beat);
+			marimba.schedule(ac.currentTime, beats[0]);
+			marimba.schedule(ac.currentTime, beats[1]);
+			// marimba.schedule(ac.currentTime, beat3);
 		})
 
 		instrument2.then(function (marimba) {
 			marimba.stop();
-			marimba.schedule(ac.currentTime, music2);
+			// console.log(music2)
+			marimba.schedule(ac.currentTime, music[0]);
 		})
 
 		update = false;
 	}
+
+	var nTime = Date.now();
+	var indices = [0,0,0,0,0];
+	var times = [1/240, 1/60, 1/180, 1/120, 1/180];
+	var deltaT = (nTime - time) / 1000;
+	
+
 }
 
 // when the scene is done initializing, it will call onLoad, then on frame updates, call onUpdate

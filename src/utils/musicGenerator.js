@@ -1,7 +1,7 @@
 var tonal = require('tonal')
 
 
-export function beatGenerator(rhythm, tempo, n) {
+export function beatGenerator(rhythm, tempo, n, drumNote = 'G3') {
 	var unitTime = 60 / tempo;
 	var analogRhythm = getAnalogRhythm(rhythm);
 	// console.log(analogRhythm)
@@ -11,7 +11,7 @@ export function beatGenerator(rhythm, tempo, n) {
 	for (var i = 0; i < n; i++) {
 		var t = analogRhythm[i % analogRhythm.length] + Math.floor(i / analogRhythm.length) * analogRhythm[analogRhythm.length-1];
 
-		notes.push({note : 'D3', time : t * unitTime});
+		notes.push({note : drumNote, time : t * unitTime});
 
 	}
 	// console.log(notes)
@@ -40,6 +40,7 @@ export function EarthWorm(init, multi, digits, n, tempo) {
 	var ts = tonal.map(tonal.transpose('8P'), s)
 	s = s.concat(ts);
 
+	var baseNote = 'E5';
 
 	var notes = [];
 	var val = init;
@@ -47,7 +48,9 @@ export function EarthWorm(init, multi, digits, n, tempo) {
 	for (var i = 0; i < n; i++) {
 		val *= multi;
 		val = val % restraint;
-		notes[i] = { note: s[val % s.length], time: i*unitTime };
+		// notes[i] = { note: s[val % s.length], time: i*unitTime };
+		// console.log(i + " " + val)
+		notes[i] = { note: (i % 2 == 0) ? baseNote : (tonal.note.midi(baseNote) + val % 10) , time: i*unitTime };
 	}
 
 	// console.log(notes) 
