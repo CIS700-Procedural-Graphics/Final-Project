@@ -1,7 +1,7 @@
 const THREE = require('three');
 
 export function initSceneGeo(scene, meshes, materials, spline) {
-  var plane_geo = new THREE.PlaneBufferGeometry(5, 100, 50, 100).rotateX(-Math.PI/2).translate(-4,-1,0);
+  var plane_geo = new THREE.PlaneBufferGeometry(200, 200, 100, 100).rotateX(-Math.PI/2);
   var plane_material = new THREE.ShaderMaterial(materials.canyon_mat);
   meshes.plane = new THREE.Mesh(plane_geo, plane_material);
   scene.add(meshes.plane);

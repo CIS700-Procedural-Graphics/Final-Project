@@ -2,7 +2,7 @@ const THREE = require('three');
 const OrbitControls = require('three-orbit-controls')(THREE)
 
 import Framework from './framework'
-import {updateCamera, makeSpline} from './camera'
+import {updateCamera, makeSpline, makeSplineTexture} from './camera'
 import {initSceneGeo, updateRocks} from './geometry'
 import {canyon_mat, water_mat, sky_mat, ground_mat, rock_mat} from './materials'
 

@@ -1,8 +1,9 @@
-uniform vec3 spline[50];
+uniform sampler2D path;
 
 varying vec3 vNormal;
 varying vec2 vUV;
 varying float vNoise;
+varying vec3 vPoint;
 
 float hash (float n)
 {
@@ -43,8 +44,9 @@ float noised (vec3 x)
 void main() {
     vNoise = noised(position);
     vNormal = normal;
+    vPoint = position;
     vUV =  uv;
-    vec3 offset = position.x * (vNoise - 1.0) * normal;
-    if (uv.x == 1.0) offset = vec3(0.0);
+    //vec3 offset = texture2D(path, uv) * (vNoise) * normal;
+    vec3 offset = abs(position.x) * (vNoise) * normal;
     gl_Position = projectionMatrix * modelViewMatrix * vec4( position + offset, 1.0 );
 }

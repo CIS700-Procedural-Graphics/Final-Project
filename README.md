@@ -50,6 +50,8 @@ I will try the various techniques and choose the one or ones that look the best 
 * Choose a song and animate some aspect of environment
 * Move camera through the environment
 
+![](./milestone1.png)
+
 ### Week of 04/17
 * Add detail to the rocks and water
 
