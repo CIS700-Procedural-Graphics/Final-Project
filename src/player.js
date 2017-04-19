@@ -29,13 +29,13 @@ export default class Player {
         this.cubeMaterial = new THREE.MeshFaceMaterial(this.cubeMaterials);
         this.cube = new THREE.Mesh( new THREE.CubeGeometry(1,1,1), this.cubeMaterial);
         this.cube.position.x = pos.x+0.5;
-        this.cube.position.y = pos.y+0.5;
+        this.cube.position.y = 0.5;
         this.cube.position.z = pos.z+0.5;
     }
 
     rotateZClockwise() {
         this.cube.position.x += 1;
-        this.cube.rotation.z += Math.PI/2;
+        this.cube.rotation.z += -Math.PI/2;
         //faceYPositive -> faceXPositive
         //faceXPositive -> faceYNegative
         //faceYNegative -> faceXNegative
@@ -50,7 +50,7 @@ export default class Player {
 
     rotateZCounter() {
         this.cube.position.x += -1;
-        this.cube.rotation.z += -Math.PI/2;
+        this.cube.rotation.z += Math.PI/2;
         //faceYPositive -> faceXNegative
         //faceXNegative -> faceYNegative
         //faceYNegative -> faceXPositive
@@ -65,7 +65,7 @@ export default class Player {
 
     rotateXCounter() {
         this.cube.position.z += 1;
-        this.cube.rotation.x += -Math.PI/2;
+        this.cube.rotation.x += Math.PI/2;
         //faceYPositive -> faceZPositive
         //faceZPositive -> faceYNegative
         //faceYNegative -> faceZNegative
@@ -80,7 +80,7 @@ export default class Player {
 
     rotateXClockwise() {
         this.cube.position.z += -1;
-        this.cube.rotation.x += Math.PI/2;
+        this.cube.rotation.x += -Math.PI/2;
         //faceYPositive -> faceZNegative
         //faceZNegative -> faceYNegative
         //faceYNegative -> faceZPositive

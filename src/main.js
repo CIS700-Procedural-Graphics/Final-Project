@@ -6,6 +6,7 @@ import Player from './player.js'
 
 var player;
 var grid;
+var gridDimension = 9;
 
 var Sliders = function() {
   this.anglefactor = 1.0;
@@ -66,11 +67,11 @@ function onLoad(framework) {
     }
   }
   */
-  var gridDimension = 7;
-  grid = new Grid(scene, new THREE.Vector3(gridDimension-1, 0.5, gridDimension-1), colors);
+
+  grid = new Grid(scene, gridDimension, new THREE.Vector3(gridDimension-1, 0, gridDimension-1), colors);
 
   // PLAYER
-  player = new Player(new THREE.Vector3(gridDimension-1, 0.5, gridDimension-1), colors);
+  player = new Player(new THREE.Vector3(gridDimension-1, 0, gridDimension-1), colors);
   scene.add(player.cube);
 
   
@@ -107,21 +108,30 @@ document.onkeydown = checkKey;
 function checkKey(e) {
     e = e || window.event;
     if (e.keyCode == '38') {
-        // up arrow
+      // up arrow
+      if (player.position.x - 1 >= 0) {
         player.rotateZCounter();
+      }
     }
     else if (e.keyCode == '40') {
-        // down arrow
+      // down arrow
+      if (player.position.x + 1 < gridDimension) {
         player.rotateZClockwise();
+      }
     }
     else if (e.keyCode == '37') {
-       // left arrow
-       player.rotateXCounter();
+      // left arrow
+      if (player.position.z + 1 < gridDimension) {
+        player.rotateXCounter();
+      }
     }
     else if (e.keyCode == '39') {
        // right arrow
-       player.rotateXClockwise();
+       if (player.position.z - 1 >= 0) {
+         player.rotateXClockwise();
+       }
     }
+    //console.log(player.position);
 }
 
 /*
