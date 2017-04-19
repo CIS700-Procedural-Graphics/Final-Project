@@ -18,11 +18,11 @@ During the first milestone, I ended up focusing on working on compositing my sce
 
 Images:
 
-![alt text](https://github.com/MegSesh/Final-Project/blob/master/documentation/referenceImages/1.png "Image 1")
+![alt text](https://github.com/MegSesh/Final-Project/blob/master/documentation/milestone1_images/1.png "Image 1")
 
-![alt text](https://github.com/MegSesh/Final-Project/blob/master/documentation/referenceImages/2.png "Image 2")
+![alt text](https://github.com/MegSesh/Final-Project/blob/master/documentation/milestone1_images/2.png "Image 2")
 
-![alt text](https://github.com/MegSesh/Final-Project/blob/master/documentation/referenceImages/3.png "Image 3")
+![alt text](https://github.com/MegSesh/Final-Project/blob/master/documentation/milestone1_images/3.png "Image 3")
 
 
 
