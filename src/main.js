@@ -6,43 +6,78 @@ import Framework from './framework'
 import MIDI from 'midi.js'
 import Soundfont from 'soundfont-player'
 import {euclid} from './utils/euclid.js'
-import {beatGenerator, MorseThue, melodyGenerator} from './utils/musicGenerator.js'
+import {beatGenerator, MorseThue, melodyGenerator, rhythmicMelodyGenerator, EarthWorm} from './utils/musicGenerator.js'
 import Lsystem from './fractals/lsystem.js'
 
 
 var ac = new AudioContext()
 
-// Colors
+// parameters
 var additionalControls = {
-	'Color' : [255, 255, 255],
-	'scale' : 1.,
-	'music' : true,
-	'inv persistence' : 2.,
-	'radius' : 0.7,
-	'detail' : 6.
+	'base' : 11,
+	'multi' : 13
 };
+
+// update flag
+var update = true;
 
 // Local global to allow for modifying variables
 var noiseCloud = {
 	mesh : {},
 };
 
-var t = Date.now();
+var testInstrument = Soundfont.instrument(ac, 'acoustic_grand_piano', { soundfont: 'MusyngKite', gain: 1.25, adsr: [0.5, 0.8, 1, 0.7] });
+var instrument2 = Soundfont.instrument(ac, 'acoustic_grand_piano', { soundfont: 'MusyngKite', gain: 1 });
+var synthDrums = Soundfont.instrument(ac, 'synth_drum', { soundfont: 'MusyngKite', gain: 0.5 });
+
+function rate_limit(func) {
+    var running = false;
+    var next = undefined;
+
+    function onDone() {
+        running = false; // set the flag to allow the function to be called again
+        if (typeof next !== 'undefined') {
+            callFunc(next); // call the function again with the queued args 
+        }
+    }
+
+    function callFunc(args) {
+        if (running) {
+            // if the function is already running, remember the arguments passed in so we can call the func with them after we're ready
+            next = args;
+        } else {
+            running = true; // prevent other function calls from running until we're done
+            next = undefined;
+            func.apply(func, args); // call the func with the arguments
+        }
+    }
+
+    // return a new function wrapping the function we want to rate limit
+    return function() {
+        // we use the same arguments but add the onDone callback as the last argument
+        var args = new Array(arguments.length + 1);
+        for (var i = 0; i < arguments.length; ++i) {
+            args[i] = arguments[i];
+        }
+        args[arguments.length] = onDone;
+        callFunc(args);
+    }
+}
 
 // called after the scene loads
 function onLoad(framework) {
-	console.log(euclid(8,8));
+	// console.log(euclid(8,8));
 
-	var grammar = {};
-	grammar['0'] = {probability: 1.0, successorString: '01'};
-	grammar['1'] = {probability: 1.0, successorString: '10'};
-	var L = new Lsystem('0',grammar, 2);
+	// var grammar = {};
+	// grammar['0'] = {probability: 1.0, successorString: '01'};
+	// grammar['1'] = {probability: 1.0, successorString: '10'};
+	// var L = new Lsystem('0',grammar, 2);
 	// console.log(L.doIterations(3));
 
 	// var s = tonal.scale.get('major', 'C4');
 	// console.log(s)
-	console.log(tonal.transpose('C2', 'P8'))
-	console.log(tonal.ivl.invert(['C4', 'E4']))
+	// console.log(tonal.transpose('C2', 'P8'))
+	// console.log(tonal.ivl.invert(['C4', 'E4']))
 	// console.log(tonal.chord.names())
 
 	var scene = framework.scene;
@@ -68,14 +103,6 @@ function onLoad(framework) {
 
 	scene.add(noiseCloud.mesh);
 
-	var music = melodyGenerator(50, 120);
-	Soundfont.instrument(ac, 'acoustic_grand_piano', { soundfont: 'MusyngKite', gain: 2 }).then(function (marimba) {
-		marimba.schedule(ac.currentTime, music[0]);
-		marimba.schedule(ac.currentTime, music[1]);
-	})
-	// Soundfont.instrument(ac, 'acoustic_grand_piano', { soundfont: 'MusyngKite' }).then(function (marimba) {
-	// 	marimba.schedule(ac.currentTime, music[1]);
-	// })
 
 	// edit params and listen to changes like this
 	// more information here: https://workshop.chromeexperiments.com/examples/gui/#1--Basic-Usage
@@ -83,23 +110,45 @@ function onLoad(framework) {
 		camera.updateProjectionMatrix();
 	});
 
-	gui.add(additionalControls, 'inv persistence', 1., 10.).onChange(function(newVal) {
-		noiseCloud.mesh.material.uniforms.inv_persistence.value = newVal;
-	});
+	gui.add(additionalControls, 'base', 1, 20).onChange(rate_limit(function(newVal, done) {
+		additionalControls['base'] = Math.round(newVal);
+		update = true;
+	}));
 
-	gui.add(additionalControls, 'music').onChange(function(newVal) {
-		additionalControls.music = newVal;
-	});
-
-	// Color menu
-	gui.addColor(additionalControls, 'Color').onChange(function(newVal) {
-		noiseCloud.mesh.material.uniforms.colorMult.value = new THREE.Vector3(newVal[0]/255, newVal[1]/255, newVal[2]/255,);
-	});
-
+	gui.add(additionalControls, 'multi', 1, 20).onChange(rate_limit(function(newVal, done) {
+		additionalControls['multi'] = Math.round(newVal);
+		update = true;
+	}));
 }
 
 // called on frame updates
 function onUpdate(framework) {
+	if (update) {
+		var music = melodyGenerator(100, 120, additionalControls.base, additionalControls.multi);
+		var music2 = EarthWorm(345,17,5,100,120);
+		var rMusic = rhythmicMelodyGenerator(100, euclid(3,8), 60, additionalControls.base, additionalControls.multi);
+		var rMusic2 = rhythmicMelodyGenerator(200, euclid(6,8), 240, additionalControls.base + 3, additionalControls.multi + 4);
+		var beat = beatGenerator(euclid(4,6), 120, 100);
+
+		var t = 10;
+
+		testInstrument.then(function (marimba) {
+			marimba.stop();
+			marimba.schedule(ac.currentTime, music[0]);
+
+		})
+		synthDrums.then(function (marimba) {
+			marimba.stop();
+			marimba.schedule(ac.currentTime, beat);
+		})
+
+		instrument2.then(function (marimba) {
+			marimba.stop();
+			marimba.schedule(ac.currentTime, music2);
+		})
+
+		update = false;
+	}
 }
 
 // when the scene is done initializing, it will call onLoad, then on frame updates, call onUpdate
