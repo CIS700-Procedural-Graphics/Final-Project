@@ -26,9 +26,17 @@ As usual with this class, we want to encourage you to take this opportunity to e
   * Create a challenging, addictive, isometric puzzle game using simple geometry and gradient colors. 
 
 - ### Inspiration
-  * Monument Valley ![](./images/ref1.jpg)
-  * Euclidean Lands ![](./images/ref2.jpg)
-  * Dancing Line ![](./images/ref3.png)
+  * Monument Valley 
+
+  ![](./images/ref1.jpg)
+  
+  * Euclidean Lands 
+
+  ![](./images/ref2.jpg)
+
+  * Dancing Line 
+  
+  ![](./images/ref3.jpg)
 
 - ### Specification
   * This procedurally-generated puzzle game has a simple objective: flip a cube from grid cell to grid cell until you reach the finish cell. Each grid cell can be one of six colors corresponding to the six distinct face colors of the cube. What makes this game challenging is that the current cell the cube is on must have the same color as the bottom face of the cube. Once the cube lands on a grid cell, the cell color turns grey and the player cannot go back. There will only be one path to the finish, so the player must plan his or her moves accordingly.
