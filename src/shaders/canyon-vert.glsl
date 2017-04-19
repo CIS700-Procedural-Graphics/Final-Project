@@ -1,3 +1,5 @@
+uniform vec3 spline[50];
+
 varying vec3 vNormal;
 varying vec2 vUV;
 varying float vNoise;
