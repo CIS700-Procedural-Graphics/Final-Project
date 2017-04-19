@@ -1,10 +1,13 @@
-Milestone 1:
+Milestone 1
+-----
 
-Summary:
+Summary
+-----
 
-Created a particle simulation on the GPU using transform feedback. In the demo, I simulate 1,000,000 particles which move around at random velocites.
+Created a particle simulation on the GPU using transform feedback. In the demo, I simulate 1,000,000 particles which move around at random velocities.
 
-Method:
+Method
+-----
 
 Created two shader programs (particles program & draw program), one to perform any calculations for the position and velocity of the particles and the other to draw the particles.
 
