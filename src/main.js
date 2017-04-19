@@ -1,7 +1,8 @@
-
 const THREE = require('three'); // older modules are imported like this. You shouldn't have to worry about this much
 const tonal = require('tonal')
+const MeshLine = require( 'three.meshline' );
 
+// Audio
 import Framework from './framework'
 import MIDI from 'midi.js'
 import Soundfont from 'soundfont-player'
@@ -9,6 +10,61 @@ import {euclid} from './utils/euclid.js'
 import {beatGenerator, MorseThue, melodyGenerator, rhythmicMelodyGenerator, EarthWorm} from './utils/musicGenerator.js'
 import Lsystem from './fractals/lsystem.js'
 
+// Visual
+import Visual from './visual'
+
+/******************************************************************************/
+
+	var clock = new THREE.Clock();
+	var visualConfig = {
+	  startTime: 0,
+	  prevTime: 0,
+	  camera: {
+	    pos: new THREE.Vector3( 80,0,0 ),
+	    vel: new THREE.Vector3( 0,0,0 ),
+	    acc: new THREE.Vector3( 0,0,0 ),
+	    look: new THREE.Vector3( 0,0,0 ),
+	  },
+	  sceneReady: false,
+	};
+
+	function initInputHandler(framework) {
+	  document.onkeydown = function(e) {
+	    switch (e.keyCode) {
+	        case 83:
+	            //alert('s');
+	  					earthVel = -10;
+	            break;
+	        case 68:
+	  					var stars = framework.scene.getObjectByName("small_star_cloud");
+	  					if (stars !== undefined) {
+	  						stars.visible = !stars.visible;
+	  					}
+	            break;
+	        case 70:
+	  					var stars = framework.scene.getObjectByName("large_star_cloud");
+	  					if (stars !== undefined) {
+	  						stars.visible = !stars.visible;
+	  					}
+	            break;
+	        case 74:
+	            alert('j');
+	            break;
+	  			case 75:
+	            alert('k');
+	            break;
+	  			case 76:
+	            alert('l');
+	            break;
+	        case 32:
+	            visualConfig.camera.acc = new THREE.Vector3( -5,0,0 );
+	            break;
+	    }
+	  }
+	}
+
+
+/******************************************************************************/
 
 var ac = new AudioContext()
 
@@ -37,7 +93,7 @@ function rate_limit(func) {
     function onDone() {
         running = false; // set the flag to allow the function to be called again
         if (typeof next !== 'undefined') {
-            callFunc(next); // call the function again with the queued args 
+            callFunc(next); // call the function again with the queued args
         }
     }
 
@@ -73,24 +129,6 @@ function onLoad(framework) {
 	var gui = framework.gui;
 	var stats = framework.stats;
 
-	// LOOK: the line below is synyatic sugar for the code above. Optional, but I sort of recommend it.
-	// var {scene, camera, renderer, gui, stats} = framework; 
- 	var adamMaterial = new THREE.MeshBasicMaterial({ 
-         color:0xFFFFFF, 
-         side:THREE.DoubleSide 
-     }); 
-
-	var iso = new THREE.IcosahedronBufferGeometry(0.7, 6);
-	noiseCloud.mesh = new THREE.Mesh(iso, adamMaterial);
-	noiseCloud.mesh.name = "adamCube";
-
-	// set camera position
-	camera.position.set(1, 1, 6);
-	camera.lookAt(new THREE.Vector3(0,0,0));
-
-	scene.add(noiseCloud.mesh);
-
-
 	// edit params and listen to changes like this
 	// more information here: https://workshop.chromeexperiments.com/examples/gui/#1--Basic-Usage
 	gui.add(camera, 'fov', 0, 180).onChange(function(newVal) {
@@ -106,6 +144,18 @@ function onLoad(framework) {
 		additionalControls['multi'] = Math.round(newVal);
 		update = true;
 	}));
+
+	// Visual
+	camera.position.set(50, 0, 0);
+	camera.lookAt(new THREE.Vector3(0,0,0));
+	scene.background = new THREE.Color( 0xffffff );
+
+  Visual.initScene(scene, visualConfig);
+
+  initInputHandler(framework);
+
+  visualConfig.startTime = clock.getElapsedTime();
+	visualConfig.prevTime = clock.getElapsedTime();
 }
 
 var music = [];
@@ -150,8 +200,25 @@ function onUpdate(framework) {
 	var indices = [0,0,0,0,0];
 	var times = [1/240, 1/60, 1/180, 1/120, 1/180];
 	var deltaT = (nTime - time) / 1000;
-	
 
+	// Visual
+	var camera = framework.camera;
+	var scene = framework.scene;
+
+	var delta = visualConfig.prevTime - clock.getElapsedTime();
+	visualConfig.prevTime = clock.getElapsedTime();
+
+
+	Visual.updateScene(scene, visualConfig, delta);
+
+	visualConfig.camera.vel = visualConfig.camera.vel.clone().add(visualConfig.camera.acc.clone().multiplyScalar(delta));
+	visualConfig.camera.pos = visualConfig.camera.pos.clone().add(visualConfig.camera.vel.clone().multiplyScalar(delta));
+	if (Visual.changeTrigger(visualConfig)) {
+		visualConfig.camera.vel = new THREE.Vector3( 0,0,0 );
+		visualConfig.camera.pos = new THREE.Vector3( 0,0,0 );
+		Visual.cleanupScene(scene);
+	}
+	camera.position.set( visualConfig.camera.pos.x, visualConfig.camera.pos.y, visualConfig.camera.pos.z );
 }
 
 // when the scene is done initializing, it will call onLoad, then on frame updates, call onUpdate
