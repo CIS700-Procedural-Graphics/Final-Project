@@ -6,6 +6,8 @@ Summary
 
 Created a particle simulation on the GPU using transform feedback. In the demo, I simulate 1,000,000 particles which move around at random velocities.
 
+Demo: https://msoudy.github.io/Final-Project/
+
 Method
 -----
 

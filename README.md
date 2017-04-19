@@ -3,11 +3,10 @@
 Goal
 -----
 
-Create a procedurally generated music video using a particle simulation.
-Inspiration/reference:
-- A Particle Dream - v1.0 — https://youtu.be/YB2u2WhZjxU
-- WebGL FBO Particle System — https://youtu.be/HtF2qWKM_go
-- GPU Accelerated Particles (Javascript, WebGL) — https://youtu.be/lJe5zEr4b0Q
+Create a procedurally generated music video using particles.
+
+Demo: https://msoudy.github.io/Final-Project/
+
 
 Specification
 --------------
@@ -17,8 +16,22 @@ Specification
 - Procedurally generated objects made solely with particles
 - Synchronization of elements in the scene with background music
 
+
 Techniques
 -----------
 
 - Particle simulation using transform feedback  - https://github.com/WebGLSamples/WebGL2Samples/blob/master/samples/transform_feedback_separated_2.html
 - Transform feedback Particles example - https://www.ibiblio.org/e-notes/webgl/gpu/lorenz_ft.htm
+
+
+Inspiration/References:
+----------------------
+- A Particle Dream - v1.0 — https://youtu.be/YB2u2WhZjxU
+- WebGL FBO Particle System — https://youtu.be/HtF2qWKM_go
+- GPU Accelerated Particles (Javascript, WebGL) — https://youtu.be/lJe5zEr4b0Q
+
+
+Screenshots
+-----------
+
+![](./images/particles.png)
