@@ -9,6 +9,10 @@ The Earthworm sequence requires an initial value, a multiplier, and a constant. 
 
 Both of these algorithms are implemented in this version of the code. `melodyGenerator` by uses the Morse-Thue while `EarthWorm` uses the Earthworm sequence to generate a set of notes. `rhythmicMelodyGenerator` combines the output of a Morse-Thue sequence with a Euclidian rhythm. 
 
+The Soundfont-player and Tonal.js libaries are used to generate scales and play the MIDI notes [4][5]. The main music play functions are located in the `onUpdate` function in `main.js`. I recently discovered a bug where preloading multiple channels/tracks of audio causes static noise build up in the overall track.  Thus, if this occurs, disable a few `.schedule` calls, which may help alleviate the problem.  The current code utilizes 3 instruments: an acoustic piano, a polysynth, and a synthetic drumset. The drum lines demonstrate how the Euclidian rhythms can be combined to create beats, while the other two instruments demonstrate the melody generation algorithms.
+
+One noticeable issue is that sometimes the melody generation sometimes is too random. One new goal for the next week is to "decrease" the randomness by artificially introducing constant structures and musical motifs. One example present in the code currently is that the `EarthWorm` function takes the generated EarthWorm sequence and injects a constant note at every other interval, which makes the resulting sequence sound more "musical".
+
 # Visualizer (Brian)
 
 
@@ -18,3 +22,7 @@ Both of these algorithms are implemented in this version of the code. `melodyGen
 [2] http://cgm.cs.mcgill.ca/~godfried/publications/banff.pdf 
 
 [3] http://www.gustavodiazjerez.com/gdj/?cat=15
+
+[4] https://github.com/danigb/soundfont-player
+
+[5] https://github.com/danigb/tonal
