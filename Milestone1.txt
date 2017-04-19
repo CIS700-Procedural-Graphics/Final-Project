@@ -5,4 +5,7 @@ Completed for Milestone 1:
 
 3.) There webpage runs a song and I have puts frequency analytics on the music. I hooked the frequency to the perlin noise in the sky, but didn't like the effect. I want to also attach it to the rocks in the scene, but I haven't gotten the right parameters for it to look right. 
 
-4.) As for the main component, the canyon walls, I have tried multiple techniques. I tried first a vertical wall, but the noise looked strange. I also couldn't figure out to extend as the camera moved. I instead moved to a horizontal plane with very spiky noise close together. I still have the problem of extending with the camera movement, but I just figured out how to fix this, although haven't implemented it. From the spline data, I want to create a grayscale texture with black along the spline with a steep ramp to get the canyon walls. I should be able to send this texture to my shader and create a canyon that my camera can move through.  
+4.) As for the main component, the canyon walls, I have tried multiple techniques. I tried first a vertical wall, but the noise looked strange. I also couldn't figure out to extend as the camera moved. I instead moved to a horizontal plane with very spiky noise close together. I still have the problem of extending with the camera movement, but I just figured out how to fix this, although haven't implemented it. From the spline data, I want to create a grayscale texture with black along the spline with a steep ramp to get the canyon walls. I should be able to send this texture to my shader and create a canyon that my camera can move through. 
+
+see image in README
+demo here: http://www.sarahforcier.com/Project9-FinalProject 
