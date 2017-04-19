@@ -1,5 +1,49 @@
 # CIS700 Procedural Graphics: Final Project
 
+
+## Milestone 1
+
+**Goals:**
+According to my design document, my original project end product was to create a metaball musical fountain and my goals for Milestone 1 were:
+
+- Set up metaballs to sprout from a ground plane, and
+- Have music’s amplitude change some simple feature(s) of the metaballs, such as music or velocity.
+
+During the first milestone, I ended up focusing on working on compositing my scene and getting necessary technical implementation foundations in place. This included:
+
+- Setting up metaballs such that it spouts from a specified spawn location and with an intial velocity. This causes it to move downwards to the ground, and resets once it does. (metaball class in metaball.js and function "setupMetaballs" in marching_cubes.js)
+- Setting up a ground plane of "influence", where the metaball falls into (function "sampleIsoValue" in marching_cubes.js)
+- Incorporating a water shader and a toon shader for scene composition (function "onLoad" in main.js and function "toonShader" in marching_cubes.js)
+
+
+Images:
+
+![alt text](https://github.com/MegSesh/Final-Project/blob/master/documentation/referenceImages/1.png "Image 1")
+
+![alt text](https://github.com/MegSesh/Final-Project/blob/master/documentation/referenceImages/2.png "Image 2")
+
+![alt text](https://github.com/MegSesh/Final-Project/blob/master/documentation/referenceImages/3.png "Image 3")
+
+
+
+Problems I encountered:
+- I tried having metaballs sprout from different locations, but while they appear, they don't move. This is something I'm currently trying to fix.
+
+
+While working on scene composition, I am still deciding which of the following to create (both of which have reference images in the included documentation/referenceImages folder):
+
+1. A cartoony, but peaceful looking waterfall in a forest, falling into a pond. This requires creating:
+    * A terrain (probably with noise)
+    * A waterfall with metaballs flowing from a height down to the pond
+    * Any added scenery and shading (for trees, grass, etc)
+    * Ambient music for sounds of the water falling into the pond
+
+2. A fountain that spouts metaballs from specified locations, flows downward. When it hits some specified "ground", it starts from its original position.
+
+
+
+## OLD README
+
 Time to show off your new bag of procedural tricks by creating one polished final project. For this assignment you will have four weeks to create and document a portfolio piece that demonstrates your mastery of procedural thinking and implementation. You may work in groups of up to three (working alone is fine too). You may use any language / platform you choose for this assignment (given our approval if it’s not JavaScript/WebGL or C++/OpenGL).
 
 As usual with this class, we want to encourage you to take this opportunity to explore and experiment. To get you started, however, we’ve provided a few open-ended prompts below. Interesting and complex visuals are the goal in all of these prompts, but they encourage focus on different aspects of proceduralism.
@@ -23,7 +67,7 @@ As usual with this class, we want to encourage you to take this opportunity to e
   * Create an environment full of interactive procedural animation. The goal of this project is to create an environment that feels responsive and alive. Whether or not animations are musically-driven, sound should be an important component. Focus on user interactions, motion design and experimental interfaces.
   * Examples: [Panoramical](https://www.youtube.com/watch?v=gBTTMNFXHTk), [Bound](https://www.youtube.com/watch?v=aE37l6RvF-c)
 - ### Own proposal
-  * You are of course **welcome to propose your own topic**. Regardless of what you choose, you and your team must research your topic and relevant techniques and come up with a detailed plan of execution. You will meet with some subset of the procedural staff before starting implementation for approval. 
+  * You are of course **welcome to propose your own topic**. Regardless of what you choose, you and your team must research your topic and relevant techniques and come up with a detailed plan of execution. You will meet with some subset of the procedural staff before starting implementation for approval.
 
 **Final grading will be individual** and will be based on both the final product and how well you were able to achieve your intended effect according to your execution plan. Plans change of course, and we don’t expect you to follow your execution plan to a T, but if your final project looks pretty good, but you cut corners and only did 30% of what you outlined in your design doc, you will be penalized.
 
@@ -46,7 +90,7 @@ Your design doc should follow the following template. Note, each section can be 
   * What motivates this project?
 - #### Goal
   * What do you intend to achieve with this project?
-- #### Inspiration/reference: 
+- #### Inspiration/reference:
   * Attach some materials, visual or otherwise you intend as reference
 - #### Specification:
   * Outline the main features of your project
@@ -70,8 +114,8 @@ Example:
 	Adam:
 Made some procedural terrain code in src/terrain.js. Implemented 3D simplex noise to do it. Also applied coloring via custom shader based on this cool paper X (see src/shaders/dirt.glsl). IMAGE
 
-Austin: 
-I managed to set up my voronoi diagram shader (see src/shaders/voronoi.glsl). 
+Austin:
+I managed to set up my voronoi diagram shader (see src/shaders/voronoi.glsl).
 Experimented with different scattering techniques. It’s working with the euclidean distance metric. I’m using it in src/main.js to color stones. IMAGE
 
 Rachel:
@@ -83,7 +127,7 @@ In addition to your demo, you will create a final report documenting your projec
 
 ### Final Report Template:
 
-- #### Updated design doc: 
+- #### Updated design doc:
   * All the sections of your original design doc, corrected if necessary
 - #### Results:
   * Provide images of your finished project
@@ -108,5 +152,3 @@ Don’t wait to merge your code! Seriously, there be dragons. Try to have a work
 - 55% Final demo + report (graded individually)
 
 NOTE: We’ve been pretty lax about our late policy throughout the semester, but our margins on the final project are tight, therefore late submissions will NOT be accepted. If you have a significant reason for being unable to complete your goals, talk to us, and we’ll discuss getting you an incomplete and figure out an adjusted work plan with your group.
-
-

@@ -15,7 +15,7 @@ const WIREFRAME_MAT = new THREE.LineBasicMaterial( { color: 0xffffff, linewidth:
 
 const LAMBERT_BLUE = new THREE.MeshBasicMaterial( { color: 0x0000ee, transparent: false, opacity: 0.75, side: THREE.DoubleSide });
 
-const TOON = toonShader(2.5);
+//const TOON = toonShader(2.5);
 
 var options = {
     albedo: '#dddddd'
@@ -835,30 +835,30 @@ function sampleIsoValue(point, ballsList)
 
 
 //defining toon shader
-function toonShader(colorOffset) {
-    var toonGreenMaterial;
-    var stepSize = 1.0/5.0;
-
-    for ( var alpha = 0, alphaIndex = 0; alpha <= 1.0; alpha += stepSize, alphaIndex ++ ) {
-          var specularShininess = Math.pow(2.0 , alpha * 10.0 );
-
-          for ( var beta = 0; beta <= 1.0; beta += stepSize ) {
-              var specularColor = new THREE.Color( beta * 0.2, beta * 0.2, beta * 0.2 );
-
-              for ( var gamma = 0; gamma <= 1.0; gamma += stepSize ) {
-                  var offset = colorOffset;
-                  var diffuseColor = new THREE.Color().setHSL( alpha * offset, 0.5, gamma * 0.5 ).multiplyScalar( 1.0 - beta * 0.2 );
-
-                  toonGreenMaterial = new THREE.MeshToonMaterial( {
-                        color: diffuseColor,
-                        specular: specularColor,
-                        reflectivity: beta,
-                        shininess: specularShininess,
-                        shading: THREE.SmoothShading
-                  } );//end var toon material
-              }//end for gamma
-          }//end for beta
-    }//end for alpha
-
-    return toonGreenMaterial;
-}
+// function toonShader(colorOffset) {
+//     var toonGreenMaterial;
+//     var stepSize = 1.0/5.0;
+//
+//     for ( var alpha = 0, alphaIndex = 0; alpha <= 1.0; alpha += stepSize, alphaIndex ++ ) {
+//           var specularShininess = Math.pow(2.0 , alpha * 10.0 );
+//
+//           for ( var beta = 0; beta <= 1.0; beta += stepSize ) {
+//               var specularColor = new THREE.Color( beta * 0.2, beta * 0.2, beta * 0.2 );
+//
+//               for ( var gamma = 0; gamma <= 1.0; gamma += stepSize ) {
+//                   var offset = colorOffset;
+//                   var diffuseColor = new THREE.Color().setHSL( alpha * offset, 0.5, gamma * 0.5 ).multiplyScalar( 1.0 - beta * 0.2 );
+//
+//                   toonGreenMaterial = new THREE.MeshToonMaterial( {
+//                         color: diffuseColor,
+//                         specular: specularColor,
+//                         reflectivity: beta,
+//                         shininess: specularShininess,
+//                         shading: THREE.SmoothShading
+//                   } );//end var toon material
+//               }//end for gamma
+//           }//end for beta
+//     }//end for alpha
+//
+//     return toonGreenMaterial;
+// }
