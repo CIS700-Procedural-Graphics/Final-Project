@@ -161,6 +161,7 @@ function onLoad(framework) {
 var music = [];
 var beats = [];
 var time = Date.now();
+var indices = [0,0,0,0,0];
 
 // called on frame updates
 function onUpdate(framework) {
@@ -168,6 +169,7 @@ function onUpdate(framework) {
 		// var music = melodyGenerator(100, 120,  2, 3);
 		music.push(EarthWorm(343, 13, 4, 140, 240));
 		music.push(rhythmicMelodyGenerator(40, euclid(5,8), 60, additionalControls.base, additionalControls.multi));
+
 		// var rMusic2 = rhythmicMelodyGenerator(200, euclid(6,8), 240, additionalControls.base + 3, additionalControls.multi + 4);
 		beats.push(beatGenerator(euclid(5,7), 180, 100));
 		beats.push(beatGenerator(euclid(3,7), 120, 70, 'C4'));
@@ -177,29 +179,51 @@ function onUpdate(framework) {
 
 		testInstrument.then(function (marimba) {
 			marimba.stop();
-			marimba.schedule(ac.currentTime, music[1][0]);
+			// marimba.schedule(ac.currentTime, music[1][0]);
 		})
 
 		synthDrums.then(function (marimba) {
 			marimba.stop();
-			marimba.schedule(ac.currentTime, beats[0]);
-			marimba.schedule(ac.currentTime, beats[1]);
+			// marimba.schedule(ac.currentTime, beats[0]);
+			// marimba.schedule(ac.currentTime, beats[1]);
 			// marimba.schedule(ac.currentTime, beat3);
 		})
 
 		instrument2.then(function (marimba) {
 			marimba.stop();
 			// console.log(music2)
-			marimba.schedule(ac.currentTime, music[0]);
+			// marimba.schedule(ac.currentTime, music[0]);
 		})
 
 		update = false;
 	}
 
 	var nTime = Date.now();
-	var indices = [0,0,0,0,0];
-	var times = [1/240, 1/60, 1/180, 1/120, 1/180];
+
+	var times = [1, 1/60, 1/180, 1/120, 1/180];
 	var deltaT = (nTime - time) / 1000;
+
+	// console.log(indices[0])
+	if (deltaT > times[0] && indices[0] < music[0].length) {
+
+		testInstrument.then(function(piano){
+			piano.play(music[1][0][indices[0]].note);
+		})
+
+		instrument2.then(function(synth) {
+			synth.play(music[0][indices[1]].note);
+		})
+
+		synthDrums.then(function (drums) {
+			drums.stop();
+			drums.play(beats[0][indices[2]].note);
+		})
+
+		indices[0]++;
+		indices[1]++;
+		indices[2]++;
+		time = nTime;
+	}
 
 	// Visual
 	var camera = framework.camera;
