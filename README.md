@@ -1,112 +1,81 @@
-# CIS700 Procedural Graphics: Final Project
+### CIS700 Procedural Graphics: Final Project
+# Procedural Terrain
+#### By: Rudraksha Shah and Rishabh Shah
+-----
 
-Time to show off your new bag of procedural tricks by creating one polished final project. For this assignment you will have four weeks to create and document a portfolio piece that demonstrates your mastery of procedural thinking and implementation. You may work in groups of up to three (working alone is fine too). You may use any language / platform you choose for this assignment (given our approval if it’s not JavaScript/WebGL or C++/OpenGL).
+![](./images/dd_img1.jpg)
 
-As usual with this class, we want to encourage you to take this opportunity to explore and experiment. To get you started, however, we’ve provided a few open-ended prompts below. Interesting and complex visuals are the goal in all of these prompts, but they encourage focus on different aspects of proceduralism.
+### Introduction
+This project consists of procedural generation of terrain and textures for Cesium. Cesium fetches tiles with geometry data from a server. We will be adding proceduralism to Cesium by providing the procedural terrain in place of pre-modelled structures.
 
-## Prompts:
+### Goal
+The geometry data Cesium fetches from the servers is based on the camera position. When the camera moves to an object, a higher resolution mesh is rendered. Our goal is to develop an algorithm that can generate terrain and textures in such incremental levels of detail. We will be creating a web server to provide the generated content.
 
-- ### A classic 4k demo
-  * In the spirit of the demo scene, create an animation that fits into a 4k executable that runs in real-time. Feel free to take inspiration from the many existing demos. Focus on efficiency and elegance in your implementation.
-  * Examples: [cdak by Quite & orange](https://www.youtube.com/watch?v=RCh3Q08HMfs&list=PLA5E2FF8E143DA58C)
+### Inspiration/ Reference
+Some cool demos that inspired us to do this project:
+- Ixaleno: A 4kb executable by IQ: tps://www.youtube.com/watch?v=XAWPCmVC5jA
+- fp.skiView: IQ again: https://www.shadertoy.com/view/XdjXDK
+- Planet Shadertoy: by reinder: https://www.shadertoy.com/view/4tjGRh
 
-- ### A forgery
-  * Taking inspiration from a particular natural phenomenon or distinctive set of visuals, implement a detailed, procedural recreation of that aesthetic. This includes modeling, texturing and object placement within your scene. Does not need to be real-time. Focus on detail and visual accuracy in your implementation.
-  * Examples:
-    - [Snail](https://www.shadertoy.com/view/ld3Gz2), [Journey](https://www.shadertoy.com/view/ldlcRf), Big Hero 6 Wormhole: [Image 1](http://2.bp.blogspot.com/-R-6AN2cWjwg/VTyIzIQSQfI/AAAAAAAABLA/GC0yzzz4wHw/s1600/big-hero-6-disneyscreencaps.com-10092.jpg) , [Image 2](https://i.stack.imgur.com/a9RGL.jpg)
+### Specification
+Our final product would feature:
+- Procedurally generated terrain.
+- Procedurally generated texture for the terrain.
+- Varying levels of detail for the terrain and the textures based on the distance of the camera from the terrain.
+- Web server serving the content to Cesium.
 
-- ### A game level
-  * Like generations of game makers before us, create a game which generates an  navigable environment (eg. a roguelike dungeon, platforms) and some sort of goal or conflict (eg. enemy agents to avoid or items to collect). Must run in real-time. Aim to create an experience that will challenge players and vary noticeably in different playthroughs, whether that means complex dungeon generation, careful resource management or a sophisticated AI model. Focus on designing a system that will generate complex challenges and goals.
-  * Examples: Spore, Dwarf Fortress, Minecraft, Rogue
+### Techniques
 
-- ### An animated environment / music visualizer
-  * Create an environment full of interactive procedural animation. The goal of this project is to create an environment that feels responsive and alive. Whether or not animations are musically-driven, sound should be an important component. Focus on user interactions, motion design and experimental interfaces.
-  * Examples: [Panoramical](https://www.youtube.com/watch?v=gBTTMNFXHTk), [Bound](https://www.youtube.com/watch?v=aE37l6RvF-c)
-- ### Own proposal
-  * You are of course **welcome to propose your own topic**. Regardless of what you choose, you and your team must research your topic and relevant techniques and come up with a detailed plan of execution. You will meet with some subset of the procedural staff before starting implementation for approval. 
+#### Terrain Generation
+1. For the procedural terrain generation part we are planning to make a 3D height field using pseudorandom perlin noise that will be divided into a set of tiles to discretise the terrain creation.
 
-**Final grading will be individual** and will be based on both the final product and how well you were able to achieve your intended effect according to your execution plan. Plans change of course, and we don’t expect you to follow your execution plan to a T, but if your final project looks pretty good, but you cut corners and only did 30% of what you outlined in your design doc, you will be penalized.
+![](./images/dd_img2.png)
+![](./images/dd_img3.png)
+![](./images/dd_img4.jpg)
 
-But overall, have fun! This is your opportunity to work on whatever procedural project inspires you. The best way to ensure a good result is to pick something you’re passionate about. :)
+2. Another method for obtaining the initial seed values for the terrain can be generated using various fractal patterns as mentioned below.
 
-## Timeline
+3. Using the seed random data converted to a 2D array, we will apply the Diamond-Square algorithm to procedurally generate and tessellate the terrain with realistic looking mountain, valleys and rough terrain.
 
-- 4/08	Design doc due / Have met with procedural staff
-- 4/18	Milestone 1 (short write-up + demo)
-- 4/25	Milestone 2 (short write-up + demo)
-- 5/3	Final presentations (3-5 pm, Siglab), final reports due
+![](./images/dd_img5.gif)
+![](./images/dd_img6.gif)
 
-## Design Doc
+4. Another approach that can be used to generate the terrain would be as mentioned in this article [[1]](http://www-cs-students.stanford.edu/~amitp/game-programming/polygon-map-generation/) using voronoi patterns. We don’t exactly know how cesium tiling works and how we can use this methods to procedurally generate more definition in the terrain as the level of detail increases. We will get a better idea on which methods are feasible to use once we get an understanding on how cesium works.
 
-Your design doc should follow the following template. Note, each section can be pretty short, but cover them all! This will serve as valuable documentation when showing this project off in the future AND doing a good job will make it much easier for you to succeed, so please take this seriously.
+#### Texture Generation
+We will be working on multiple texture generation algorithms to achieve different terrain effects.
 
-### Design Doc Template:
+1. Fractals: This can be used if the finer details are to be added to coarser images, as fractals are repetitive. Also, we can get other cool terrain features like rivers using fractals.
 
-- #### Introduction
-  * What motivates this project?
-- #### Goal
-  * What do you intend to achieve with this project?
-- #### Inspiration/reference: 
-  * Attach some materials, visual or otherwise you intend as reference
-- #### Specification:
-  * Outline the main features of your project
-- #### Techniques:
-  * What are the main technical/algorithmic tools you’ll be using? Give an overview, citing  specific papers/articles
-- #### Design:
-  * How will your program fit together? Make a simple free-body diagram illustrating the pieces.
-- #### Timeline:
-  * Create a week-by-week set of milestones for each person in your group.
+2. Voronoi patterns / Cell noise / Worley noise: To achieve a dry land kind of effect, one of these methods will be used. These can also be used for texturing stones.
 
+![](./images/dd_img7.jpg)
 
-Along with your final project demo, you will submit a final report, in which you will update correct your original design doc as needed and add a few post-mortem items.
+3. Ridged fractal/perlin noise: This will be used for creating smoother looking textures like desert or snow, and for blending the textures. This is very similar to the original Perlin noise algorithm, with some modifications [[2]](http://www.inear.se/2010/04/ridged-perlin-noise). We will be using either one of those. Examples of ridged fractal noise textures:
 
-## Milestones
+![](./images/dd_img8.jpg)
+![](./images/dd_img9.jpg)
+![](./images/dd_img10.jpg)
 
-To keep you honest / on-track, we will be checking on your progress at weekly intervals, according to milestones you’ll define at the outset (pending our approval). For each of the two milestones prior to the final submission, you will submit a short write up explaining whether or not you individually achieved your goals (specifying the files where the work happened), along with a link to a demo / images. These don’t have to be super polished -- we just want to see that you’re getting things done.
+4. Blending different textures for smoother transition. Dirt and snow on mountains, sand and water on beaches, etc. don’t have hard edges. We don’t have a proper idea of what the best method would be to achieve this. There are some articles describing the use of height maps to do this [[3]](http://www.cprogramming.com/discussionarticles/texture_generation.html). We will get a better idea about this as we begin working on the generation algorithms.
 
-Example:
+5. Since we are aiming for realistic images, we would like to explore Whittaker diagram for biomes of multiple terrain types [[4]](https://w3.marietta.edu/~biol/biomes/biome_main.htm), if time permits. It uses data like temperature and humidity to define biomes.
 
-“Milestone 1:
-	Adam:
-Made some procedural terrain code in src/terrain.js. Implemented 3D simplex noise to do it. Also applied coloring via custom shader based on this cool paper X (see src/shaders/dirt.glsl). IMAGE
+### Design
+As stated before, Cesium obtains tiles from the server. We will be creating a web server that provides the 3D tile content.
 
-Austin: 
-I managed to set up my voronoi diagram shader (see src/shaders/voronoi.glsl). 
-Experimented with different scattering techniques. It’s working with the euclidean distance metric. I’m using it in src/main.js to color stones. IMAGE
+![](./images/dd_img11.png)
 
-Rachel:
-I tried really hard to make my toon shader work (src/shaders/toon.glsl), but I still have a bug! T_T BUGGY IMAGE. DEMO LINK”
-
-## Final Report
-
-In addition to your demo, you will create a final report documenting your project overall. This document should be clear enough to explain the value and details of your project to a random computer graphics person with no knowledge of this class.
-
-### Final Report Template:
-
-- #### Updated design doc: 
-  * All the sections of your original design doc, corrected if necessary
-- #### Results:
-  * Provide images of your finished project
-- #### Evaluation (this is a big one!):
-  * How well did you do? What parameters did you tune along the way? Include some WIP shots that compare intermediate results to your final. Explain why you made the decisions you did.
-- #### Future work:
-  * Given more time, what would you add/improve
-- #### Acknowledgements:
-  * Cite _EVERYTHING_. Implemented a paper? Used some royalty-free music? Talked to classmates / a professor in a way that influenced your project? Attribute everything!
-
-## Logistics
-
-Like every prior project, your code will be submitted via github. Fork the empty final project repo and start your code base from there. Take this as an opportunity to practice using git properly in a team setting if you’re a new user.  For each weekly submission, provide a link to your pull request. Your repo will contain all the code and documentation associated with your project. The readme for your repo will eventually be your final report. At the top level, include a folder called “documentation”, where you’ll put your design doc and milestone write-ups.
-
-Don’t wait to merge your code! Seriously, there be dragons. Try to have a working version including all your code so that compatibility and merge issues don’t sneak up on you near the end.
-
-## Grading
-
-- 15% Design Doc (graded as a group)
-- 15% Milestone 1 (graded as a group)
-- 15% Milestone 2 (graded as a group)
-- 55% Final demo + report (graded individually)
-
-NOTE: We’ve been pretty lax about our late policy throughout the semester, but our margins on the final project are tight, therefore late submissions will NOT be accepted. If you have a significant reason for being unable to complete your goals, talk to us, and we’ll discuss getting you an incomplete and figure out an adjusted work plan with your group.
-
-
+### Timeline
+- 09 April - 15 April
+    - Rishabh & Rudraksha: Getting the server part working.
+    - Rishabh: Start with ridged fractal/perlin noise.
+    - Rudraksha: Understand the tiling method used by cesium to start working on the terrain generation.
+- 16 April - 22 April
+    - Rishabh: Complete ridged fractal/perlin noise and start with Voronoi / fractals depending on the terrain types that are going to be generated.
+    - Rudraksha: Generate the terrain height field data and pack it in the .gltf format for output to cesium.
+- 23 April - 29 April
+    - Rishabh: Complete all the texture generation part. Work on the blending of textures if not already taken care of while implementing the generation.
+    - Rudraksha: Finish any remaining details and merge the code.
+- 30 April - 03 May
+    - Time buffer.
