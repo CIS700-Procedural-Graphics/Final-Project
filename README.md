@@ -70,6 +70,7 @@ Inspiration from [Panoramical](http://panoramic.al/) and [Proteus](http://twiste
 * [Brian] Implement 1 scene + polish
 
 ### Demo
+[Link](https://xnieamo.github.io/Final-Project/)
 
 ## Resources
 [1] https://github.com/spite/THREE.MeshLine - Three.js lines are a little wonky. This fixes issues with using linewidth.
