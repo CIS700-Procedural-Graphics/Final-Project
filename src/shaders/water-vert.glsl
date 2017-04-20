@@ -1,6 +1,11 @@
 const float PI = 3.14159265;
 const int size = 8;
 
+
+// Reference
+// http://http.developer.nvidia.com/GPUGems/gpugems_ch01.html
+// Followed up to equation 6b 
+
 varying vec2 f_uv;
 varying vec3 f_normal;
 varying vec3 f_position;
@@ -13,10 +18,10 @@ uniform float time; // time
 uniform vec3 light;
 
 uniform int numWaves;
-uniform float amplitude[8];
-uniform float wavelength[8];
-uniform float speed[8];
-uniform vec2 direction[8];
+uniform float amplitude[size];
+uniform float wavelength[size];
+uniform float speed[size];
+uniform vec2 direction[size];
 
 // Equation 1
 // State of each wave as a function of horizontal position (x, y) and time t

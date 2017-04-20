@@ -28,60 +28,60 @@ var options = {
   }
 }
 
-  var planeMaterial = new THREE.ShaderMaterial({
-    uniforms: {
-      u_amount: {
-        type: "f",
-        value: 1.0
-      },
-      u_albedo: {
-        type: 'v3',
-        value: new THREE.Color('#0000ff')
-      },
-      time: {
-        type: "f",
-        value: 0
-      },
-      waterHeight: {
-        type: "f",
-        value: 0
-      },
-      light: {
-        type: "vec3",
-        value: new THREE.Vector3(0.0, 0.0, 0.0)
-      },
-      numWaves: {
-        type: "i",
-        value: 4
-      },
-      amplitude: {
-        type: "1fv",
-        value: [0.2, 0.25, 0.125, 0.0625, 0.0, 0.0, 0.0, 0.0]
-      },
-      wavelength: {
-        type: "1fv",
-        value: [8 * PI, 4 * PI, 2 * PI, PI, 0.0, 0.0, 0.0, 0.0]
-      },
-      speed: {
-        type: "1fv",
-        value: [1.0, 3.0, 5.0, 7.0, 0.0, 0.0, 0.0, 0.0]
-      },
-      direction: {
-        type: "v2v",
-        value: [new THREE.Vector2(0, 1), 
-                new THREE.Vector2(1, 0),
-                new THREE.Vector2(1, 1),
-                new THREE.Vector2(1, 1),
-                new THREE.Vector2(1, 1),
-                new THREE.Vector2(1, 1),
-                new THREE.Vector2(1, 1),
-                new THREE.Vector2(1, 1)]
-      }
+var planeMaterial = new THREE.ShaderMaterial({
+  uniforms: {
+    u_amount: {
+      type: "f",
+      value: 1.0
     },
-    // wireframe: true,
-    vertexShader: require('./shaders/water-vert.glsl'),
-    fragmentShader: require('./shaders/water-frag.glsl')
-  });
+    u_albedo: {
+      type: 'v3',
+      value: new THREE.Color('#0000ff')
+    },
+    time: {
+      type: "f",
+      value: 0
+    },
+    waterHeight: {
+      type: "f",
+      value: 0
+    },
+    light: {
+      type: "vec3",
+      value: new THREE.Vector3(0.0, 0.0, 0.0)
+    },
+    numWaves: {
+      type: "i",
+      value: 4
+    },
+    amplitude: {
+      type: "1fv",
+      value: [0.2, 0.25, 0.125, 0.0625, 0.0, 0.0, 0.0, 0.0]
+    },
+    wavelength: {
+      type: "1fv",
+      value: [8 * PI, 4 * PI, 2 * PI, PI, 0.0, 0.0, 0.0, 0.0]
+    },
+    speed: {
+      type: "1fv",
+      value: [1.0, 3.0, 5.0, 7.0, 0.0, 0.0, 0.0, 0.0]
+    },
+    direction: {
+      type: "v2v",
+      value: [new THREE.Vector2(0, 1), 
+              new THREE.Vector2(1, 0),
+              new THREE.Vector2(1, 1),
+              new THREE.Vector2(1, 1),
+              new THREE.Vector2(1, 1),
+              new THREE.Vector2(1, 1),
+              new THREE.Vector2(1, 1),
+              new THREE.Vector2(1, 1)]
+    }
+  },
+  wireframe: true,
+  vertexShader: require('./shaders/water-vert.glsl'),
+  fragmentShader: require('./shaders/water-frag.glsl')
+});
 
 
 // called after the scene loads
@@ -102,8 +102,8 @@ function onLoad(framework) {
   planeMaterial.uniforms.light.value = directionalLight.position;
 
   // set camera position
-  camera.position.set(500, 500, 500);
-  camera.lookAt(new THREE.Vector3(500, 0, 500));
+  camera.position.set(0, 500, 0);
+  camera.lookAt(new THREE.Vector3(0, 0, 0));
 
   // Water
   var planeGeo = new THREE.PlaneGeometry(options.water.width, 
@@ -113,10 +113,8 @@ function onLoad(framework) {
   //var planeMaterial = new THREE.MeshBasicMaterial( {color: 0x0000ff, side: THREE.DoubleSide, wireframe: true});
   var planeMesh = new THREE.Mesh(planeGeo, planeMaterial);
   planeMesh.rotateX(-Math.PI / 2.0);
-  planeMesh.position.set(500, 0, 500);
+  planeMesh.position.set(0, 0, 0);
   scene.add(planeMesh);
-
-
 
   // Set up time
   startTime = Date.now();
@@ -125,9 +123,13 @@ function onLoad(framework) {
 
   // edit params and listen to changes like this
   // more information here: https://workshop.chromeexperiments.com/examples/gui/#1--Basic-Usage
-  gui.add(camera, 'fov', 0, 180).onChange(function(newVal) {
+  var fcamera = gui.addFolder('Camera');
+  fcamera.add(camera, 'fov', 0, 180).onChange(function(newVal) {
     camera.updateProjectionMatrix();
   });
+
+  console.log(camera);
+  console.log("here");
 }
 
 
@@ -138,6 +140,8 @@ function onUpdate(framework) {
 
   // Update time in water shader
   planeMaterial.uniforms.time.value = (currentTime - startTime) / 1000;
+
+
 }
 
 // when the scene is done initializing, it will call onLoad, then on frame updates, call onUpdate
