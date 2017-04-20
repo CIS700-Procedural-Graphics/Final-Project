@@ -36,6 +36,8 @@ I intend to achieve a beautiful looking pond scene which is also animated and in
 - Orbit Camera
 
 ### Milestone 1
+![milestone 1 water][https://github.com/eldu/Final-Project/blob/master/src/common/images/M1_Water.gif]
+![milestone 1 water wireframe][https://github.com/eldu/Final-Project/blob/master/src/common/images/M1_WaterWireframe.gif]
 
 
 ### References
