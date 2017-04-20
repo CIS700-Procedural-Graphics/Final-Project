@@ -44,6 +44,8 @@ I intend to achieve a beautiful looking pond scene which is also animated and in
 - Computed waves and moved vertices in vertex shader.
 - Referenced [Effective Water Simulation From Physical Models by Mark Finch and Cyan Worlds](http://http.developer.nvidia.com/GPUGems/gpugems_ch01.html)
 
+### Live Demo
+- [here](https://eldu.github.io/Final-Project/)
 
 ### References
 - [Effective Water Simulation From Physical Models by Mark Finch and Cyan Worlds](http://http.developer.nvidia.com/GPUGems/gpugems_ch01.html)
