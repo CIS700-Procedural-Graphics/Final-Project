@@ -36,8 +36,13 @@ I intend to achieve a beautiful looking pond scene which is also animated and in
 - Orbit Camera
 
 ### Milestone 1
-![milestone 1 water][https://github.com/eldu/Final-Project/blob/master/src/common/images/M1_Water.gif]
-![milestone 1 water wireframe][https://github.com/eldu/Final-Project/blob/master/src/common/images/M1_WaterWireframe.gif]
+![alt text][m1_water]
+![alt text][m1_waterWireframe]
+
+[m1_water]: https://github.com/eldu/Final-Project/blob/master/src/common/images/M1_Water.gif "Milestone 1: Water"
+[m1_waterWireframe]: https://github.com/eldu/Final-Project/blob/master/src/common/images/M1_WaterWireframe.gif "Milestone 1: Water Wireframe"
+- Computed waves and moved vertices in vertex shader.
+- Referenced [Effective Water Simulation From Physical Models by Mark Finch and Cyan Worlds](http://http.developer.nvidia.com/GPUGems/gpugems_ch01.html)
 
 
 ### References

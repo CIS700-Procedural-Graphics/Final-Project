@@ -78,7 +78,7 @@ var planeMaterial = new THREE.ShaderMaterial({
               new THREE.Vector2(1, 1)]
     }
   },
-  wireframe: true,
+  // wireframe: true,
   vertexShader: require('./shaders/water-vert.glsl'),
   fragmentShader: require('./shaders/water-frag.glsl')
 });
