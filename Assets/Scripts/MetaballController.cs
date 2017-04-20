@@ -19,13 +19,12 @@ public class MetaballController : MonoBehaviour {
 
     public int res = 4;
     private int res2 = 4 * 4;
-    private float res3 = 4 * 4 * 4;
+    private int res3 = 4 * 4 * 4;
 
     public float maxSpeed = 0.01f;
     public int numMetaballs = 5;
 
-    public List<Voxel> voxels;
-    public GameObject[] labels;
+	public Voxel[] voxels;
     public List<Metaball> balls;
 
     private Mesh metaballsMesh;
@@ -54,8 +53,6 @@ public class MetaballController : MonoBehaviour {
         //Update isovalues of each voxel
         for (int c = 0; c < this.res3; c++)
         {
-            this.voxels[c].center.isovalue = this.sample
-                (this.voxels[c].center.position);
 
             this.voxels[c].v1.isovalue = this.sample
                 (this.voxels[c].v1.position);
@@ -100,17 +97,18 @@ public class MetaballController : MonoBehaviour {
     void setupCells()
     {
         // Allocate voxels based on our grid resolution
-        this.voxels = new List<Voxel>();
+		this.voxels = new Voxel[this.res3];
         for (int i = 0; i < this.res3; i++)
         {
-            //GameObject voxel = Instantiate(Resources.Load("Voxel")) as GameObject;
-            //voxel.isStatic = true;
             var i3 = this.i1toi3(i);
             Vector3 voxelPos = this.i3toPos(i3);
             Voxel voxel = new Voxel(voxelPos, this.gridCellWidth);
+			this.voxels[i] = voxel;
+
+			//GameObject voxel = Instantiate(Resources.Load("Voxel")) as GameObject;
+			//voxel.isStatic = true;
             //voxel.transform.localScale = Vector3.one * gridCellWidth;
             //this.voxels.Add(voxel.GetComponent<Voxel>());
-            this.voxels.Add(voxel);
             //if (visualDebug)
             //{
             //    voxel.GetComponent<MeshRenderer>().enabled = true;
@@ -179,6 +177,7 @@ public class MetaballController : MonoBehaviour {
 
             var ball = metaball.GetComponent<Metaball>();
             ball.radius = radius;
+			ball.radius = Mathf.Pow (radius, 2.0f);
 
             this.balls.Add(ball);
 
@@ -237,15 +236,15 @@ public class MetaballController : MonoBehaviour {
         metaballsMesh.Clear();
         metaballsMesh.vertices = meshVertices.ToArray();
         metaballsMesh.triangles = meshTriangles;
-        metaballsMesh.RecalculateBounds();
+        //metaballsMesh.RecalculateBounds();
     }
 
     float influence(Metaball ball, Vector3 point)
     {
-        float rSquared = Mathf.Pow(ball.radius, 2.0f);
-        float xDiffSquared = Mathf.Pow(point.x - ball.transform.position.x, 2.0f);
-        float yDiffSquared = Mathf.Pow(point.y - ball.transform.position.y, 2.0f);
-        float zDiffSquared = Mathf.Pow(point.z - ball.transform.position.z, 2.0f);
+		float rSquared = ball.radiusSquared;
+		float xDiffSquared = (point.x - ball.transform.position.x) * (point.x - ball.transform.position.x);
+		float yDiffSquared = (point.y - ball.transform.position.y) * (point.y - ball.transform.position.y);
+		float zDiffSquared = (point.z - ball.transform.position.z) * (point.z - ball.transform.position.z);
         return (rSquared / (xDiffSquared + yDiffSquared + zDiffSquared));
     }
 
@@ -253,9 +252,14 @@ public class MetaballController : MonoBehaviour {
     {
         float isovalue = 0.0f;
 
-        for (int i = 0; i < this.balls.Count; i++)
+		for (int i = 0; i < numMetaballs; i++)
         {
-            isovalue += this.influence(this.balls[i], point);
+			float rSquared = this.balls[i].radiusSquared;
+			float xDiffSquared = (point.x - this.balls[i].transform.position.x) * (point.x - this.balls[i].transform.position.x);
+			float yDiffSquared = (point.y - this.balls[i].transform.position.y) * (point.y - this.balls[i].transform.position.y);
+			float zDiffSquared = (point.z - this.balls[i].transform.position.z) * (point.z - this.balls[i].transform.position.z);
+			float influence =  (rSquared / (xDiffSquared + yDiffSquared + zDiffSquared));
+			isovalue += influence;
         }
 
         return isovalue;
