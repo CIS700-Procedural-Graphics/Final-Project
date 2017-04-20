@@ -9,10 +9,10 @@ My motivation for this project is to create an environment that I can keep addin
 I intend to achieve a beautiful looking pond scene which is also animated and interactive.
 
 ### Inspiration
-- http://aquasixio.deviantart.com/art/Protect-me-from-what-I-want-311893619
-- http://ani-r.deviantart.com/art/Very-high-up-412864930
-- http://static.boredpanda.com/blog/wp-content/uploads/2016/07/IMG_0528-p-577a423beb0db__880.jpg
-- https://www.youtube.com/watch?v=69ks5akyFsA
+- [Digital Painting by AquaSixio: Protect me from what I want](http://aquasixio.deviantart.com/art/Protect-me-from-what-I-want-311893619)
+- [Digital Painting by ani-r: Very high up](http://ani-r.deviantart.com/art/Very-high-up-412864930)
+- [Koi pond](http://static.boredpanda.com/blog/wp-content/uploads/2016/07/IMG_0528-p-577a423beb0db__880.jpg)
+- [Monet's Pond](https://www.youtube.com/watch?v=69ks5akyFsA)
 
 ### Specification
 - Water
@@ -46,9 +46,9 @@ I intend to achieve a beautiful looking pond scene which is also animated and in
 
 
 ### References
-- http://http.developer.nvidia.com/GPUGems/gpugems_ch01.html
-- IQ: http://www.iquilezles.org/www/articles/palettes/palettes.htm
-- cosine gradient generator: http://dev.thi.ng/gradients/
+- [Effective Water Simulation From Physical Models by Mark Finch and Cyan Worlds](http://http.developer.nvidia.com/GPUGems/gpugems_ch01.html)
+- [IQ's Simple Procedural Color Palette](http://www.iquilezles.org/www/articles/palettes/palettes.htm)
+- [Cosine Gradient Generator](http://dev.thi.ng/gradients/)
 
 ### Timeline
 - 4/11: Codebase organization, Sketch End Goal, Work on Terrain Generation: Water Plane, and rock formation
