@@ -1,4 +1,5 @@
 const _ = require('lodash');
+const Voronoi = require('voronoi');
 
 import Cell from './cell'
 import Edge from './edge'
@@ -20,6 +21,8 @@ export default class GraphManager {
       this._generateFromSquareGrid();
     } else if (this.cellType === 'hex') {
       this._generateFromHexGrid();
+    } else if (this.cellType === 'voronoi') {
+      this._generateFromVoronoiGrid();
     } else {
       // Unrecognized cell type
     }
@@ -277,6 +280,86 @@ export default class GraphManager {
         this.cells.push(cell);
       }
     }
+
+    this.nodes = _.values(nodesMap);
+    this.edges = _.values(edgesMap);
+  }
+
+  _generateFromVoronoiGrid() {
+    var voronoi = new Voronoi();
+    var bbox = { xl: 0, xr: this.numCells, yt: 0, yb: this.numCells };
+    var sites = [];
+
+    for (var i = 0; i < this.numCells * 10; i++) {
+      var x = Math.random() * this.numCells;
+      var y = Math.random() * this.numCells;
+
+      sites.push({
+        x: x,
+        y: y
+      });
+    }
+
+    var diagram = voronoi.compute(sites, bbox);
+    var nodesMap = {};
+    var edgesMap = {};
+
+    diagram.edges.forEach(function(edge) {
+      var vA = edge.va;
+      var vB = edge.vb;
+
+      var nodesMapIndexA = vA.x + ' ' + vA.y;
+      var nodesMapIndexB = vB.x + ' ' + vB.y;
+
+      if (!nodesMap[nodesMapIndexA]) {
+        nodesMap[nodesMapIndexA] = new Node(vA.x, vA.y);
+      }
+
+      if (!nodesMap[nodesMapIndexB]) {
+        nodesMap[nodesMapIndexB] = new Node(vB.x, vB.y);
+      }
+
+      var nodeA = nodesMap[nodesMapIndexA];
+      var nodeB = nodesMap[nodesMapIndexB];
+
+      nodeA.neighbors.push(nodeB);
+      nodeB.neighbors.push(nodeA);
+
+      var edgeNew = new Edge(nodeA, nodeB);
+      var edgesMapIndex = nodesMapIndexA + ' ' + nodesMapIndexB;
+
+      edgesMap[edgesMapIndex] = edgeNew;
+    });
+
+    diagram.cells.forEach(function(cell) {
+      var cellNew = new Cell();
+      var halfedges = cell.halfedges;
+
+      halfedges.forEach(function(halfedge) {
+        var vA = halfedge.getStartpoint();
+        var vB = halfedge.getEndpoint();
+        var nodesMapIndexA = vA.x + ' ' + vA.y;
+        var nodesMapIndexB = vB.x + ' ' + vB.y;
+        var nodeA = nodesMap[nodesMapIndexA];
+        var nodeB = nodesMap[nodesMapIndexB];
+
+        var edge = halfedge.edge;
+        var edgesMapIndex = nodesMapIndexA + ' ' + nodesMapIndexB;
+        var edgeNew = edgesMap[edgesMapIndex];
+
+        var halfedgeNew = new HalfEdge();
+
+        halfedgeNew.cell = cellNew;
+        halfedgeNew.nodeA = nodeA;
+        halfedgeNew.nodeB = nodeB;
+        halfedgeNew.edge = edgeNew;
+
+        cellNew.halfedges.push(halfedgeNew);
+        cellNew.corners.push(nodeA);
+      });
+
+      this.cells.push(cellNew);
+    }, this);
 
     this.nodes = _.values(nodesMap);
     this.edges = _.values(edgesMap);

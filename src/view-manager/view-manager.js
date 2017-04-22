@@ -5,7 +5,7 @@ const CHROMA = require('chroma-js');
 export default class ViewManager {
   constructor(options, map, scene) {
     this.renderGraph = options.renderGraph;
-    this.renderElevation = options.renderElevation;
+    this.renderColors = options.renderColors;
     this.renderCoastline = options.renderCoastline;
     this.debugOcean = options.debugOcean;
     this.debugShowNodes = options.debugShowNodes;
@@ -18,9 +18,7 @@ export default class ViewManager {
       this._renderGraph();
     }
 
-    if (this.renderElevation) {
-      this._renderElevation();
-    }
+    this._renderCells();
 
     if (this.renderCoastline) {
       this._renderCoastline();
@@ -47,39 +45,17 @@ export default class ViewManager {
     }
   }
 
-  _renderElevation() {
+  _renderCells() {
     var cells = this.map.graphManager.cells;
 
     cells.forEach(function(cell) {
-      var color = (this.debugOcean && cell.getElevation() <= 0) ? CHROMA('red') : cell.color;
+      var color = (this.renderColors === 'elevation') ? cell.elevationColor :
+                  (this.renderColors === 'moisture')  ? cell.moistureColor :
+                  (this.renderColors === 'biomes')    ? cell.biomeColor :
+                                                        CHROMA('black');
 
       this._renderCell(cell, color);
     }, this);
-  }
-
-  _renderCoastline() {
-    var cells = this.map.graphManager.cells;
-
-    cells.forEach(function(cell) {
-      var corners = cell.corners;
-      var isCoastal = false;
-
-      corners.forEach(function(node) {
-        if (node.elevation <= 0) {
-          isCoastal = true;
-        }
-      });
-
-      if (isCoastal) {
-        corners.forEach(function(node) {
-          if (node.elevation > 0) {
-            node.isCoastal = true;
-          }
-        })
-      }
-    });
-
-    this._renderCoastlineHelper();
   }
 
   _render3D() {
@@ -129,7 +105,7 @@ export default class ViewManager {
 
   }
 
-  _renderCoastlineHelper() {
+  _renderCoastline() {
     var nodes = this.map.graphManager.nodes;
     var material = new THREE.LineBasicMaterial({
       color: 0x000000,

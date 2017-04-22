@@ -11,15 +11,14 @@ function onLoad(framework) {
 
   var options = {
     graphManager: {
-      cellType: 'hex', // 'square', 'hex'
-      numCells: 50
+      cellType: 'voronoi', // 'square', 'hex', 'voronoi'
+      numCells: 100
     },
     geographyManager: {},
     viewManager: {
-      renderGraph: true,
-      renderElevation: true,
+      renderGraph: false,
+      renderColors: 'elevation', // 'elevation', 'moisture', 'biomes'
       renderCoastline: true,
-      debugOcean: false,
       debugShowNodes: false
     }
   };
@@ -35,14 +34,26 @@ function onLoad(framework) {
   map.viewManager = viewManager;
 
   graphManager.generateGrid()
-  geographyManager.generateElevationMap();
+  geographyManager.generateGeography();
   viewManager.renderMap();
 
   camera.position.set(0, 0, 100);
   camera.lookAt(new THREE.Vector3(0,0,0));
 
-  gui.add(camera, 'fov', 0, 180).onChange(function(newVal) {
-    camera.updateProjectionMatrix();
+  var guiGraphManager = gui.addFolder('Graph Manager');
+  var guiGeographyManager = gui.addFolder('Geography Manager');
+  var guiViewManager = gui.addFolder('View Manager');
+
+  guiGraphManager.add(options.graphManager, 'cellType', ['square', 'hex', 'voronoi']).name('Cell type');
+  guiGraphManager.add(options.graphManager, 'numCells').name('Num cells');
+
+  guiViewManager.add(options.viewManager, 'renderGraph').name('Show graph');
+  guiViewManager.add(options.viewManager, 'renderColors', ['elevation', 'moisture', 'biomes']).name('Show map colors');
+  guiViewManager.add(options.viewManager, 'renderCoastline').name('Show coastline');
+  guiViewManager.add(options.viewManager, 'debugShowNodes').name('Show debug nodes');
+
+  gui.onFinishChange(function() {
+
   });
 }
 

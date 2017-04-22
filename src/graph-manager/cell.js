@@ -14,4 +14,12 @@ export default class Cell {
 
     return elevation / this.corners.length;
   }
+
+  isCoastal() {
+    this.corners.forEach(function(node) {
+
+    });
+
+    return false;
+  }
 }
