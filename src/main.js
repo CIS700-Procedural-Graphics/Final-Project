@@ -26,6 +26,8 @@ var ballBright;
 
 var stepTime = 0.0;
 
+var dim = 4;
+
 var icosahedron = new THREE.IcosahedronGeometry(0.5, 5);
 var icosahedron0 = new THREE.IcosahedronGeometry(0.5, 5);
 var icosahedron1 = new THREE.IcosahedronGeometry(0.5, 5);
@@ -35,6 +37,17 @@ var icosahedron4 = new THREE.IcosahedronGeometry(0.5, 5);
 var icosahedron5 = new THREE.IcosahedronGeometry(0.5, 5);
 var icosahedron6 = new THREE.IcosahedronGeometry(0.5, 5);
 var icosahedron7 = new THREE.IcosahedronGeometry(0.5, 5);
+
+var mat4Locations = [
+                new THREE.Matrix4().makeTranslation(0, dim * Math.sin(0* 2*Math.PI/8.0), dim * Math.cos(0* 2*Math.PI/8.0) ), 
+                new THREE.Matrix4().makeTranslation(0, dim * Math.sin(1* 2*Math.PI/8.0), dim * Math.cos(1* 2*Math.PI/8.0) ),
+                new THREE.Matrix4().makeTranslation(0, dim * Math.sin(2* 2*Math.PI/8.0), dim * Math.cos(2* 2*Math.PI/8.0) ),
+                new THREE.Matrix4().makeTranslation(0, dim * Math.sin(3* 2*Math.PI/8.0), dim * Math.cos(3* 2*Math.PI/8.0) ),
+                new THREE.Matrix4().makeTranslation(0, dim * Math.sin(4* 2*Math.PI/8.0), dim * Math.cos(4* 2*Math.PI/8.0) ),
+                new THREE.Matrix4().makeTranslation(0, dim * Math.sin(5* 2*Math.PI/8.0), dim * Math.cos(5* 2*Math.PI/8.0) ),
+                new THREE.Matrix4().makeTranslation(0, dim * Math.sin(6* 2*Math.PI/8.0), dim * Math.cos(6* 2*Math.PI/8.0) ),
+                new THREE.Matrix4().makeTranslation(0, dim * Math.sin(7* 2*Math.PI/8.0), dim * Math.cos(7* 2*Math.PI/8.0) ) ];
+
 
 var planeDim = 20;
 
@@ -208,17 +221,14 @@ function onLoad(framework) {
   var sphere6 = new THREE.Mesh(icosahedron6, ballBright);
   var sphere7 = new THREE.Mesh(icosahedron7, ballBright);
 
-  var dim = 4;
-
-
-  sphere0.applyMatrix( new THREE.Matrix4().makeTranslation(0, dim * Math.sin(0* 2*Math.PI/8.0), dim * Math.cos(0* 2*Math.PI/8.0) )   );
-  sphere1.applyMatrix( new THREE.Matrix4().makeTranslation(0, dim * Math.sin(1* 2*Math.PI/8.0), dim * Math.cos(1* 2*Math.PI/8.0) )   );
-  sphere2.applyMatrix( new THREE.Matrix4().makeTranslation(0, dim * Math.sin(2* 2*Math.PI/8.0), dim * Math.cos(2* 2*Math.PI/8.0) )   );
-  sphere3.applyMatrix( new THREE.Matrix4().makeTranslation(0, dim * Math.sin(3* 2*Math.PI/8.0), dim * Math.cos(3* 2*Math.PI/8.0) )   );
-  sphere4.applyMatrix( new THREE.Matrix4().makeTranslation(0, dim * Math.sin(4* 2*Math.PI/8.0), dim * Math.cos(4* 2*Math.PI/8.0) )   );
-  sphere5.applyMatrix( new THREE.Matrix4().makeTranslation(0, dim * Math.sin(5* 2*Math.PI/8.0), dim * Math.cos(5* 2*Math.PI/8.0) )   );
-  sphere6.applyMatrix( new THREE.Matrix4().makeTranslation(0, dim * Math.sin(6* 2*Math.PI/8.0), dim * Math.cos(6* 2*Math.PI/8.0) )   );
-  sphere7.applyMatrix( new THREE.Matrix4().makeTranslation(0, dim * Math.sin(7* 2*Math.PI/8.0), dim * Math.cos(7* 2*Math.PI/8.0) )   );
+  sphere0.applyMatrix( mat4Locations[0] );
+  sphere1.applyMatrix( mat4Locations[1] );
+  sphere2.applyMatrix( mat4Locations[2] );
+  sphere3.applyMatrix( mat4Locations[3] );
+  sphere4.applyMatrix( mat4Locations[4] );
+  sphere5.applyMatrix( mat4Locations[5] );
+  sphere6.applyMatrix( mat4Locations[6] );
+  sphere7.applyMatrix( mat4Locations[7] );
 
   /************************************/
   /* SET UP CAMERA AND SCENE TOGETHER */
