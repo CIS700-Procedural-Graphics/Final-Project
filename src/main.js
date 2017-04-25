@@ -6,23 +6,7 @@ import GraphManager from './graph-manager/graph-manager';
 import GeographyManager from './geography-manager/geography-manager';
 import ViewManager from './view-manager/view-manager';
 
-function onLoad(framework) {
-  var { scene, camera, renderer, gui, stats } = framework;
-
-  var options = {
-    graphManager: {
-      cellType: 'voronoi', // 'square', 'hex', 'voronoi'
-      numCells: 100
-    },
-    geographyManager: {},
-    viewManager: {
-      renderGraph: false,
-      renderColors: 'elevation', // 'elevation', 'moisture', 'biomes'
-      renderCoastline: true,
-      debugShowNodes: false
-    }
-  };
-
+function setup(options, scene) {
   var map = new Map();
 
   var graphManager = new GraphManager(options.graphManager, map);
@@ -36,6 +20,33 @@ function onLoad(framework) {
   graphManager.generateGrid()
   geographyManager.generateGeography();
   viewManager.renderMap();
+}
+
+function teardown(scene) {
+  for (var i = scene.children.length - 1; i >= 0; i--) {
+    scene.remove(scene.children[i]);
+  }
+}
+
+function onLoad(framework) {
+  var { scene, camera, renderer, gui, stats } = framework;
+
+  var options = {
+    graphManager: {
+      cellType: 'voronoi', // 'square', 'hex', 'voronoi'
+      numCells: 100
+    },
+    geographyManager: {},
+    viewManager: {
+      renderGraph: true,
+      renderColors: 'elevation', // 'elevation', 'moisture', 'biomes'
+      renderCoastline: true,
+      debugShowNodes: false,
+      debugShowCoastalNodes: true
+    }
+  };
+
+  setup(options, scene);
 
   camera.position.set(0, 0, 100);
   camera.lookAt(new THREE.Vector3(0,0,0));
@@ -50,11 +61,19 @@ function onLoad(framework) {
   guiViewManager.add(options.viewManager, 'renderGraph').name('Show graph');
   guiViewManager.add(options.viewManager, 'renderColors', ['elevation', 'moisture', 'biomes']).name('Show map colors');
   guiViewManager.add(options.viewManager, 'renderCoastline').name('Show coastline');
-  guiViewManager.add(options.viewManager, 'debugShowNodes').name('Show debug nodes');
+  guiViewManager.add(options.viewManager, 'debugShowNodes').name('Debug nodes');
+  guiViewManager.add(options.viewManager, 'debugShowCoastalNodes').name('Debug coastal nodes');
 
-  gui.onFinishChange(function() {
+  for (var i in gui.__folders) {
+      var folder = gui.__folders[i];
 
-  });
+      for (var j in folder.__controllers) {
+        folder.__controllers[j].onFinishChange(function() {
+          teardown(scene);
+          setup(options, scene);
+        });
+      }
+  }
 }
 
 function onUpdate(framework) {

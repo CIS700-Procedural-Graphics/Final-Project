@@ -9,6 +9,7 @@ export default class ViewManager {
     this.renderCoastline = options.renderCoastline;
     this.debugOcean = options.debugOcean;
     this.debugShowNodes = options.debugShowNodes;
+    this.debugShowCoastalNodes = options.debugShowCoastalNodes;
     this.map = map;
     this.scene = scene;
   }
@@ -22,6 +23,14 @@ export default class ViewManager {
 
     if (this.renderCoastline) {
       this._renderCoastline();
+    }
+
+    if (this.debugShowNodes) {
+      this._renderNodes();
+    }
+
+    if (this.debugShowCoastalNodes) {
+      this._renderCoastalNodes();
     }
   }
 
@@ -199,6 +208,23 @@ export default class ViewManager {
     var mesh = new THREE.Mesh(geometry, material);
 
     this.scene.add(mesh);
+  }
+
+  _renderCoastalNodes() {
+    var nodes = this.map.graphManager.nodes;
+    var coastalNodes = [];
+
+    nodes.forEach(function(node) {
+      if (node.isCoastal) coastalNodes.push(node);
+    });
+
+    this._renderPoints(coastalNodes, CHROMA('black').hex());
+  }
+
+  _renderNodes() {
+    var nodes = this.map.graphManager.nodes;
+
+    this._renderNodes(nodes, CHROMA('black').hex());
   }
 
 }
