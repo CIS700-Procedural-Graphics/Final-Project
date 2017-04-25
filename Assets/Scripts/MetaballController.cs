@@ -24,6 +24,7 @@ public class MetaballController : MonoBehaviour {
     public float maxSpeed = 0.01f;
     public int numMetaballs = 5;
 
+    public Metaball inputMetaball;
 	public Voxel[] voxels;
     public List<Metaball> balls;
 
@@ -168,7 +169,6 @@ public class MetaballController : MonoBehaviour {
             velocity = new Vector3(vx, vy, vz);
 
             radius = Random.Range(0, 1.0f) * (this.maxRadius - this.minRadius) + this.minRadius;
-            //radius = 1.0f;
 
             GameObject metaball = Instantiate(Resources.Load("Metaball")) as GameObject;
             metaball.transform.localScale = Vector3.one * radius / 2.0f;
@@ -177,16 +177,24 @@ public class MetaballController : MonoBehaviour {
 
             var ball = metaball.GetComponent<Metaball>();
             ball.radius = radius;
-			ball.radius = Mathf.Pow (radius, 2.0f);
+			ball.radiusSquared = Mathf.Pow (radius, 2.0f);
 
             this.balls.Add(ball);
 
-            if (visualDebug)
+            if (showSpheres)
             {
                 metaball.GetComponent<MeshRenderer>().enabled = true;
             }
 
         }
+
+        if (this.inputMetaball)
+        {
+            //inputMetaball.radius = inputMetaball.transform.localScale.x;
+            //inputMetaball.radiusSquared = inputMetaball.radius * inputMetaball.radius;
+            this.balls.Add(inputMetaball);
+            this.numMetaballs++;
+       }
     }
 
     void makeMesh()
@@ -214,22 +222,15 @@ public class MetaballController : MonoBehaviour {
             }
         }
 
-        //////add test vertices
-        //meshVertices.Add(new Vector3(0f, 0f, 0f));
-        //meshVertices.Add(new Vector3(0f, 1f, 0f));
-        //meshVertices.Add(new Vector3(1f, 1f, 0f));
-
-        //meshVertices.Add(new Vector3(2f, 0f, 0f));
-        //meshVertices.Add(new Vector3(2f, 1f, 0f));
-        //meshVertices.Add(new Vector3(3f, 1f, 0f));
-
 
         //create triangle indices
         int[] meshTriangles = new int[meshVertices.Count];
+
         for (int i = 0; i < meshTriangles.Length; i++)
         {
             //index in order because we add vertices in order
             meshTriangles[i] = i;
+
         }
 
 
