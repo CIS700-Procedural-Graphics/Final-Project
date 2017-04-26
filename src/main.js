@@ -8,8 +8,15 @@ import Framework from './framework'
 import MIDI from 'midi.js'
 import Soundfont from 'soundfont-player'
 import {euclid} from './utils/euclid.js'
-import {beatGenerator, MorseThue, melodyGenerator, rhythmicMelodyGenerator, EarthWorm} from './utils/musicGenerator.js'
-import Lsystem from './fractals/lsystem.js'
+import {beatGenerator, 
+		MorseThue, 
+		melodyGenerator, 
+		rhythmicMelodyGenerator, 
+		EarthWorm,
+		noteBeats} from './utils/musicGenerator.js'
+
+import {patternedMelody,
+		createMainTheme} from './utils/musicMotifs.js'
 
 // Visual
 const EffectComposer = require('three-effectcomposer')(THREE);
@@ -157,9 +164,9 @@ var noiseCloud = {
 	mesh : {},
 };
 
-var testInstrument = Soundfont.instrument(ac, 'acoustic_grand_piano', { soundfont: 'MusyngKite', gain: 1.0 });//
-var instrument2 = Soundfont.instrument(ac, 'pad_3_polysynth', { soundfont: 'MusyngKite', adsr: [0,0,0,0], gain: 0.5 });
-var synthDrums = Soundfont.instrument(ac, 'synth_drum', { soundfont: 'MusyngKite', gain: 1.0 });
+var testInstrument = Soundfont.instrument(ac, 'acoustic_grand_piano', { soundfont: 'MusyngKite', gain: 0.6 });//
+var melodyInstr = Soundfont.instrument(ac, 'cello', { soundfont: 'MusyngKite', adsr: [0.3,0.5,0.2,0.8], gain: 3 });
+var baseInstr = Soundfont.instrument(ac, 'acoustic_bass', { soundfont: 'MusyngKite', gain: 0.8 });
 
 function rate_limit(func) {
     var running = false;
@@ -252,70 +259,94 @@ function onLoad(framework) {
 
 var music = [];
 var beats = [];
-var time = Date.now();
+var now = Date.now();
 var indices = [0,0,0,0,0];
+var time = [now,now,now,now,now];
+var bpm = [1/4, 1, 1/4, 2, 1/4];
+var melIdx = 4;
 
 // called on frame updates
 function onUpdate(framework) {
 	if (update) {
-		// var music = melodyGenerator(100, 120,  2, 3);
-		music.push(EarthWorm(343, 13, 4, 140, 240));
-		music.push(rhythmicMelodyGenerator(40, euclid(5,8), 60, additionalControls.base, additionalControls.multi));
+		music.push(patternedMelody(EarthWorm(343, 13, 4, 100, 240)));
+		music.push(rhythmicMelodyGenerator(100, euclid(5,8), 60, additionalControls.base, additionalControls.multi));
+		music.push(noteBeats(euclid(5,8), 'A3', 100));
+		music.push(beatGenerator(euclid(4,8), 180, 400, 'C4'))
+		music.push(createMainTheme('C4'))
 
-		// var rMusic2 = rhythmicMelodyGenerator(200, euclid(6,8), 240, additionalControls.base + 3, additionalControls.multi + 4);
-		beats.push(beatGenerator(euclid(5,7), 180, 100));
-		beats.push(beatGenerator(euclid(3,7), 120, 70, 'C4'));
-		beats.push(beatGenerator(euclid(6,9), 180, 100, 'G2'));
+		beats.push(beatGenerator(euclid(2,8), 180, 400, 'F3'));
+		beats.push(beatGenerator(euclid(9,12), 120, 400, 'C4'));
+		beats.push(beatGenerator(euclid(7,15), 180, 400, 'D2'));
 
-		// console.log(euclid(5,7))
-
-		testInstrument.then(function (marimba) {
-			marimba.stop();
-			// marimba.schedule(ac.currentTime, music[1][0]);
-		})
-
-		synthDrums.then(function (marimba) {
-			marimba.stop();
-			marimba.schedule(ac.currentTime, beats[0]);
-			marimba.schedule(ac.currentTime, beats[1]);
-			// marimba.schedule(ac.currentTime, beat3);
-		})
-
-		instrument2.then(function (marimba) {
-			marimba.stop();
-			// console.log(music2)
-			marimba.schedule(ac.currentTime, music[0]);
-		})
-
+		console.log('Music 2:')
+		console.log(music[melIdx])
 		update = false;
 	}
 
 	var nTime = Date.now();
 
-	var times = [1, 1/60, 1/180, 1/120, 1/180];
-	var deltaT = (nTime - time) / 1000;
 
-	// // console.log(indices[0])
-	// if (deltaT > times[0] && indices[0] < music[0].length) {
+	var deltaT = (nTime - time[0]) / 1000;
+	if (deltaT > music[3][1][indices[0]] * bpm[0] && indices[0] < music[3][0].length) {
 
-	// 	testInstrument.then(function(piano){
-	// 		piano.play(music[1][0][indices[0]].note);
-	// 	})
+		testInstrument.then(function(piano) {
+			if (music[3][0][indices[0]] > 0) {
+				// piano.play(music[3][0][indices[0]]).stop(ac.currentTime + music[3][1][indices[0]] * bpm[0]);
+			}
+		})
 
-	// 	instrument2.then(function(synth) {
-	// 		synth.play(music[0][indices[1]].note);
-	// 	})
+		indices[0]++;
+		time[0] = nTime;
+	}
 
-	// 	synthDrums.then(function (drums) {
-	// 		drums.stop();
-	// 		drums.play(beats[0][indices[2]].note);
-	// 	})
+	deltaT = (nTime - time[1]) / 1000;
+	if (deltaT > music[melIdx][1][indices[1]] * bpm[1] && indices[1] < music[melIdx][0].length) {
 
-	// 	indices[0]++;
-	// 	indices[1]++;
-	// 	indices[2]++;
-	// 	time = nTime;
-	// }
+		melodyInstr.then(function(melIn) {
+			if (music[melIdx][0][indices[1]] > 0) {
+				melIn.play(music[melIdx][0][indices[1]]).stop(ac.currentTime + music[melIdx][1][indices[1]] * bpm[1]);
+			}
+			
+		})
+		indices[1]++;
+		time[1] = nTime;
+	}
+
+	deltaT = (nTime - time[2]) / 1000;
+	if (deltaT > beats[0][1][indices[2]] * bpm[2] && indices[2] < beats[0][0].length) {
+
+		baseInstr.then(function (baseIn) {
+			if (beats[0][0][indices[2]] > 0) {
+				baseIn.start(beats[0][0][indices[2]], ac.currentTime, {gain: 0.5});
+			}
+		})
+		indices[2]++;
+		time[2] = nTime;
+	}
+
+	deltaT = (nTime - time[3]) / 1000;
+	if (deltaT > beats[1][1][indices[3]] * bpm[3] && indices[3] < beats[1][0].length) {
+
+		baseInstr.then(function (baseIn) {
+			if (beats[1][0][indices[3]] > 0) {
+				baseIn.start(beats[1][0][indices[3]], ac.currentTime, {gain: 1});
+			}
+		})
+		indices[3]++;
+		time[3] = nTime;
+	}
+
+	deltaT = (nTime - time[4]) / 1000;
+	if (deltaT > beats[2][1][indices[4]] * bpm[4] && indices[4] < beats[2][0].length) {
+
+		baseInstr.then(function (baseIn) {
+			if (beats[2][0][indices[4]] > 0)
+				baseIn.start(beats[2][0][indices[4]], ac.currentTime, {gain: 1});
+		})
+		indices[4]++;
+		time[4] = nTime;
+	}
+
 
 	// Visual
 	var scene = framework.scene;

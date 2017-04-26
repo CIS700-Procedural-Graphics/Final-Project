@@ -6,16 +6,48 @@ export function beatGenerator(rhythm, tempo, n, drumNote = 'G3') {
 	var analogRhythm = getAnalogRhythm(rhythm);
 	// console.log(analogRhythm)
 
-	var notes = [];
+	var notes = [[],[]];
 	var t = 0;
 	for (var i = 0; i < n; i++) {
-		var t = analogRhythm[i % analogRhythm.length] + Math.floor(i / analogRhythm.length) * analogRhythm[analogRhythm.length-1];
+		var r = rhythm[i % rhythm.length];
+		var note = (r == 1) ? drumNote : -1;
 
-		notes.push({note : drumNote, time : t * unitTime});
-
+		notes[0].push(tonal.note.midi(note));
+		notes[1].push(1);
+		
 	}
-	// console.log(notes)
-	// console.log(baseConversion(101,2));
+
+	return notes;
+}
+
+export function noteBeats(rhythm, note, n) {
+	var notes = [[],[]];
+
+	var sn = tonal.note.midi(note);
+	var tempPattern = [sn,sn+2,sn+3,sn-2];
+	var tempTime = [3,1,1,2];
+
+	for (var i = 0; i < n; i++) {
+		if (rhythm[i % rhythm.length] == 1) {
+			for (var j = 0; j < tempPattern.length; j++) {
+				var toPush = tempPattern[j];
+				if (j == tempPattern.length-1) {toPush += Math.floor(Math.random() * 6) - 3};
+
+				notes[0].push(toPush);
+				notes[1].push(tempTime[j]);
+			}
+			notes[0].push(-1);
+			notes[1].push(1);
+
+		} else {
+			for (var j = 0; j < 5; j++) {
+				notes[0].push(-1);
+				notes[1].push(1);
+			}
+		}
+	}
+
+
 	return notes;
 }
 
@@ -35,22 +67,26 @@ export function EarthWorm(init, multi, digits, n, tempo) {
 	var unitTime = 60 / tempo;
 	var scaleTypes = tonal.scale.names();
 	var scaleIdx = Math.floor( Math.random() * scaleTypes.length );
-	var s = tonal.scale.get('major', 'C4');
+	var s = tonal.scale.get('major', 'C3');
 
 	var ts = tonal.map(tonal.transpose('8P'), s)
 	s = s.concat(ts);
 
-	var baseNote = 'E5';
+	var rhythm = [4,1,2,1];
+	var baseNote = 'C4';
 
-	var notes = [];
+	var notes = [[],[]];
 	var val = init;
 	var restraint = Math.pow(10, digits);
 	for (var i = 0; i < n; i++) {
 		val *= multi;
 		val = val % restraint;
-		// notes[i] = { note: s[val % s.length], time: i*unitTime };
-		// console.log(i + " " + val)
-		notes[i] = { note: (i % 2 == 0) ? baseNote : (tonal.note.midi(baseNote) + val % 10) , time: i*unitTime };
+
+		// notes[0].push( (i % 2 == 0) ? baseNote : (tonal.note.midi(baseNote) + val % 7) );
+		// notes[0].push( (tonal.note.midi(baseNote) + val % 7) );
+		notes[0].push( tonal.note.midi(s[val%s.length]));
+
+		notes[1].push( rhythm[i%rhythm.length] );
 	}
 
 	// console.log(notes) 
@@ -75,21 +111,21 @@ export function melodyGenerator(n, tempo, base, multi) {
 
 export function rhythmicMelodyGenerator(n, rhythm, tempo, base, multi) {
 	var unitTime = 60 / tempo;
-	var notes = [[],[],[]];
+	var notes = [[],[]];
 	var mel = melodyNotes(n, base, multi);
-	// console.log(mel)
+	var aRhythm = [2, 1, 1, 1];
 
-	var aRhythm = getAnalogRhythm(rhythm);
 
-	// var timetest = [];
 	for ( var i = 0; i < mel[0].length; i++ ) {
-		var c = createChord(mel[0][i]);
-		var t = (aRhythm[i % aRhythm.length] + Math.floor(i/aRhythm.length) * (aRhythm[aRhythm.length-1] + 1)) * unitTime;
-		notes[0].push( {note: mel[0][i], time: t} );
-		// notes[1].push( {note: c[1], time: t} );
+		// var c = createChord(mel[0][i]);
+		// var t = (aRhythm[i % aRhythm.length] + Math.floor(i/aRhythm.length) * (aRhythm[aRhythm.length-1] + 1)) * unitTime;
+		// notes[0].push( {note: mel[0][i], time: t} );
 
-		// notes[2].push( {note: c[2], time: t} );
-		// timetest.push(Math.log((t+2) * (t+2)))
+		var noteLength = aRhythm[i%aRhythm.length];
+
+		notes[0].push(mel[0][i]);
+		notes[1].push(noteLength);
+
 	} 
 
 	// console.log(timetest)
@@ -189,3 +225,4 @@ function getAnalogRhythm(digitalRhythm) {
 	analogRhythm.push(digitalRhythm.length - 1);
 	return analogRhythm;
 }
+
