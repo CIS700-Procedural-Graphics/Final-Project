@@ -15,7 +15,8 @@ import {beatGenerator,
 		noteBeats} from './utils/musicGenerator.js'
 
 import {patternedMelody,
-		createMainTheme} from './utils/musicMotifs.js'
+		createMainTheme,
+		createMelody} from './utils/musicMotifs.js'
 
 // Visual
 import Scene1 from './scene1'
@@ -91,8 +92,8 @@ var noiseCloud = {
 	mesh : {},
 };
 
-var testInstrument = Soundfont.instrument(ac, 'acoustic_grand_piano', { soundfont: 'MusyngKite', gain: 0.6 });//
-var melodyInstr = Soundfont.instrument(ac, 'cello', { soundfont: 'MusyngKite', adsr: [0.3,0.5,0.2,0.8], gain: 3 });
+var testInstrument = Soundfont.instrument(ac, 'acoustic_grand_piano', { soundfont: 'MusyngKite', gain: 1 });//
+var melodyInstr = Soundfont.instrument(ac, 'acoustic_grand_piano', { soundfont: 'MusyngKite', asdr: [0,0.8,0.8,0.8], gain: 1 });
 var baseInstr = Soundfont.instrument(ac, 'acoustic_bass', { soundfont: 'MusyngKite', gain: 0.8 });
 
 function rate_limit(func) {
@@ -167,8 +168,9 @@ var beats = [];
 var now = Date.now();
 var indices = [0,0,0,0,0];
 var time = [now,now,now,now,now];
-var bpm = [1/4, 1, 1/4, 2, 1/4];
-var melIdx = 4;
+var bpm = [1/4, 1/4, 1/4, 1/4, 1/4];
+var melIdx = 6;
+var melIdxB = 5;
 
 // called on frame updates
 function onUpdate(framework) {
@@ -177,14 +179,22 @@ function onUpdate(framework) {
 		music.push(rhythmicMelodyGenerator(100, euclid(5,8), 60, additionalControls.base, additionalControls.multi));
 		music.push(noteBeats(euclid(5,8), 'A3', 100));
 		music.push(beatGenerator(euclid(4,8), 180, 400, 'C4'))
-		music.push(createMainTheme('C4'))
+
+		// Testing stuff
+		var mTheme = createMainTheme('C4');
+		music.push(mTheme[0]);
+		music.push(mTheme[1]);
+
+		music.push(createMelody('F5'));
+	
+		console.log(createMelody('F6'))
 
 		beats.push(beatGenerator(euclid(2,8), 180, 400, 'F3'));
 		beats.push(beatGenerator(euclid(9,12), 120, 400, 'C4'));
 		beats.push(beatGenerator(euclid(7,15), 180, 400, 'D2'));
 
 		console.log('Music 2:')
-		console.log(music[melIdx])
+		console.log(music)
 		update = false;
 	}
 
@@ -192,11 +202,14 @@ function onUpdate(framework) {
 
 
 	var deltaT = (nTime - time[0]) / 1000;
-	if (deltaT > music[3][1][indices[0]] * bpm[0] && indices[0] < music[3][0].length) {
+	if (deltaT > music[melIdxB][1][indices[0]] * bpm[0] && indices[0] < music[melIdxB][0].length) {
 
-		testInstrument.then(function(piano) {
-			if (music[3][0][indices[0]] > 0) {
-				// piano.play(music[3][0][indices[0]]).stop(ac.currentTime + music[3][1][indices[0]] * bpm[0]);
+		melodyInstr.then(function(melIn) {
+			// console.log(music[melIdxB][0][indices[0]])
+			if (music[melIdxB][0][indices[0]] > 0) {
+				// console.log(music[melIdxB][1][indices[0]])
+				melIn.play(music[melIdxB][0][indices[0]], ac.currentTime, {gain: 0.5})
+				     .stop(ac.currentTime + music[melIdxB][1][indices[0]] * bpm[0]);
 			}
 		})
 
@@ -209,7 +222,9 @@ function onUpdate(framework) {
 
 		melodyInstr.then(function(melIn) {
 			if (music[melIdx][0][indices[1]] > 0) {
-				melIn.play(music[melIdx][0][indices[1]]).stop(ac.currentTime + music[melIdx][1][indices[1]] * bpm[1]);
+				// console.log(music[melIdx][1][indices[0]])
+				melIn.start(music[melIdx][0][indices[1]], ac.currentTime, {gain: 1})
+					 .stop(ac.currentTime + music[melIdx][1][indices[1]] * bpm[1]);
 			}
 			
 		})
@@ -245,8 +260,9 @@ function onUpdate(framework) {
 	if (deltaT > beats[2][1][indices[4]] * bpm[4] && indices[4] < beats[2][0].length) {
 
 		baseInstr.then(function (baseIn) {
-			if (beats[2][0][indices[4]] > 0)
+			if (beats[2][0][indices[4]] > 0) {
 				baseIn.start(beats[2][0][indices[4]], ac.currentTime, {gain: 1});
+			}
 		})
 		indices[4]++;
 		time[4] = nTime;
