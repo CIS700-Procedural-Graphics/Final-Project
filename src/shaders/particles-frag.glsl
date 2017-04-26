@@ -1,5 +1,5 @@
 #version 300 es
-//not used
+//unused
  
 precision mediump float;
  

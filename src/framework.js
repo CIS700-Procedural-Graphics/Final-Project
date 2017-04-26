@@ -3,26 +3,25 @@ import Stats from 'stats-js'
 import DAT from 'dat-gui'
 import WebGL2 from './webgl.js'
 
-
 function init(callback, update) {
   var stats = new Stats();
   stats.setMode(0);
   stats.domElement.style.position = 'absolute';
   stats.domElement.style.left = '0px';
   stats.domElement.style.top = '0px';
-  //document.body.appendChild(stats.domElement);
+  document.body.appendChild(stats.domElement);
 
-  //var gui = new DAT.GUI();
+  var gui = new DAT.GUI();
 
   var framework = {
-    //gui: gui,
-    //stats: stats
+    gui: gui,
+    stats: stats
   };
 
   window.addEventListener('load', function() {
 
-    framework.canvas = canvas;
     framework.webgl = new WebGL2();
+    framework.canvas = framework.webgl.canvas;
       
     window.addEventListener('resize', function() {
       resize(framework.webgl.gl.canvas);
@@ -33,6 +32,7 @@ function init(callback, update) {
     (function tick() {
       stats.begin();
       update(framework); // perform any requested updates
+         //scene.render();
       stats.end();
       requestAnimationFrame(tick); // register to call this again when the browser renders a new frame
     })();

@@ -16,6 +16,8 @@
     "dat-gui": "^0.5.0",
     "stats-js": "^1.0.0-alpha1",
     "simple-git": "^1.65.0",
-    "gh-pages-deploy": "^0.4.2"
+    "gh-pages-deploy": "^0.4.2",
+    "obj-mtl-loader": "^0.0.5",
+    "glm-js": "^0.0.6-c"
   }
 }

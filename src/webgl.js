@@ -46,6 +46,7 @@ export default function WebGL2() {
             var vertexShader = createShader(gl, vertexShaderSource, gl.VERTEX_SHADER);
             var fragmentShader = createShader(gl, fragmentShaderSource, gl.FRAGMENT_SHADER);
             this.programs[i] = createProgram(gl, vertexShader, fragmentShader);
+            this.programs[i].attributeBuffers = [];
         }
         
         return this.programs;
@@ -74,6 +75,30 @@ export default function WebGL2() {
         }  
         
         return program.uniformLocations;
+    }
+    
+    this.setAttributeBufferAtIndex = function (program, bufferIndex, data) {
+        
+        var gl = this.gl;
+        var index = bufferIndex;
+        
+        program.attributeBuffers[index] = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, program.attributeBuffers[index]);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data), gl.DYNAMIC_COPY);
+
+        return program.attributeBuffers;
+    }
+    
+    this.setAttributeBuffer = function (program, bufferName, data) {
+        
+        var gl = this.gl;
+        var index = program.attributeBuffers.length;
+        
+        program.attributeBuffers[index] = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, program.attributeBuffers[index]);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data), gl.DYNAMIC_COPY);
+
+        return program.attributeBuffers;
     }
 	   
 
@@ -113,7 +138,7 @@ export default function WebGL2() {
                 }
                 gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(particle_positions), gl.DYNAMIC_COPY);
             }
-            else if (i == 1) {
+            else if (i == 1 || i == 2) {
                 var particle_velocites = [];
 
                 var num_particles = 1000000;

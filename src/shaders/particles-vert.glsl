@@ -2,11 +2,15 @@
  
 uniform float u_time;
 uniform vec2 u_resolution;
-uniform vec2 u_mouse;
-
+uniform vec4 u_mouse;
+uniform mat4 u_model;
+uniform mat4 u_view;
+uniform mat4 u_projection;
+uniform mat4 u_projectionView;
 
 in vec4 inPos;
 in vec4 inVel;
+in vec4 inObjPos;
 
 out vec4 outPos;
 out vec4 outVel;
@@ -20,18 +24,18 @@ float rand(vec2 co){
 
 void main()
 {     
-    vec4 pos = inPos;    
-    vec4 vel = inVel;    
+    vec3 pos = inPos.xyz; 
+    vec3 vel = inVel.xyz; 
+    vec3 objPos = inObjPos.xyz;
+    vec4 mousePos = u_mouse;
+    //objPos = max(mousePos.xyz,objPos);
     
-   if (pos.x > 1.0 || pos.x < -1.0)
-       vel.x = -vel.x;
-
-   if (pos.y > 1.0 || pos.y < -1.0)
-       vel.y = -vel.y;
-
-   if (pos.z > 1.0 || pos.y < -1.0)
-        vel.z = -vel.z;
+    vel = (objPos - pos)/30.0;
+    if (length(objPos - pos) < 0.01) {
+        vel = vec3(0);
+    }
     
-    outPos = vec4(pos.x+vel.x,pos.y+vel.y,pos.z+vel.z,1.0); 
-    outVel = vec4(vel.x, vel.y,vel.z,1.0);
+    outPos = vec4(pos.x+vel.x,pos.y+vel.y,pos.z+vel.z,1.0);
+    outVel = vec4(vel.x,vel.y,vel.z,1.0);
 }
+

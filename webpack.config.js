@@ -28,5 +28,8 @@ module.exports = {
   devtool: 'source-map',
   devServer: {
     port: 7000
-  }
+  },
+    node: {
+  fs: 'empty'
+    }
 }
