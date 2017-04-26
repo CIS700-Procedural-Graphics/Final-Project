@@ -1,6 +1,7 @@
 
 const THREE = require('three'); // older modules are imported like this. You shouldn't have to worry about this much
 import Framework from './framework';
+import AllShooters from './shooters';
 
 
 // var declared so in working material can make the object fluctuate depending on the ticked time
@@ -50,7 +51,6 @@ var mat4Locations = [
 
 
 var planeDim = 20;
-
 var songLen = 3*60+8;
 
 var visElements = {
@@ -196,14 +196,14 @@ function onLoad(framework) {
   var {scene, camera, renderer, gui, stats} = framework; 
 
   // set skybox
-  // var loader = new THREE.CubeTextureLoader();
-  // var urlPrefix = './images/skymap/';
-  // var skymap = new THREE.CubeTextureLoader().load([
-  //     urlPrefix + 'px.jpg', urlPrefix + 'nx.jpg',
-  //     urlPrefix + 'py.jpg', urlPrefix + 'ny.jpg',
-  //     urlPrefix + 'pz.jpg', urlPrefix + 'nz.jpg'
-  // ] );
-  // scene.background = skymap;
+  var loader = new THREE.CubeTextureLoader();
+  var urlPrefix = './images/skymap/';
+  var skymap = new THREE.CubeTextureLoader().load([
+      urlPrefix + 'px.jpg', urlPrefix + 'nx.jpg',
+      urlPrefix + 'py.jpg', urlPrefix + 'ny.jpg',
+      urlPrefix + 'pz.jpg', urlPrefix + 'nz.jpg'
+  ] );
+  scene.background = skymap;
   
   /*****************************/
   /* PUTTING MATERIALS ON OBJS */
@@ -282,6 +282,12 @@ function onLoad(framework) {
 
   // start music
   loadMusic();
+
+  /*******************/
+  /* CREATE SHOOTERS */
+  /*******************/
+
+  var all = new AllShooters(framework);
   
 }
 
