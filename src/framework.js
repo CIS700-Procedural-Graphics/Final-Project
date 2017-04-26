@@ -57,7 +57,7 @@ function init(callback, update) {
     (function tick() {
       stats.begin();
       update(framework); // perform any requested updates
-      renderer.render(scene, camera); // render the scene
+      // renderer.render(scene, camera); // render the scene
       stats.end();
       requestAnimationFrame(tick); // register to call this again when the browser renders a new frame
     })();
