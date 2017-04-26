@@ -53,6 +53,8 @@ var mat4Locations = [
 var planeDim = 20;
 var songLen = 3*60+8;
 
+var all; // ALL SHOOTERS
+
 var visElements = {
   volume: 2,
   loop: false,
@@ -275,7 +277,9 @@ function onLoad(framework) {
       // pause
       visElements.sound.pause();
     }
-    // otherwise do nothing
+    // otherwise do nothing for visElements
+
+    all.play(visElements.play);
   });
 
   gui.add(visElements, 'playTime').listen(); //
@@ -287,7 +291,7 @@ function onLoad(framework) {
   /* CREATE SHOOTERS */
   /*******************/
 
-  var all = new AllShooters(framework);
+  all = new AllShooters(framework);
   
 }
 
@@ -299,6 +303,10 @@ function onUpdate(framework) {
   var count = 60.0
 
   stepTime += 1.0;
+  if (stepTime % 5.0 == 0) {
+    all.update();
+  }
+
   if (stepTime % 60.0 == 0 && visElements.sound.isPlaying) {
     if (visElements.loop && visElements.playTime < 0) {
       visElements.playTime += songLen;
