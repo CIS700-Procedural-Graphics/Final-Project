@@ -35,7 +35,6 @@ var mouseX = 0;
 var mouseY = 0;
 
 var obj_vertices;
-var rotMat;
 var obj_list = [];
 var obj_frames = [];
 
@@ -266,7 +265,7 @@ function setUpWebGL(framework) {
     
     startTime = Date.now();
 
-    programs = framework.webgl.createPrograms(["particles", "draw","mouse"]);
+    programs = framework.webgl.createPrograms(["particles", "draw"]);
     
     //provide webgl with output attributes for capture into buffers
     //GL_SEPARATE_ATTRIBS: Write attributes to multiple buffer objects
@@ -323,9 +322,6 @@ function setUpWebGL(framework) {
     }   
     //console.log(obj_positions);
     
-   rotMat = new CanvasMatrix4();
-   rotMat.makeIdentity();
-    
     framework.webgl.setAttributeBuffer(programs[program.PARTICLES],"inPos", particle_positions);
     framework.webgl.setAttributeBuffer(programs[program.PARTICLES],"inVel", particle_velocites);
     framework.webgl.setAttributeBuffer(programs[program.PARTICLES],"inObjPos", obj_positions);
@@ -378,12 +374,10 @@ function onUpdate(framework) {
         updateAnimationFrame(frame/20, framework);
     }
 
-        //rotMat.rotate(1, 0,1,0);
     var canvas = framework.canvas;
     var ndcX = (( xOffset - canvas.offsetLeft ) / canvas.clientWidth) * 2 - 1;
     var ndcY = (1 - (( yOffset - canvas.offsetTop ) / canvas.clientHeight)) * 2 - 1;
 
-    //var worldPoint = glm.inverse(projectionView)['*'](glm.vec4(ndcX,ndcY,1.0,1.0))['*'](farClippingPlaneDistance-1);
     var worldPoint = glm.inverse(camera.getViewProj())['*'](glm.vec4(ndcX,ndcY,1.0,1.0))['*'](camera.farClip-1);
    // worldPoint = worldPoint['/'](worldPoint.w);
     //ndcX = worldPoint.x;
