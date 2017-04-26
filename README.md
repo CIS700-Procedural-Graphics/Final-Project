@@ -7,7 +7,7 @@ Hannah Bollar [Single Person Project]
 
 NOTE: PROJECT STILL IN PROGRESS. Turn volume on and possibly wear headphones to hear the sound.
 
-###### [Click Here to View the Project](https://hanbollar.github.io/Final-Project/)
+###### [Click Here to View the Current Project](https://hanbollar.github.io/Final-Project/)
 
 ## The Audio
 
