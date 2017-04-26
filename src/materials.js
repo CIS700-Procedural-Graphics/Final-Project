@@ -37,7 +37,7 @@ export var canyon_mat = {
     bcolor: {value: [0,128/255, 0]},
     rcolor: {value: [25/255, 25/255,112/255]},
     tcolor: {value: [205/255,133/255,63/255]},
-    spline: {type: 'vec3', value: []},
+    spline_tex: {type: "t", value: null},
     grads: {type: 'vec3', value: [new THREE.Vector3(1,1,0), new THREE.Vector3(-1,1,0), new THREE.Vector3(1,-1,0),        
       new THREE.Vector3(-1,-1,0), new THREE.Vector3(1,0,1), new THREE.Vector3(-1,0,1), new THREE.Vector3(1,0,-1), 
       new THREE.Vector3(-1,0,-1), new THREE.Vector3(0,1,1), new THREE.Vector3(0,-1,1), new THREE.Vector3(0,1,-1), 

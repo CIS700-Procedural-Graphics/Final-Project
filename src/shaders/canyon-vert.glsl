@@ -1,4 +1,4 @@
-uniform sampler2D path;
+uniform sampler2D spline_tex;
 
 varying vec3 vNormal;
 varying vec2 vUV;
@@ -46,7 +46,7 @@ void main() {
     vNormal = normal;
     vPoint = position;
     vUV =  uv;
-    //vec3 offset = texture2D(path, uv) * (vNoise) * normal;
+    //vec3 offset = texture2D(spline_tex, uv) * (vNoise) * normal;
     vec3 offset = abs(position.x) * (vNoise) * normal;
     gl_Position = projectionMatrix * modelViewMatrix * vec4( position + offset, 1.0 );
 }

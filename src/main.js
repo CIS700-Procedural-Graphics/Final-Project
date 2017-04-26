@@ -11,7 +11,7 @@ var time, count;
 var variables = {
   music : null,
   audioAnalyser : null,
-  enableSound : false,
+  enableSound : true,
   initialized : false,
   isPaused : true, 
 
@@ -50,8 +50,10 @@ function onLoad(framework) {
   var stats = framework.stats;
 
   // set camera position
-  variables.spline = makeSpline(variables.path_radius, variables.num_points, variables.jitter, variables.smoothness);
-  materials.canyon_mat.uniforms.spline.value = variables.spline.getPoints(50);
+  var splineData = makeSpline(variables.path_radius, variables.num_points, variables.jitter, variables.smoothness);
+  variables.spline = splineData.spline;
+  // pass spline to material
+  materials.canyon_mat.uniforms.spline_tex.value = makeSplineTexture(variables.spline, splineData.dim, splineData.center);
 
   var geometry = new THREE.Geometry();
   geometry.vertices = variables.spline.getPoints( 100 );

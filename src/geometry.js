@@ -1,17 +1,19 @@
 const THREE = require('three');
 
-export function initSceneGeo(scene, meshes, materials, spline) {
-  var plane_geo = new THREE.PlaneBufferGeometry(200, 200, 100, 100).rotateX(-Math.PI/2);
+export function initSceneGeo(scene, meshes, materials, spline, dim, center) {
+
+  var width = dim[0]; var depth = dim[1];
+  var plane_geo = new THREE.PlaneBufferGeometry(width, depth, width, depth).rotateX(-Math.PI/2).translate(center[0], 0, center[1]);
   var plane_material = new THREE.ShaderMaterial(materials.canyon_mat);
   meshes.plane = new THREE.Mesh(plane_geo, plane_material);
   scene.add(meshes.plane);
 
-  var ground_geo = new THREE.PlaneBufferGeometry(10, 10, 100, 100).rotateX(-Math.PI/2).translate(0,-2,0);
+  var ground_geo = new THREE.PlaneBufferGeometry(10, 10, 100, 100).rotateX(-Math.PI/2).translate(center[0], -2, center[1]);
   var ground_material = new THREE.MeshBasicMaterial( { color: 0x444444 , wireframe: true} );
   meshes.ground = new THREE.Mesh(ground_geo, ground_material);
   scene.add(meshes.ground);
 
-  var water_geo = new THREE.PlaneBufferGeometry(10, 10, 100, 100).rotateX(-Math.PI/2).translate(0,-1,0);
+  var water_geo = new THREE.PlaneBufferGeometry(10, 10, 100, 100).rotateX(-Math.PI/2).translate(center[0], -1, center[1]);
   var water_material = new THREE.MeshBasicMaterial( { color: 0x0000FF , wireframe: true} );
   meshes.water = new THREE.Mesh(water_geo, water_material);
   scene.add(meshes.water);
