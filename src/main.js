@@ -248,6 +248,8 @@ function onLoad(framework) {
   });
 }
 
+// Stone making helper function
+// Returns a mesh
 function generateStone(points, min, max) {
   var stonePoints = [];
   for (var i = 0; i < stoneOptions.points; i++) {
