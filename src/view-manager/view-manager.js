@@ -6,6 +6,7 @@ export default class ViewManager {
   constructor(options, map, scene) {
     this.renderGraph = options.renderGraph;
     this.renderColors = options.renderColors;
+    this.render3D = options.render3D;
     this.renderCoastline = options.renderCoastline;
     this.debugOcean = options.debugOcean;
     this.debugShowNodes = options.debugShowNodes;
@@ -15,6 +16,11 @@ export default class ViewManager {
   }
 
   renderMap() {
+    if (this.render3D) {
+      this._render3D();
+      return;
+    }
+
     if (this.renderGraph) {
       this._renderGraph();
     }
@@ -90,7 +96,10 @@ export default class ViewManager {
         faceIndices.push(id);
       });
 
-      var color = cell.color;
+      var color = (this.renderColors === 'elevation') ? cell.elevationColor :
+                  (this.renderColors === 'moisture')  ? cell.moistureColor :
+                  (this.renderColors === 'biomes')    ? cell.biomeColor :
+                                                        CHROMA('black');
       var normal = new THREE.Vector3(1, 1, 1);
       var materialIndex = 0;
 
@@ -99,15 +108,20 @@ export default class ViewManager {
         var ib = faceIndices[i - 1];
         var ic = faceIndices[i];
 
-        var face = new THREE.Face3(ia, ib, ic, normal, color, materialIndex);
+        var face = new THREE.Face3(ia, ib, ic, normal, new THREE.Color(color.hex()), materialIndex);
 
         geometry.faces.push(face);
       }
+    }, this);
+
+    geometry.computeFaceNormals();
+    geometry.computeVertexNormals();
+
+    var material = new THREE.MeshStandardMaterial({
+      color: 0xffffff,
+      side: THREE.DoubleSide,
+      vertexColors: THREE.FaceColors
     });
-
-
-
-    var material = new THREE.MeshStandardMaterial({ color: 0xffffff });
     var mesh = new THREE.Mesh(geometry, material);
 
     this.scene.add(mesh);
