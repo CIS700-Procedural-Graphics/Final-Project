@@ -39,11 +39,11 @@ function onLoad(framework) {
     geographyManager: {},
     viewManager: {
       renderGraph: true,
-      renderColors: 'elevation', // 'elevation', 'moisture', 'biomes'
-      render3D: true,
-      renderCoastline: true,
+      renderColors: 'moisture', // 'elevation', 'moisture', 'biomes'
+      render3D: 'polygon', // 'polygon', 'shader', 'none'
+      renderCoastline: false,
       debugShowNodes: false,
-      debugShowCoastalNodes: true
+      debugShowCoastalNodes: false
     }
   };
 
@@ -57,7 +57,7 @@ function onLoad(framework) {
 
   scene.add(ambientLight);
   scene.add(directionalLight);
-  scene.add(directionalLightHelper);
+  // scene.add(directionalLightHelper);
 
   camera.position.set(0, 0, 100);
   camera.lookAt(new THREE.Vector3(0,0,0));
@@ -71,7 +71,7 @@ function onLoad(framework) {
 
   guiViewManager.add(options.viewManager, 'renderGraph').name('Show graph');
   guiViewManager.add(options.viewManager, 'renderColors', ['elevation', 'moisture', 'biomes']).name('Show map colors');
-  guiViewManager.add(options.viewManager, 'render3D').name('Show 3D');
+  guiViewManager.add(options.viewManager, 'render3D', ['none', 'polygon', 'shader']).name('Show 3D');
   guiViewManager.add(options.viewManager, 'renderCoastline').name('Show coastline');
   guiViewManager.add(options.viewManager, 'debugShowNodes').name('Debug nodes');
   guiViewManager.add(options.viewManager, 'debugShowCoastalNodes').name('Debug coastal nodes');

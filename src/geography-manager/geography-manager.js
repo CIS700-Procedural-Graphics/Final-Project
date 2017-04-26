@@ -131,6 +131,7 @@ export default class GeographyManager {
   }
 
   _distributeBiomes() {
+    var nodes = this.map.graphManager.nodes;
     var cells = this.map.graphManager.cells;
 
     cells.forEach(function(cell) {
@@ -144,6 +145,19 @@ export default class GeographyManager {
 
       cell.biome = biome;
       cell.biomeColor = this.biomeColors[biome];
+    }, this);
+
+    nodes.forEach(function(node) {
+      var elevation = node.elevation;
+      var moisture = node.moisture;
+      var biome = this._getBiome(elevation, moisture);
+
+      if (node.isCoastal) {
+        biome = this.biomes.BEACH;
+      }
+
+      node.biome = biome;
+      node.biomeColor = this.biomeColors[biome];
     }, this);
   }
 

@@ -13,11 +13,32 @@ export default class ViewManager {
     this.debugShowCoastalNodes = options.debugShowCoastalNodes;
     this.map = map;
     this.scene = scene;
+
+    // Determines if the shader will use elevation, moisture, or biomes
+    var color = (this.renderColors === 'elevation') ? 0 :
+                (this.renderColors === 'moisture')  ? 1 :
+                (this.renderColors === 'biomes')    ? 2 :
+                                                      3;
+
+    this.shaderMaterial = new THREE.ShaderMaterial({
+      uniforms: {
+        u_color: { value: color }
+      },
+      vertexShader: require('../shaders/map-vert.glsl'),
+      fragmentShader: require('../shaders/map-frag.glsl'),
+      side: THREE.DoubleSide,
+      vertexColors: THREE.VertexColors
+    });
   }
 
   renderMap() {
-    if (this.render3D) {
-      this._render3D();
+    if (this.render3D === 'polygon') {
+      this._render3DPolygon();
+      return;
+    }
+
+    if (this.render3D === 'shader') {
+      this._render3DShader();
       return;
     }
 
@@ -73,7 +94,7 @@ export default class ViewManager {
     }, this);
   }
 
-  _render3D() {
+  _render3DPolygon() {
     var geometry = new THREE.Geometry();
     var cells = this.map.graphManager.cells;
     var positionsVisited = {};
@@ -125,7 +146,86 @@ export default class ViewManager {
     var mesh = new THREE.Mesh(geometry, material);
 
     this.scene.add(mesh);
+  }
 
+  _render3DShader() {
+    var nodes = this.map.graphManager.nodes;
+    var cells = this.map.graphManager.cells;
+    var numNodes = nodes.length;
+
+    var geometry = new THREE.BufferGeometry();
+    var indices = new Uint32Array((numNodes - 2) * 3 * 3);
+    var positions = new Float32Array(numNodes * 3 * 3);
+    var elevations = new Float32Array(numNodes * 3);
+    var moistures = new Float32Array(numNodes * 3);
+
+    var indicesOfPositions = {};
+    var i = 0;
+    var j = 0;
+
+    cells.forEach(function(cell) {
+      var corners = cell.corners;
+
+      corners.forEach(function(node) {
+        var elevation = node.elevation;
+        var moisture = node.moisture;
+        var pos = node.pos.clone();
+        var posMapIndex = pos.x + ' ' + pos.y;
+        var positionNotSeen = _.isUndefined(indicesOfPositions[posMapIndex]);
+
+        if (positionNotSeen) {
+          indicesOfPositions[posMapIndex] = i;
+
+          positions[(i * 3)    ] = pos.x;
+          positions[(i * 3) + 1] = pos.y;
+          positions[(i * 3) + 2] = pos.z + (elevation * 10.0);
+          elevations[i] = elevation;
+          moistures[i] = moisture;
+
+          i++;
+        }
+      }, this);
+    }, this);
+
+
+    cells.forEach(function(cell) {
+      var corners = cell.corners;
+
+      for (var k = 1; k < corners.length - 1; k++) {
+        var nA = corners[0];
+        var nB = corners[k];
+        var nC = corners[k + 1];
+
+        var posA = nA.pos.clone();
+        var posB = nB.pos.clone();
+        var posC = nC.pos.clone();
+
+        var posMapIndexA = posA.x + ' ' + posA.y;
+        var posMapIndexB = posB.x + ' ' + posB.y;
+        var posMapIndexC = posC.x + ' ' + posC.y;
+
+        var iA = indicesOfPositions[posMapIndexA];
+        var iB = indicesOfPositions[posMapIndexB];
+        var iC = indicesOfPositions[posMapIndexC];
+
+        indices[j    ] = iA;
+        indices[j + 1] = iB;
+        indices[j + 2] = iC;
+
+        j += 3;
+      }
+    }, this);
+
+    geometry.setIndex(new THREE.BufferAttribute(indices, 1));
+    geometry.addAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.addAttribute('elevation', new THREE.BufferAttribute(elevations, 1));
+    geometry.addAttribute('moisture', new THREE.BufferAttribute(moistures, 1));
+    geometry.computeVertexNormals();
+
+    var material = this.shaderMaterial;
+    var mesh = new THREE.Mesh(geometry, material);
+
+    this.scene.add(mesh);
   }
 
   _renderCoastline() {

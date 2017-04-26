@@ -17,7 +17,7 @@ export default class Cell {
 
   isCoastal() {
     this.corners.forEach(function(node) {
-
+      // TODO
     });
 
     return false;
