@@ -5697,13 +5697,14 @@ var program = {
 var programs = [];
 
 var startTime;
-var num_particles = 9000;
+var num_particles = 10000;
 var mouseX = 0;
 var mouseY = 0;
 
-var obj_vertices;
+//var obj_vertices;
 var obj_list = [];
-var obj_frames = [];
+var obj_names = ["doberman", "dragon", "sphere", "cube"];
+var obj_frame_count = [22, 1, 1, 1];
 
 function glmMatToArray(mat) {
     return [mat[0][0], mat[0][1], mat[0][2], mat[0][3], mat[1][0], mat[1][1], mat[1][2], mat[1][3], mat[2][0], mat[2][1], mat[2][2], mat[2][3], mat[3][0], mat[3][1], mat[3][2], mat[3][3]];
@@ -5722,61 +5723,57 @@ var config = {
 
 function onLoad(framework) {
 
-    var obj_names = ["goblin", "sphere", "cube", "dragon"];
-    //var obj_names = ["sphere","cube"];    
-    //loadOBJs(obj_names, framework); 
-    loadDoberman(framework, 22);
+    loadOBJs(obj_names.slice(), framework, obj_frame_count.slice());
 }
 
-function loadOBJs(objNames, framework) {
+function loadOBJs(objNames, framework, objFrames) {
+
+    if (objFrames[0] == 0) {
+        objNames.splice(0, 1);
+        objFrames.splice(0, 1);
+    }
 
     if (objNames.length == 0) {
         console.log("Static OBJs loaded...");
-        obj_vertices = obj_list[0].vertices;
-        loadDoberman(framework, 22);
-        //setUpGUI(framework);
-        //setUpWebGL(framework);
-        return;
-    }
-
-    var objMtlLoader = new ObjMtlLoader();
-    objMtlLoader.load("./models/" + objNames[objNames.length - 1] + ".obj", function (err, result) {
-        if (err) {
-            console.log("obj error");
-        }
-        console.log("Loading " + objNames[objNames.length - 1] + "...");
-        obj_list.push(result);
-        obj_vertices = result.vertices;
-        var faces = result.faces;
-        var normals = result.normals;
-        console.log(obj_vertices.length);
-        objNames.pop();
-        loadOBJs(objNames, framework);
-    });
-}
-
-function loadDoberman(framework, numFrames) {
-
-    if (numFrames == 0) {
-        console.log("OBJs loaded...");
-        // obj_vertices = obj_list[0].vertices;
-        obj_vertices = obj_frames[0].vertices;
+        //obj_vertices = obj_list[0][0].flattenedVertices;
         setUpGUI(framework);
         setUpWebGL(framework);
         return;
     }
 
     var objMtlLoader = new ObjMtlLoader();
-    objMtlLoader.load("./models/doberman/" + numFrames + ".obj", function (err, result) {
+    objMtlLoader.load("./models/" + objNames[0] + "/" + objFrames[0] + ".obj", function (err, result) {
         if (err) {
             console.log("obj error");
         }
-        console.log("Loading doberman" + numFrames + "...");
-        obj_frames.unshift(result);
-        //obj_list.push(result);
-        obj_vertices = result.vertices;
-        console.log(obj_vertices.length);
-        loadDoberman(framework, numFrames - 1);
+        console.log("Loading " + objNames[0] + objFrames[0] + "...");
+
+        if (!obj_list[obj_names.indexOf(objNames[0])]) {
+            obj_list[obj_names.indexOf(objNames[0])] = [];
+        }
+
+        //        var obj_positions = [];
+        //        var vertices = result.vertices;
+        //
+        //        for (var i = 0; i < vertices.length; i++) {
+        //
+        //                var pos = vertices[i];
+        //                obj_positions.push(pos[0]);
+        //                obj_positions.push(pos[1]);
+        //                obj_positions.push(pos[2]);
+        //                obj_positions.push(1.0);
+        //
+        //        } 
+        //        
+        //        result.flattenedVertices = obj_positions;
+
+        obj_list[obj_names.indexOf(objNames[0])].unshift(result);
+
+        //obj_vertices = result.vertices;
+        //console.log(obj_vertices.length);
+
+        objFrames[0] = objFrames[0] - 1;
+        loadOBJs(objNames, framework, objFrames);
     });
 }
 
@@ -5801,40 +5798,20 @@ function setUpGUI(framework) {
     //        }
     //    });
 
-    //    gui.add(config, 'object', { Dragon: 1, Cube: 2, Sphere: 3, Goblin: 4 } ).name("Object").onChange(function(obj_index) {
-    //        config.object = obj_index;
-    //        
-    //        
-    //        var obj_positions = [];
-    //        obj_vertices = obj_list[obj_index-1].vertices;
-    //        for (var i = 0; i < num_particles; i++) {
-    //
-    //            var pos = obj_vertices[i%obj_vertices.length];
-    //            obj_positions.push(pos[0]);
-    //            obj_positions.push(pos[1]);
-    //            obj_positions.push(pos[2]);
-    //            obj_positions.push(1.0);
-    //
-    //        } 
-    //       
-    //        framework.webgl.gl.useProgram(programs[program.PARTICLES]);
-    //        framework.webgl.setAttributeBufferAtIndex(programs[program.PARTICLES],2, obj_positions);
-    //        
-    //    });  
-
-    gui.add(config, 'animated_object', { Doberman: 1 }).name("Animated Object").onChange(function (obj_index) {
+    gui.add(config, 'object', { Doberman: 1, Dragon: 2, Sphere: 3, Cube: 4 }).name("Object").onChange(function (obj_index) {
         config.object = obj_index;
 
         var obj_positions = [];
-        obj_vertices = obj_frames[obj_index - 1].vertices;
+        var verts = obj_list[config.object - 1][0].vertices;
         for (var i = 0; i < num_particles; i++) {
 
-            var pos = obj_vertices[i % obj_vertices.length];
+            var pos = verts[i % verts.length];
             obj_positions.push(pos[0]);
             obj_positions.push(pos[1]);
             obj_positions.push(pos[2]);
             obj_positions.push(1.0);
         }
+        //var obj_positions = obj_list[config.object-1][0].flattenedVertices;
 
         framework.webgl.gl.useProgram(programs[program.PARTICLES]);
         framework.webgl.setAttributeBufferAtIndex(programs[program.PARTICLES], 2, obj_positions);
@@ -5965,13 +5942,12 @@ function setUpWebGL(framework) {
 
     for (var i = 0; i < num_particles; i++) {
 
-        var pos = obj_vertices[i % obj_vertices.length];
+        var pos = obj_list[0][0].vertices[i % obj_list[0][0].vertices.length];
         obj_positions.push(pos[0]);
-        obj_positions.push(pos[1] - 2);
+        obj_positions.push(pos[1]);
         obj_positions.push(pos[2]);
         obj_positions.push(1.0);
     }
-    //console.log(obj_positions);
 
     framework.webgl.setAttributeBuffer(programs[program.PARTICLES], "inPos", particle_positions);
     framework.webgl.setAttributeBuffer(programs[program.PARTICLES], "inVel", particle_velocites);
@@ -5991,13 +5967,18 @@ var frame = 0;
 
 function updateAnimationFrame(curr_frame, framework) {
 
-    var f = curr_frame % 22;
+    if (obj_frame_count[config.object - 1].length == 1) return;
+
+    var f = curr_frame % obj_frame_count[config.object - 1];
     //console.log(f);
+
+    //var obj_positions =  obj_list[config.object-1][f].flattenedVertices;
     var obj_positions = [];
-    obj_vertices = obj_frames[f].vertices;
+    var verts = obj_list[config.object - 1][f].vertices;
+
     for (var i = 0; i < num_particles; i++) {
 
-        var pos = obj_vertices[i % obj_vertices.length];
+        var pos = verts[i % verts.length];
         obj_positions.push(pos[0]);
         obj_positions.push(pos[1]);
         obj_positions.push(pos[2]);
