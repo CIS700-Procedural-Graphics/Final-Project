@@ -58,9 +58,13 @@
 	
 	var _marching_cubes2 = _interopRequireDefault(_marching_cubes);
 	
+	var _waterShader = __webpack_require__(14);
+	
+	var _waterShader2 = _interopRequireDefault(_waterShader);
+	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	__webpack_require__(14);
+	__webpack_require__(15);
 	
 	// Credit:
 	// http://jamie-wong.com/2014/08/19/metaballs-and-marching-squares/
@@ -68,13 +72,42 @@
 	
 	var THREE = __webpack_require__(6); // older modules are imported like this. You shouldn't have to worry about this much
 	
-	var DEFAULT_VISUAL_DEBUG = true;
+	var clock = new THREE.Clock();
+	
+	(0, _waterShader2.default)(THREE);
+	var waterNormals; //to get water texture
+	var water;
+	
+	var time_update = 0.0;
+	var start = Date.now();
+	
+	//create ground plane
+	var gridDim = 100;
+	var terrainGeo = new THREE.PlaneGeometry(gridDim, gridDim, gridDim, gridDim); //width, height, widthSegments, heightSegments
+	terrainGeo.rotateX(-Math.PI / 2.0); //make the grid flat
+	
+	var noiseMaterial = new THREE.ShaderMaterial({
+	  uniforms: {
+	    time: {
+	      type: "float",
+	      value: time_update
+	    }
+	  },
+	  vertexShader: __webpack_require__(16),
+	  fragmentShader: __webpack_require__(17)
+	});
+	var terrainMesh = new THREE.Mesh(terrainGeo, noiseMaterial);
+	terrainMesh.rotateY(-Math.PI / 2.0);
+	terrainMesh.translateZ(-10);
+	terrainMesh.translateY(3);
+	
+	var DEFAULT_VISUAL_DEBUG = false; //true;
 	var DEFAULT_ISO_LEVEL = 1.0;
-	var DEFAULT_GRID_RES = 12; //4;
+	var DEFAULT_GRID_RES = 15; //12;//12;//4;  //32 should make it look real nice and smooth
 	var DEFAULT_GRID_WIDTH = 10;
-	var DEFAULT_NUM_METABALLS = 10;
+	var DEFAULT_NUM_METABALLS = 1; //10;
 	var DEFAULT_MIN_RADIUS = 0.5;
-	var DEFAULT_MAX_RADIUS = 1;
+	var DEFAULT_MAX_RADIUS = 0.5; //1;
 	var DEFAULT_MAX_SPEED = 0.01;
 	
 	var App = {
@@ -97,7 +130,7 @@
 	
 	    // Width of each voxel
 	    // Ideally, we want the voxel to be small (higher resolution)
-	    gridCellWidth: DEFAULT_GRID_WIDTH / DEFAULT_GRID_RES,
+	    gridCellWidth: DEFAULT_GRID_WIDTH / DEFAULT_GRID_RES, //THE SMALLER THIS VALUE IS, THE BETTER METABALLS LOOK. BUT ALSO WILL MAKE IT SLOWER
 	
 	    // Number of metaballs
 	    numMetaballs: DEFAULT_NUM_METABALLS,
@@ -134,41 +167,56 @@
 	  App.renderer = renderer;
 	
 	  renderer.setClearColor(0xbfd1e5);
-	  scene.add(new THREE.AxisHelper(20));
+	  //scene.add(new THREE.AxisHelper(20));
 	
 	  setupCamera(App.camera);
 	  setupLights(App.scene);
 	  setupScene(App.scene);
 	  setupGUI(gui);
-	}
+	
+	  setupBackground(App.scene);
+	  setupWater(App.scene, App.renderer, App.camera);
+	
+	  //set up obj mesh in scene
+	  var treeObj = 'geometry/feather.obj'; //'geometry/lowpolytree.obj';
+	  //setupObj(App.scene, treeObj);
+	
+	  //add terrain
+	  scene.add(terrainMesh);
+	} //end onload
 	
 	// called on frame updates
 	function onUpdate(framework) {
 	
+	  var deltaT = clock.getDelta();
+	
+	  time_update = (Date.now() - start) * 0.00025;
+	  noiseMaterial.uniforms.time.value = time_update;
+	
 	  if (App.marchingCubes) {
-	    App.marchingCubes.update();
+	    App.marchingCubes.update(deltaT); //send get delta value here
 	  }
-	}
+	
+	  if (water) {
+	    water.material.uniforms.time.value += 1.0 / 240.0; //make this divisor smaller to make water move faster
+	    water.render();
+	  }
+	} //end onUpdate
 	
 	function setupCamera(camera) {
 	  // set camera position
-	  camera.position.set(5, 5, 30);
-	  camera.lookAt(new THREE.Vector3(0, 0, 0));
+	  //camera.position.set(5, 5, 30);
+	  camera.position.set(-25.26, 6.7, -20.14);
+	  camera.lookAt(new THREE.Vector3(-15, 4, 0)); //FIDGET WITH THIS
 	}
 	
 	function setupLights(scene) {
-	
 	  // Directional light
 	  var directionalLight = new THREE.DirectionalLight(0xffffff, 1);
 	  directionalLight.color.setHSL(0.1, 1, 0.95);
 	  directionalLight.position.set(1, 10, 2);
 	  directionalLight.position.multiplyScalar(10);
-	
 	  scene.add(directionalLight);
-	}
-	
-	function setupScene(scene) {
-	  App.marchingCubes = new _marching_cubes2.default(App);
 	}
 	
 	function setupGUI(gui) {
@@ -216,6 +264,73 @@
 	  });
 	  debugFolder.open();
 	}
+	
+	function setupBackground(scene) {
+	  // set skybox
+	  var loader = new THREE.CubeTextureLoader();
+	  var urlPrefix = 'images/skymap/';
+	
+	  var skymap = new THREE.CubeTextureLoader().load([urlPrefix + 'px.jpg', urlPrefix + 'nx.jpg', urlPrefix + 'py.jpg', urlPrefix + 'ny.jpg', urlPrefix + 'pz.jpg', urlPrefix + 'nz.jpg']);
+	
+	  scene.background = skymap;
+	}
+	
+	function setupScene(scene) {
+	  App.marchingCubes = new _marching_cubes2.default(App);
+	}
+	
+	function setupWater(scene, renderer, camera) {
+	  //water shader
+	  scene.add(new THREE.AmbientLight(0x444444));
+	  var light = new THREE.DirectionalLight(0xffffbb, 1);
+	  light.position.set(-1, 1, -1);
+	  scene.add(light);
+	
+	  waterNormals = new THREE.TextureLoader().load('textures/waternormals.jpg');
+	  waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping;
+	
+	  var parameters = {
+	    width: 2000,
+	    height: 2000,
+	    widthSegments: 250,
+	    heightSegments: 250,
+	    depth: 1500,
+	    param: 4,
+	    filterparam: 1
+	  };
+	
+	  water = new THREE.Water(renderer, camera, scene, {
+	    textureWidth: 512,
+	    textureHeight: 512,
+	    waterNormals: waterNormals,
+	    alpha: 1.0,
+	    sunDirection: light.position.clone().normalize(),
+	    sunColor: 0xffffff,
+	    waterColor: 0x001e0f,
+	    distortionScale: 50.0
+	  });
+	
+	  var mirrorMesh = new THREE.Mesh(new THREE.PlaneBufferGeometry(parameters.width * 500, parameters.height * 500), water.material);
+	
+	  mirrorMesh.add(water);
+	  mirrorMesh.rotation.x = -Math.PI * 0.5;
+	  scene.add(mirrorMesh);
+	}
+	
+	// function setupObj(scene, file) {
+	//   //FOR WHEN I GET THE OBJ I WANT
+	//
+	//   // load a simple obj mesh
+	//   var objLoader = new THREE.OBJLoader();
+	//   objLoader.load(file, function(obj) {
+	//
+	//       // LOOK: This function runs after the obj has finished loading
+	//       var geo = obj.children[0].geometry; //the actual mesh could have more than 1 part. hence the array
+	//       var mesh = new THREE.Mesh(geo, lambertWhite);
+	//       mesh.translateY(10);
+	//       scene.add(mesh);
+	//   });
+	// }
 	
 	// when the scene is done initializing, it will call onLoad, then on frame updates, call onUpdate
 	_framework2.default.init(onLoad, onUpdate);
@@ -48146,9 +48261,16 @@
 	
 	var VISUAL_DEBUG = true;
 	
+	// ================================================ SHADERS ================================================ //
 	var LAMBERT_WHITE = new THREE.MeshLambertMaterial({ color: 0xeeeeee });
-	var LAMBERT_GREEN = new THREE.MeshBasicMaterial({ color: 0x00ee00, transparent: true, opacity: 0.5 });
+	
+	var LAMBERT_GREEN = new THREE.MeshLambertMaterial({ color: 0xeeeeee, side: THREE.DoubleSide });
+	//const LAMBERT_GREEN = new THREE.MeshBasicMaterial( { color: 0x00ee00, transparent: false, opacity: 0.75, side: THREE.DoubleSide });
 	var WIREFRAME_MAT = new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 10 });
+	
+	var LAMBERT_BLUE = new THREE.MeshBasicMaterial({ color: 0x0000ee, transparent: false, opacity: 0.75, side: THREE.DoubleSide });
+	
+	//const TOON = toonShader(2.5);
 	
 	var options = {
 	  albedo: '#dddddd'
@@ -48169,6 +48291,8 @@
 	  vertexShader: __webpack_require__(12),
 	  fragmentShader: __webpack_require__(13)
 	});
+	
+	// ================================================ MARCHING CUBE CLASS ================================================ //
 	
 	var MarchingCubes = function () {
 	  function MarchingCubes(App) {
@@ -48209,11 +48333,12 @@
 	      this.labels = [];
 	      this.balls = [];
 	
-	      //CREATING MESH OBJECT
-	      //var geom = new THREE.Geometry();
-	      //var object = new THREE.Mesh( new THREE.Geometry(), IRIDESCENCE);//new THREE.MeshNormalMaterial() );
-	      //this.meshGeom = object;
-	      this.meshGeom = new THREE.Mesh(new THREE.Geometry(), IRIDESCENCE);
+	      //CREATING MESH OBJECT MEMBER VARIABLE
+	      this.meshGeom = new THREE.Mesh(new THREE.Geometry(), LAMBERT_GREEN);
+	
+	      //max number of metaballs
+	      this.maxNumBalls = 1; //8;
+	
 	
 	      this.showSpheres = true;
 	      this.showGrid = true;
@@ -48286,79 +48411,212 @@
 	  }, {
 	    key: 'setupMetaballs',
 	    value: function setupMetaballs() {
-	
 	      this.balls = [];
-	
 	      var x, y, z, vx, vy, vz, radius, pos, vel;
-	      var matLambertWhite = LAMBERT_WHITE;
-	      var maxRadiusTRippled = this.maxRadius * 3;
-	      var maxRadiusDoubled = this.maxRadius * 2;
+	      var spawn_x, spawn_y, spawn_z, spawnLoc, spawnVel, accel;
 	
-	      // Randomly generate metaballs with different sizes and velocities
+	      // ---------------- METABLL ONE ----------------
+	      // -------- Position --------
+	      x = this.gridWidth - 2;
+	      y = this.gridWidth - 2;
+	      z = this.gridWidth / 2 - 3.5;
+	      pos = new THREE.Vector3(x, y, z);
+	      spawn_x = this.gridWidth - 2;
+	      spawn_y = this.gridWidth - 2;
+	      spawn_z = this.gridWidth / 2 - 3.5;
+	      spawnLoc = new THREE.Vector3(spawn_x, spawn_y, spawn_z);
+	      // -------- Velocity --------
+	      vx = (Math.random() * 2 - 1) * this.maxSpeed;
+	      vy = (Math.random() * 2 - 1) * this.maxSpeed;
+	      vz = (Math.random() * 2 - 1) * this.maxSpeed;
+	      vel = new THREE.Vector3(vx, vy, vz);
+	      spawnVel = new THREE.Vector3(-1.0, vy, vz);
+	      // -------- Other things --------
+	      accel = new THREE.Vector3(0.0, -10.0, 0.0);
+	      radius = Math.random() * (this.maxRadius - this.minRadius) + this.minRadius;
+	      this.setupBall(pos, vel, radius, spawnLoc, spawnVel, accel);
+	
+	      // ---------------- METABLL TWO ----------------
+	      // -------- Position --------
+	      z = this.gridWidth / 2 - 2.5;
+	      pos = new THREE.Vector3(x, y, z);
+	      spawn_z = this.gridWidth / 2 - 2.5;
+	      spawnLoc = new THREE.Vector3(spawn_x, spawn_y, spawn_z);
+	      // -------- Other things --------
+	      //spawnVel = new THREE.Vector3(-1.0, vy, vz);
+	      accel = new THREE.Vector3(0.0, -5.0, 0.0);
+	      this.setupBall(pos, vel, radius, spawnLoc, spawnVel, accel);
+	
+	      // ---------------- METABLL THREE ----------------
+	      // -------- Position --------
+	      z = this.gridWidth / 2 - 1.5;
+	      pos = new THREE.Vector3(x, y, z);
+	      spawn_z = this.gridWidth / 2 - 1.5;
+	      spawnLoc = new THREE.Vector3(spawn_x, spawn_y, spawn_z);
+	      // -------- Other things --------
+	      //spawnVel = new THREE.Vector3(-1.0, vy, vz);
+	      accel = new THREE.Vector3(0.0, -7.0, 0.0);
+	      this.setupBall(pos, vel, radius, spawnLoc, spawnVel, accel);
+	
+	      // ---------------- METABLL FOUR ----------------
+	      // -------- Position --------
+	      z = this.gridWidth / 2 - 0.5;
+	      pos = new THREE.Vector3(x, y, z);
+	      spawn_z = this.gridWidth / 2 - 0.5;
+	      spawnLoc = new THREE.Vector3(spawn_x, spawn_y, spawn_z);
+	      // -------- Other things --------
+	      //spawnVel = new THREE.Vector3(-1.0, vy, vz);
+	      accel = new THREE.Vector3(0.0, -3.0, 0.0);
+	      this.setupBall(pos, vel, radius, spawnLoc, spawnVel, accel);
+	
+	      // ---------------- METABLL FIVE ----------------
+	      // -------- Position --------
+	      z = this.gridWidth / 2 + 1;
+	      pos = new THREE.Vector3(x, y, z);
+	      spawn_z = this.gridWidth / 2 + 1;
+	      spawnLoc = new THREE.Vector3(spawn_x, spawn_y, spawn_z);
+	      // -------- Other things --------
+	      //spawnVel = new THREE.Vector3(-1.0, vy, vz);
+	      accel = new THREE.Vector3(0.0, -9.0, 0.0);
+	      this.setupBall(pos, vel, radius, spawnLoc, spawnVel, accel);
+	
+	      // ---------------- METABLL SIX ----------------
+	      // -------- Position --------
+	      z = this.gridWidth / 2 + 2;
+	      pos = new THREE.Vector3(x, y, z);
+	      spawn_z = this.gridWidth / 2 + 2;
+	      spawnLoc = new THREE.Vector3(spawn_x, spawn_y, spawn_z);
+	      // -------- Other things --------
+	      //spawnVel = new THREE.Vector3(-1.0, vy, vz);
+	      accel = new THREE.Vector3(0.0, -4.0, 0.0);
+	      this.setupBall(pos, vel, radius, spawnLoc, spawnVel, accel);
+	
+	      // // ---------------- METABLL FOUR ----------------
+	      // // -------- Position --------
+	      // x = this.gridWidth / 2;
+	      // y = this.gridWidth - 2;
+	      // z = this.gridWidth - 2;
+	      // pos = new THREE.Vector3(x, y, z);
+	      // // -------- Other things --------
+	      // spawn_x = this.gridWidth / 2;
+	      // spawn_y = this.gridWidth - 2;
+	      // spawn_z = this.gridWidth - 2;
+	      // spawnLoc = new THREE.Vector3(spawn_x, spawn_y, spawn_z);
+	      // spawnVel = new THREE.Vector3(vx, vy, -1.0);
+	      // accel = new THREE.Vector3(0.0, -15.0, 0.0);
+	      // radius = Math.random() * (this.maxRadius - this.minRadius) + this.minRadius;
+	      //
+	      // this.setupBall(pos, vel, radius, spawnLoc, spawnVel, accel);
+	    }
+	  }, {
+	    key: 'setupBall',
+	    //end setupMetaballs
+	
+	    //use this to spawn metaballs with specified locations, velocities, accel, etc
+	    value: function setupBall(pos, vel, radius, spawnLoc, spawnVel, accel) {
 	      for (var i = 0; i < this.numMetaballs; i++) {
-	        x = this.gridWidth / 2;
-	        y = this.gridWidth / 2;
-	        z = this.gridWidth / 2;
-	        pos = new THREE.Vector3(x, y, z);
+	        pos = pos;
+	        vel = vel;
+	        radius = radius;
+	        spawnLoc = spawnLoc;
+	        spawnVel = spawnVel;
+	        accel = accel;
 	
-	        vx = (Math.random() * 2 - 1) * this.maxSpeed;
-	        vy = (Math.random() * 2 - 1) * this.maxSpeed;
-	        vz = (Math.random() * 2 - 1) * this.maxSpeed;
-	        vel = new THREE.Vector3(vx, vy, vz);
-	
-	        radius = Math.random() * (this.maxRadius - this.minRadius) + this.minRadius;
-	
-	        var ball = new _metaball2.default(pos, radius, vel, this.gridWidth, VISUAL_DEBUG);
+	        var ball = new _metaball2.default(pos, radius, vel, this.gridWidth, VISUAL_DEBUG, spawnLoc, spawnVel, accel);
 	        this.balls.push(ball);
 	
 	        if (VISUAL_DEBUG) {
 	          this.scene.add(ball.mesh);
-	        }
-	      }
+	        } //end if
+	      } //end for
 	    }
-	
-	    // This function samples a point from the metaball's density function
-	    // Implement a function that returns the value of the all metaballs influence to a given point.
-	    // Please follow the resources given in the write-up for details.
-	
 	  }, {
 	    key: 'sample',
+	    //end setupBall
+	
+	
+	    //THE POINT YOU PASS INTO SAMPLE IS POINT ON THE GRID OR SPACE THAT YOU'RE DOING SIMULATION IN
+	    //YOU GIVE POINT, IT RETURNS VALUE (KINDA LIKE PERLIN NOISE, BUT THIS ONE IS DOING THE RADIUS / DISTANCE FUNCTION INSTEAD OF PERLIN NOISE)
+	    // YOU CAN CHANGE THIS IF YOU WANT
+	    // THE CURRENT FUNCTION IS A SECOND ORDER EQUATION HENCE IT GIVES A CURVY LOOKING SHAPE
+	    // THIRD ORDER EQUATION WILL GIVE MORE WAVY LOOK, AND LINEAR WILL GIVE SHARPER LOOK
+	
+	
+	    /*  METABALL FUNCTION (2 POINTS)
+	    An isosurface is created whenever the metaball function crosses a certain threshold, called isolevel.
+	    The metaball function describes the total influences of each metaball to a given points.
+	    A metaball influence is a function between its radius and distance to the point:
+	       f(point) = (radius * radius) / (distance * distance)
+	     By summing up all these influences, you effectively describes all the points that are greater than
+	    the isolevel as inside, and less than the isolevel as outside (or vice versa).
+	    As an observation, the bigger the metaball's radius is, the bigger its influence is.
+	     // This function samples a point from the metaball's density function
+	    // Implement a function that returns the value of the all metaballs influence to a given point.
+	    */
 	    value: function sample(point) {
 	      // @TODO
-	      /*  METABALL FUNCTION (2 POINTS)
-	      Metaballs are organic-looking n-dimensional objects. We will be implementing a 3-dimensional metaballs.
-	      They are great to make bloppy shapes. An isosurface is created whenever the metaball function
-	      crosses a certain threshold, called isolevel. The metaball function describes the total influences
-	      of each metaball to a given points. A metaball influence is a function between its radius and distance to the point:
-	         f(point) = (radius * radius) / (distance * distance)
-	       By summing up all these influences, you effectively describes all the points that are greater than
-	      the isolevel as inside, and less than the isolevel as outside (or vice versa).
-	      As an observation, the bigger the metaball's radius is, the bigger its influence is.
-	      --------------------------------------------------------------------------------------------------
-	      */
 	
-	      var isovalue = 0.0; //1.1; //BRINGING IT TO 0 WILL ONLY SHOW THE GRID CELL CUBES WHERE THE ISOVALUE IS >= 1 (but this doesn't always work?)
-	
-	      for (var i = 0; i < this.numMetaballs; i++) {
-	        var currBall = this.balls[i];
-	        var dist = Math.sqrt(Math.pow(currBall.pos.x - point.x, 2) + Math.pow(currBall.pos.y - point.y, 2) + Math.pow(currBall.pos.z - point.z, 2));
-	
-	        isovalue += currBall.radius * currBall.radius / (dist * dist);
-	      }
+	      var isovalue = 0.0;
+	      isovalue = sampleIsoValue(point, this.balls);
 	      return isovalue;
-	    } //end sample function
-	
+	    }
 	  }, {
 	    key: 'update',
-	    value: function update() {
+	    //end sample function
+	
+	
+	    value: function update(deltaT) {
 	
 	      if (this.isPaused) {
 	        return;
 	      }
 	
+	      //if list isn't at max num of metaballs
+	      //generate random number and check if it's less than a threshold
+	      //if so, create a new metaball and add to the list
+	
+	      //put logic in setupMetaballs here instead
+	
+	      // if(this.balls.length < this.maxNumBalls)
+	      // {
+	      //   var randNum = (Math.random() * 10 - 1);
+	      //   if(randNum < 5.0)
+	      //   {
+	      //
+	      //     var x, y, z, vx, vy, vz, radius, pos, vel;
+	      //     var spawn_x, spawn_y, spawn_z, spawnLoc, spawnVel, accel;
+	      //
+	      //     // ---------------- METABLL ONE ----------------
+	      //     // -------- Position --------
+	      //     x = this.gridWidth - 2;
+	      //     y = this.gridWidth - 2;
+	      //     z = this.gridWidth / 2 - 3.5;
+	      //     pos = new THREE.Vector3(x, y, z);
+	      //     spawn_x = this.gridWidth - 2;
+	      //     spawn_y = this.gridWidth - 2;
+	      //     spawn_z = this.gridWidth / 2 - 3.5;
+	      //     spawnLoc = new THREE.Vector3(spawn_x, spawn_y, spawn_z);
+	      //     // -------- Velocity --------
+	      //     vx = (Math.random() * 2 - 1) * this.maxSpeed;
+	      //     vy = (Math.random() * 2 - 1) * this.maxSpeed;
+	      //     vz = (Math.random() * 2 - 1) * this.maxSpeed;
+	      //     vel = new THREE.Vector3(vx, vy, vz);
+	      //     spawnVel = new THREE.Vector3(-1.0, vy, vz);
+	      //     // -------- Other things --------
+	      //     accel = new THREE.Vector3(0.0, -10.0, 0.0);
+	      //     radius = Math.random() * (this.maxRadius - this.minRadius) + this.minRadius;
+	      //     this.setupBall(pos, vel, radius, spawnLoc, spawnVel, accel);
+	      //   }
+	      // }
+	
+	
 	      // This should move the metaballs
 	      this.balls.forEach(function (ball) {
-	        ball.update();
+	        ball.update(deltaT);
+	        // console.log("ID: ");
+	        // console.log(ball.id);
+	        // console.log("POS: ");
+	        // console.log(ball.pos);
 	      });
 	
 	      /*  SAMPLING AT CORNERS (15 POINTS)
@@ -48455,19 +48713,19 @@
 	    value: function makeMesh() {
 	      // @TODO
 	
-	      this.meshGeom = new THREE.Mesh(new THREE.Geometry(), IRIDESCENCE);
-	      this.meshGeom.verticesNeedUpdate = true;
+	      this.meshGeom = new THREE.Mesh(new THREE.Geometry(), LAMBERT_GREEN);
 	      this.meshGeom.dynamic = true;
 	      this.scene.add(this.meshGeom);
-	    } //end makeMesh
-	
+	    }
 	  }, {
 	    key: 'updateMesh',
+	    //end makeMesh
+	
 	    value: function updateMesh() {
 	      // @TODO
 	
 	      //set the geometry to these new lists
-	      var newVerticesList = []; //use new Array();???
+	      var newVerticesList = [];
 	      var newFacesList = [];
 	
 	      //iterate through the vertices list
@@ -48475,9 +48733,6 @@
 	        var polygonizeResult = this.voxels[c].polygonize(this.isolevel, this.balls);
 	        var vertList = polygonizeResult.vertPositions;
 	        var normList = polygonizeResult.vertNormals;
-	        // console.log("PRINTING NORM LIST: ")
-	        // console.log(normList);
-	        // console.log(vertList);
 	
 	        //sanity check to make sure vertList is correct
 	        if (vertList.length % 3 !== 0) {
@@ -48487,7 +48742,6 @@
 	        if (vertList.length != 0) {
 	          var _len = newVerticesList.length;
 	          for (var i = 0; i < vertList.length; i += 3) {
-	            //var newVert = new THREE.Vector3(vertList[i].x, vertList[i].y, vertList[i].z);
 	            var v1 = vertList[i];
 	            var v2 = vertList[i + 1];
 	            var v3 = vertList[i + 2];
@@ -48506,53 +48760,22 @@
 	        } //end if vertlist
 	      } //end for every voxel loop
 	
-	      if (this.meshGeom) {
-	        this.scene.remove(this.meshGeom);
-	      }
-	
-	      // var geom = new THREE.Geometry();
-	      // geom.vertices = newVerticesList;
-	      // geom.faces = newFacesList;
-	      // var object = new THREE.Mesh( geom, IRIDESCENCE );
-	      // this.meshGeom = object;
-	      //
-	      // this.meshGeom.dynamic = true;
-	      // this.meshGeom.elementsNeedUpdate = true;
-	      // this.meshGeom.verticesNeedUpdate = true;
-	      // this.scene.add(this.meshGeom);
-	
-	
-	      //WHY IS THIS NOT WORKING?!?!?!
-	      // this.meshGeom.dynamic = true;
-	      // this.meshGeom.geometry.vertices = newVerticesList;
-	      // this.meshGeom.geometry.faces = newFacesList;
-	      // // //this.meshGeom.computeFaceNormals();
-	      // this.meshGeom.elementsNeedUpdate = true;
-	      // this.meshGeom.verticesNeedUpdate = true;
-	      // this.scene.add(this.meshGeom);
-	
-	
-	      //WILL THIS WORK??
-	      this.meshGeom.dynamic = true;
-	      var geom = new THREE.Geometry();
-	      geom.vertices = newVerticesList;
-	      geom.faces = newFacesList;
-	      this.meshGeom.geometry = geom;
-	
-	      this.meshGeom.elementsNeedUpdate = true;
-	      this.meshGeom.verticesNeedUpdate = true;
-	      this.scene.add(this.meshGeom);
-	    } //end updateMesh
-	
+	      this.meshGeom.geometry.vertices = newVerticesList;
+	      this.meshGeom.geometry.faces = newFacesList;
+	      this.meshGeom.geometry.elementsNeedUpdate = true;
+	      this.meshGeom.geometry.verticesNeedUpdate = true;
+	    }
 	  }]);
 	
 	  return MarchingCubes;
 	}();
 	
 	exports.default = MarchingCubes;
+	//end updateMesh
+	
 	; //end MarchingCube class
 	
-	// ------------------------------------------- //
+	// ================================================ VOXEL CLASS ================================================ //
 	
 	var Voxel = function () {
 	  function Voxel(position, gridCellWidth) {
@@ -48683,20 +48906,12 @@
 	
 	      var lerpPos = new THREE.Vector3(0.0, 0.0, 0.0);
 	
-	      // console.log("PRINTING THE 2 POS: ");
-	      // console.log(posA);
-	      // console.log(posB);
-	
 	      var posAiso = posA.isovalue;
 	      var posBiso = posB.isovalue;
 	      var posApos = posA.pos;
 	      var posBpos = posB.pos;
 	
-	      // console.log("posAISO: " + posAiso);
-	      // console.log("posBISO: " + posBiso);
-	
 	      var mu = 0.0;
-	      //var p = THREE.Vector3(0.0);
 	
 	      if (Math.abs(isolevel - posAiso) < 0.00001) {
 	        return posApos;
@@ -48709,14 +48924,10 @@
 	      }
 	
 	      mu = (isolevel - posAiso) / (posBiso - posAiso);
-	      // console.log("MU:" + mu);
 	
 	      lerpPos.x = posApos.x + mu * (posBpos.x - posApos.x);
 	      lerpPos.y = posApos.y + mu * (posBpos.y - posApos.y);
 	      lerpPos.z = posApos.z + mu * (posBpos.z - posApos.z);
-	
-	      // console.log("IM IN VERTEX INTERP: ");
-	      // console.log(lerpPos);
 	
 	      return lerpPos;
 	    }
@@ -48725,10 +48936,6 @@
 	    value: function polygonize(isolevel, metaBallsList) {
 	
 	      // @TODO
-	
-	      // console.log("IM IN POLYGONIZE");
-	      // console.log("Metaballs list length: ");
-	      // console.log(metaBallsList.length);
 	
 	      var vertexList = [];
 	      var normalList = [];
@@ -48743,17 +48950,6 @@
 	      //|= --> bitwise or
 	      //EX --> 5 | 1 --> 0101 | 0001 --> 0101 (anywhere there's a 1, result will be 1)
 	
-	      // console.log(this.BLowerLeft.isovalue);
-	      // console.log(this.BLowerRight.isovalue);
-	      // console.log(this.FLowerRight.isovalue);
-	      // console.log(this.FLowerLeft.isovalue);
-	      //
-	      // console.log(this.BUpperLeft.isovalue);
-	      // console.log(this.BUpperRight.isovalue);
-	      // console.log(this.FUpperRight.isovalue);
-	      // console.log(this.FUpperLeft.isovalue);
-	      //
-	      // console.log(isolevel);
 	      if (this.BLowerLeft.isovalue < isolevel) {
 	        cubeIndex |= 1;
 	      } //grid[0]
@@ -48779,7 +48975,6 @@
 	        cubeIndex |= 128;
 	      } //grid[7]
 	
-	      // console.log("CUBE INDEX: " + cubeIndex);
 	
 	      //FIND OUT WHICH BITS OF EDGETABLE VALUE TO RUN VERTEXINTERPOLATION ON
 	      //if cubeIndex == 9, edgetable[9] = 1001 0000 0101
@@ -48787,9 +48982,6 @@
 	
 	      //cube is completely inside or outside the isosurface
 	      if (_marching_cube_LUT2.default.EDGE_TABLE[cubeIndex] == 0) {
-	        //return 0;
-	        // vertPositions = [];
-	        // vertNormals = [];
 	        return {
 	          vertPositions: vertPositions,
 	          vertNormals: vertNormals
@@ -48797,108 +48989,64 @@
 	      }
 	      if (_marching_cube_LUT2.default.EDGE_TABLE[cubeIndex] & 1) {
 	        var pt1 = this.vertexInterpolation(isolevel, this.BLowerLeft, this.BLowerRight);
-	        // vertexList.push(pt1);
-	        // var nor1 = this.calculateNormal(pt1, metaBallsList);
-	        // normalList.push(nor1);
 	        vertexList[0] = pt1;
 	        normalList[0] = this.calculateNormal(pt1, metaBallsList);
 	      } //0, 1
 	      if (_marching_cube_LUT2.default.EDGE_TABLE[cubeIndex] & 2) {
 	        var pt2 = this.vertexInterpolation(isolevel, this.BLowerRight, this.FLowerRight);
-	        // vertexList.push(pt2);
-	        // var nor2 = this.calculateNormal(pt2, metaBallsList);
-	        // normalList.push(nor2);
 	        vertexList[1] = pt2;
 	        normalList[1] = this.calculateNormal(pt2, metaBallsList);
 	      } //1, 2
 	      if (_marching_cube_LUT2.default.EDGE_TABLE[cubeIndex] & 4) {
 	        var pt3 = this.vertexInterpolation(isolevel, this.FLowerRight, this.FLowerLeft);
-	        // vertexList.push(pt3);
-	        // var nor3 = this.calculateNormal(pt3, metaBallsList);
-	        // normalList.push(nor3);
 	        vertexList[2] = pt3;
 	        normalList[2] = this.calculateNormal(pt3, metaBallsList);
 	      } //2, 3
 	      if (_marching_cube_LUT2.default.EDGE_TABLE[cubeIndex] & 8) {
 	        var pt4 = this.vertexInterpolation(isolevel, this.FLowerLeft, this.BLowerLeft);
-	        // vertexList.push(pt4);
-	        // var nor4 = this.calculateNormal(pt4, metaBallsList);
-	        // normalList.push(nor4);
 	        vertexList[3] = pt4;
 	        normalList[3] = this.calculateNormal(pt4, metaBallsList);
 	      } //3, 0
 	      if (_marching_cube_LUT2.default.EDGE_TABLE[cubeIndex] & 16) {
 	        var pt5 = this.vertexInterpolation(isolevel, this.BUpperLeft, this.BUpperRight);
-	        // vertexList.push(pt5);
-	        // var nor5 = this.calculateNormal(pt5, metaBallsList);
-	        // normalList.push(nor5);
 	        vertexList[4] = pt5;
 	        normalList[4] = this.calculateNormal(pt5, metaBallsList);
 	      } //4, 5
 	      if (_marching_cube_LUT2.default.EDGE_TABLE[cubeIndex] & 32) {
 	        var pt6 = this.vertexInterpolation(isolevel, this.BUpperRight, this.FUpperRight);
-	        // vertexList.push(pt6);
-	        // var nor6 = this.calculateNormal(pt6, metaBallsList);
-	        // normalList.push(nor6);
 	        vertexList[5] = pt6;
 	        normalList[5] = this.calculateNormal(pt6, metaBallsList);
 	      } //5,6
 	      if (_marching_cube_LUT2.default.EDGE_TABLE[cubeIndex] & 64) {
 	        var pt7 = this.vertexInterpolation(isolevel, this.FUpperRight, this.FUpperLeft);
-	        // vertexList.push(pt7);
-	        // var nor7 = this.calculateNormal(pt7, metaBallsList);
-	        // normalList.push(nor7);
 	        vertexList[6] = pt7;
 	        normalList[6] = this.calculateNormal(pt7, metaBallsList);
 	      } //6, 7
 	      if (_marching_cube_LUT2.default.EDGE_TABLE[cubeIndex] & 128) {
 	        var pt8 = this.vertexInterpolation(isolevel, this.BUpperLeft, this.FUpperLeft);
-	        // vertexList.push(pt8);
-	        // var nor8 = this.calculateNormal(pt8, metaBallsList);
-	        // normalList.push(nor8);
 	        vertexList[7] = pt8;
 	        normalList[7] = this.calculateNormal(pt8, metaBallsList);
 	      } //7, 4
 	      if (_marching_cube_LUT2.default.EDGE_TABLE[cubeIndex] & 256) {
 	        var pt9 = this.vertexInterpolation(isolevel, this.BLowerLeft, this.BUpperLeft);
-	        // vertexList.push(pt9);
-	        // var nor9 = this.calculateNormal(pt9, metaBallsList);
-	        // normalList.push(nor9);
 	        vertexList[8] = pt9;
 	        normalList[8] = this.calculateNormal(pt9, metaBallsList);
 	      } //0, 4
 	      if (_marching_cube_LUT2.default.EDGE_TABLE[cubeIndex] & 512) {
 	        var pt10 = this.vertexInterpolation(isolevel, this.BLowerRight, this.BUpperRight);
-	        // vertexList.push(pt10);
-	        // var nor10 = this.calculateNormal(pt10, metaBallsList);
-	        // normalList.push(nor10);
 	        vertexList[9] = pt10;
 	        normalList[9] = this.calculateNormal(pt10, metaBallsList);
 	      } //1, 5
 	      if (_marching_cube_LUT2.default.EDGE_TABLE[cubeIndex] & 1024) {
 	        var pt11 = this.vertexInterpolation(isolevel, this.FLowerRight, this.FUpperRight);
-	        // vertexList.push(pt11);
-	        // var nor11 = this.calculateNormal(pt11, metaBallsList);
-	        // normalList.push(nor11);
 	        vertexList[10] = pt11;
 	        normalList[10] = this.calculateNormal(pt11, metaBallsList);
 	      } //2, 6
 	      if (_marching_cube_LUT2.default.EDGE_TABLE[cubeIndex] & 2048) {
 	        var pt12 = this.vertexInterpolation(isolevel, this.FLowerLeft, this.FUpperLeft);
-	        // vertexList.push(pt12);
-	        // var nor12 = this.calculateNormal(pt12, metaBallsList);
-	        // normalList.push(nor12);
 	        vertexList[11] = pt12;
 	        normalList[11] = this.calculateNormal(pt12, metaBallsList);
 	      } //3, 7
-	
-	      // console.log("IM HERE AFTER 15 IF STATEMENTS");
-	
-	      // var currTriTableRow = LUT.TRI_TABLE[cubeIndex];
-	      // console.log(currTriTableRow);
-	
-	      // console.log("IM PRINTING THE VERT LIST AFTER INTERPOLATING: ");
-	      // console.log(vertexList);
 	
 	
 	      //var tri = LUT.TRI_TABLE[cubeIndex * 16 + j];
@@ -48907,9 +49055,6 @@
 	        // if(LUT.TRI_TABLE[cubeIndex * 16 + i] != -1)
 	        // {
 	        //get the 3 triangle points and put them in vertPositions
-	
-	        // console.log("IM IN OKAY TRI TABLE CASE: ");
-	        // console.log(LUT.TRI_TABLE[cubeIndex * 16 + i]);
 	
 	        var p1 = vertexList[_marching_cube_LUT2.default.TRI_TABLE[cubeIndex * 16 + i]];
 	        var p2 = vertexList[_marching_cube_LUT2.default.TRI_TABLE[cubeIndex * 16 + i + 1]];
@@ -48928,9 +49073,6 @@
 	        // }
 	      } //end for loop
 	
-	      // console.log("IM HERE AFTER TRIANGLE FOR LOOP");
-	      // console.log("PRINTING VERT POSITIONS: ")
-	      // console.log(vertPositions);
 	
 	      return {
 	        vertPositions: vertPositions,
@@ -48940,9 +49082,8 @@
 	  }, {
 	    key: 'calculateNormal',
 	    value: function calculateNormal(point, ballList) {
-	      //console.log("IM IN CALCULATE NORMAL");
 	      var grad = new THREE.Vector3(0.0, 0.0, 0.0);
-	      var offset = 0.0001;
+	      var offset = 0.01;
 	
 	      var p1x = new THREE.Vector3(point.x + offset, point.y, point.z);
 	      var p2x = new THREE.Vector3(point.x - offset, point.y, point.z);
@@ -48956,30 +49097,86 @@
 	      var p2z = new THREE.Vector3(point.x, point.y, point.z - offset);
 	      grad.z = this.sampleNormal(p1z, ballList) - this.sampleNormal(p2z, ballList);
 	
-	      //var _len = grad.length();
-	      //var outputNormal = new THREE.Vector3(-grad.x / _len, -grad.y / _len, -grad.z / _len);
-	      //return outputNormal;
+	      // return -grad.normalize();
 	      return grad.normalize();
 	    }
 	  }, {
 	    key: 'sampleNormal',
 	    value: function sampleNormal(point, _ballList) {
-	      //console.log("IM IN SAMPLENORMAL");
 	      var isovalue = 0.0;
-	      //var pt = new THREE.Vector3(point[0], point[1], point[2])
-	
-	      for (var i = 0; i < _ballList.length; i++) {
-	        var currBall = _ballList[i];
-	        var dist = Math.sqrt(Math.pow(currBall.pos.x - point.x, 2) + Math.pow(currBall.pos.y - point.y, 2) + Math.pow(currBall.pos.z - point.z, 2));
-	
-	        isovalue += currBall.radius * currBall.radius / (dist * dist);
-	      }
+	      isovalue = sampleIsoValue(point, _ballList);
 	      return isovalue;
 	    }
 	  }]);
-
+	
 	  return Voxel;
-	}();
+	}(); //end Voxel Class
+	
+	
+	// ================================================ EXTERNAL FUNCTIONS ================================================ //
+	
+	function sampleIsoValue(point, ballsList) {
+	  var isovalue = 0.0;
+	
+	  for (var i = 0; i < ballsList.length; i++) {
+	    var currBall = ballsList[i];
+	    var dist = point.distanceToSquared(currBall.pos);
+	    isovalue += currBall.radius2 / dist;
+	  }
+	
+	  //Adding influence from a ground plane
+	
+	  var groundPlaneRadius = 1.5; //influence
+	  var y = -2;
+	  for (var x = 0; x < 10; x += 3) {
+	    for (var z = 0; z < 10; z += 3) {
+	      var dist = point.distanceToSquared(new THREE.Vector3(x, y, z));
+	      isovalue += groundPlaneRadius / dist;
+	    }
+	  }
+	
+	  // var groundPlaneRadius = 1.5; //influence
+	  // var y = 0;
+	  // for(var x = 0; x < 10; x += 4)  //dependent on grid size
+	  // {
+	  //   for(var z = 0; z < 10; z += 4)
+	  //   {
+	  //     var dist = point.distanceToSquared(new THREE.Vector3(x,y,z));
+	  //     isovalue += groundPlaneRadius / dist;
+	  //   }
+	  // }
+	
+	  return isovalue;
+	}
+	
+	//defining toon shader
+	// function toonShader(colorOffset) {
+	//     var toonGreenMaterial;
+	//     var stepSize = 1.0/5.0;
+	//
+	//     for ( var alpha = 0, alphaIndex = 0; alpha <= 1.0; alpha += stepSize, alphaIndex ++ ) {
+	//           var specularShininess = Math.pow(2.0 , alpha * 10.0 );
+	//
+	//           for ( var beta = 0; beta <= 1.0; beta += stepSize ) {
+	//               var specularColor = new THREE.Color( beta * 0.2, beta * 0.2, beta * 0.2 );
+	//
+	//               for ( var gamma = 0; gamma <= 1.0; gamma += stepSize ) {
+	//                   var offset = colorOffset;
+	//                   var diffuseColor = new THREE.Color().setHSL( alpha * offset, 0.5, gamma * 0.5 ).multiplyScalar( 1.0 - beta * 0.2 );
+	//
+	//                   toonGreenMaterial = new THREE.MeshToonMaterial( {
+	//                         color: diffuseColor,
+	//                         specular: specularColor,
+	//                         reflectivity: beta,
+	//                         shininess: specularShininess,
+	//                         shading: THREE.SmoothShading
+	//                   } );//end var toon material
+	//               }//end for gamma
+	//           }//end for beta
+	//     }//end for alpha
+	//
+	//     return toonGreenMaterial;
+	// }
 
 /***/ },
 /* 10 */
@@ -49000,23 +49197,41 @@
 	var SPHERE_GEO = new THREE.SphereBufferGeometry(1, 32, 32);
 	var LAMBERT_WHITE = new THREE.MeshLambertMaterial({ color: 0x9EB3D8, transparent: true, opacity: 0.5 });
 	
+	var clock = new THREE.Clock();
+	
+	//all simulation information
+	//to have metaballs move
+	//can be independent from metaball
+	//i could use a different simulation -- create the curving motion or any other motion here
+	
+	var globalID = 0;
+	
 	var Metaball = function () {
-	  function Metaball(pos, radius, vel, gridWidth, visualDebug) {
+	  function Metaball(pos, radius, vel, gridWidth, visualDebug, spawnLoc, spawnVel, accel) {
 	    _classCallCheck(this, Metaball);
 	
-	    this.init(pos, radius, vel, gridWidth, visualDebug);
+	    this.init(pos, radius, vel, gridWidth, visualDebug, spawnLoc, spawnVel, accel);
 	  }
 	
 	  _createClass(Metaball, [{
 	    key: 'init',
-	    value: function init(pos, radius, vel, gridWidth, visualDebug) {
+	    value: function init(pos, radius, vel, gridWidth, visualDebug, spawnLoc, spawnVel, accel) {
 	      this.gridWidth = gridWidth;
 	      this.pos = pos;
 	      this.vel = vel;
 	
+	      this.spawnVelocity = spawnVel; //new THREE.Vector3(-1, this.vel.y, this.vel.z);
+	      this.spawnLocation = spawnLoc; //new THREE.Vector3(this.gridWidth / 2, this.gridWidth - 2, this.gridWidth / 2); //subtract 2 from y as an offset
+	      this.accel = accel; //new THREE.Vector3(0.0);
+	      //this.accel.y = -1;
+	      this.vel.x = this.spawnVelocity.x; //set intial velocity to -1 in x direction
+	
 	      this.radius = radius;
 	      this.radius2 = radius * radius;
 	      this.mesh = null;
+	
+	      this.id = globalID;
+	      globalID += 1;
 	
 	      if (visualDebug) {
 	        this.makeMesh();
@@ -49044,8 +49259,14 @@
 	      }
 	    }
 	  }, {
+	    key: 'resetMetaball',
+	    value: function resetMetaball() {
+	      this.pos = this.spawnLocation.clone();
+	      this.vel = this.spawnVelocity.clone();
+	    }
+	  }, {
 	    key: 'update',
-	    value: function update() {
+	    value: function update(deltaT) {
 	      // @TODO
 	      //Implement the update for metaballs to move its position based velocity.
 	      //Reverse the velocity whenever the metaball goes out of bounds.
@@ -49053,49 +49274,47 @@
 	      //maintain an additional small margin so that the metaball
 	      //can reverse its moving direction before reaching the bounds.
 	
-	      //if there's a collision detected between the metaball position + EPSILON and the boundary position
-	      //reverse the velocity (subtract velocity from position??)
-	      //else ( if x, y, z of position is inside 0 to gridwidth, then you're still inside the boundary )
-	      //add velocity to position
+	      // console.log("ID: ");
+	      // console.log(ball.id);
+	      // console.log("POS: ");
+	      // console.log(ball.pos);
 	
-	      var offset2 = 0.5;
-	      var offset = this.gridWidth - offset2;
+	      //var deltaT = clock.getDelta();
 	
-	      // if(this.pos.x > 0.0 && this.pos.x < offset && this.pos.y > 0.0 && this.pos.y < offset && this.pos.z > 0.0 && this.pos.z < offset)
-	      // {
-	      //   //always add velocity but update what it is
-	      //   this.pos += this.vel;
-	      // }
-	      // else {
-	      //   this.pos -= this.vel;
-	      // }
+	      var bottomOffset = 1.0; //this should be radius of the metaball
+	      var topOffset = this.gridWidth - bottomOffset;
 	
-	      //if the metaball is NOT within the grid boundaries, then reverse velocity
-	      if (this.pos.x <= offset2 || this.pos.x > offset) {
-	        this.vel.x = -this.vel.x;
+	      //if the metaball hits grid boundaries, then reset to spawn location and velocity
+	      if (this.pos.x <= bottomOffset || this.pos.x > topOffset) {
+	        //this.vel.x = -this.vel.x;
+	        this.resetMetaball();
 	      }
-	      if (this.pos.y <= offset2 || this.pos.y > offset) {
-	        this.vel.y = -this.vel.y;
+	      if (this.pos.y <= bottomOffset || this.pos.y > topOffset) {
+	        //this.vel.y = -this.vel.y;
+	        this.resetMetaball();
 	      }
-	      if (this.pos.z <= offset2 || this.pos.z > offset) {
-	        this.vel.z = -this.vel.z;
+	      if (this.pos.z <= bottomOffset || this.pos.z > topOffset) {
+	        //this.vel.z = -this.vel.z;
+	        this.resetMetaball();
 	      }
-	      // this.pos += this.vel;
-	      // this.pos = new THREE.Vector3(this.pos.x + this.vel.x, this.pos.y  + this.vel.y, this.pos.z  + this.vel.z);
-	      this.pos.x += this.vel.x;
-	      this.pos.y += this.vel.y;
-	      this.pos.z += this.vel.z;
 	
-	      this.mesh.position.set(this.pos.x, this.pos.y, this.pos.z);
+	      this.vel.x += this.accel.x * deltaT;
+	      this.vel.y += this.accel.y * deltaT;
+	      this.vel.z += this.accel.z * deltaT;
 	
-	      //console.log(this.mesh.position);
-	      //console.log();
+	      this.pos.x += this.vel.x * deltaT;
+	      this.pos.y += this.vel.y * deltaT;
+	      this.pos.z += this.vel.z * deltaT;
+	
+	      //ONLY DO THIS WHEN VISUAL_DEBUG IS SET TO TRUE
+	      //this.mesh.position.set(this.pos.x, this.pos.y, this.pos.z);
 	    } //end update function
 	
 	  }]);
 	
 	  return Metaball;
-	}();
+	}(); //end Metaball class
+	
 	
 	exports.default = Metaball;
 
@@ -49194,9 +49413,493 @@
 
 /***/ },
 /* 14 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	
+	exports.default = function (THREE) {
+	
+	  //======================================================== MIRROR SHADER ===================================================================
+	
+	  /**
+	   * @author Slayvin / http://slayvin.net
+	   */
+	
+	  THREE.ShaderLib['mirror'] = {
+	
+	    uniforms: {
+	      "mirrorColor": { value: new THREE.Color(0x7F7F7F) },
+	      "mirrorSampler": { value: null },
+	      "textureMatrix": { value: new THREE.Matrix4() }
+	    },
+	
+	    vertexShader: ["uniform mat4 textureMatrix;", "varying vec4 mirrorCoord;", "void main() {", "vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );", "vec4 worldPosition = modelMatrix * vec4( position, 1.0 );", "mirrorCoord = textureMatrix * worldPosition;", "gl_Position = projectionMatrix * mvPosition;", "}"].join("\n"),
+	
+	    fragmentShader: ["uniform vec3 mirrorColor;", "uniform sampler2D mirrorSampler;", "varying vec4 mirrorCoord;", "float blendOverlay(float base, float blend) {", "return( base < 0.5 ? ( 2.0 * base * blend ) : (1.0 - 2.0 * ( 1.0 - base ) * ( 1.0 - blend ) ) );", "}", "void main() {", "vec4 color = texture2DProj(mirrorSampler, mirrorCoord);", "color = vec4(blendOverlay(mirrorColor.r, color.r), blendOverlay(mirrorColor.g, color.g), blendOverlay(mirrorColor.b, color.b), 1.0);", "gl_FragColor = color;", "}"].join("\n")
+	
+	  };
+	
+	  THREE.Mirror = function (renderer, camera, options) {
+	
+	    THREE.Object3D.call(this);
+	
+	    this.name = 'mirror_' + this.id;
+	
+	    options = options || {};
+	
+	    this.matrixNeedsUpdate = true;
+	
+	    var width = options.textureWidth !== undefined ? options.textureWidth : 512;
+	    var height = options.textureHeight !== undefined ? options.textureHeight : 512;
+	
+	    this.clipBias = options.clipBias !== undefined ? options.clipBias : 0.0;
+	
+	    var mirrorColor = options.color !== undefined ? new THREE.Color(options.color) : new THREE.Color(0x7F7F7F);
+	
+	    this.renderer = renderer;
+	    this.mirrorPlane = new THREE.Plane();
+	    this.normal = new THREE.Vector3(0, 0, 1);
+	    this.mirrorWorldPosition = new THREE.Vector3();
+	    this.cameraWorldPosition = new THREE.Vector3();
+	    this.rotationMatrix = new THREE.Matrix4();
+	    this.lookAtPosition = new THREE.Vector3(0, 0, -1);
+	    this.clipPlane = new THREE.Vector4();
+	
+	    // For debug only, show the normal and plane of the mirror
+	    var debugMode = options.debugMode !== undefined ? options.debugMode : false;
+	
+	    if (debugMode) {
+	
+	      var arrow = new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), new THREE.Vector3(0, 0, 0), 10, 0xffff80);
+	      var planeGeometry = new THREE.Geometry();
+	      planeGeometry.vertices.push(new THREE.Vector3(-10, -10, 0));
+	      planeGeometry.vertices.push(new THREE.Vector3(10, -10, 0));
+	      planeGeometry.vertices.push(new THREE.Vector3(10, 10, 0));
+	      planeGeometry.vertices.push(new THREE.Vector3(-10, 10, 0));
+	      planeGeometry.vertices.push(planeGeometry.vertices[0]);
+	      var plane = new THREE.Line(planeGeometry, new THREE.LineBasicMaterial({ color: 0xffff80 }));
+	
+	      this.add(arrow);
+	      this.add(plane);
+	    }
+	
+	    if (camera instanceof THREE.PerspectiveCamera) {
+	
+	      this.camera = camera;
+	    } else {
+	
+	      this.camera = new THREE.PerspectiveCamera();
+	      console.log(this.name + ': camera is not a Perspective Camera!');
+	    }
+	
+	    this.textureMatrix = new THREE.Matrix4();
+	
+	    this.mirrorCamera = this.camera.clone();
+	    this.mirrorCamera.matrixAutoUpdate = true;
+	
+	    var parameters = { minFilter: THREE.LinearFilter, magFilter: THREE.LinearFilter, format: THREE.RGBFormat, stencilBuffer: false };
+	
+	    this.renderTarget = new THREE.WebGLRenderTarget(width, height, parameters);
+	    this.renderTarget2 = new THREE.WebGLRenderTarget(width, height, parameters);
+	
+	    var mirrorShader = THREE.ShaderLib["mirror"];
+	    var mirrorUniforms = THREE.UniformsUtils.clone(mirrorShader.uniforms);
+	
+	    this.material = new THREE.ShaderMaterial({
+	
+	      fragmentShader: mirrorShader.fragmentShader,
+	      vertexShader: mirrorShader.vertexShader,
+	      uniforms: mirrorUniforms
+	
+	    });
+	
+	    this.material.uniforms.mirrorSampler.value = this.renderTarget.texture;
+	    this.material.uniforms.mirrorColor.value = mirrorColor;
+	    this.material.uniforms.textureMatrix.value = this.textureMatrix;
+	
+	    if (!THREE.Math.isPowerOfTwo(width) || !THREE.Math.isPowerOfTwo(height)) {
+	
+	      this.renderTarget.texture.generateMipmaps = false;
+	      this.renderTarget2.texture.generateMipmaps = false;
+	    }
+	
+	    this.updateTextureMatrix();
+	    this.render();
+	  };
+	
+	  THREE.Mirror.prototype = Object.create(THREE.Object3D.prototype);
+	  THREE.Mirror.prototype.constructor = THREE.Mirror;
+	
+	  THREE.Mirror.prototype.renderWithMirror = function (otherMirror) {
+	
+	    // update the mirror matrix to mirror the current view
+	    this.updateTextureMatrix();
+	    this.matrixNeedsUpdate = false;
+	
+	    // set the camera of the other mirror so the mirrored view is the reference view
+	    var tempCamera = otherMirror.camera;
+	    otherMirror.camera = this.mirrorCamera;
+	
+	    // render the other mirror in temp texture
+	    otherMirror.renderTemp();
+	    otherMirror.material.uniforms.mirrorSampler.value = otherMirror.renderTarget2.texture;
+	
+	    // render the current mirror
+	    this.render();
+	    this.matrixNeedsUpdate = true;
+	
+	    // restore material and camera of other mirror
+	    otherMirror.material.uniforms.mirrorSampler.value = otherMirror.renderTarget.texture;
+	    otherMirror.camera = tempCamera;
+	
+	    // restore texture matrix of other mirror
+	    otherMirror.updateTextureMatrix();
+	  };
+	
+	  THREE.Mirror.prototype.updateTextureMatrix = function () {
+	
+	    this.updateMatrixWorld();
+	    this.camera.updateMatrixWorld();
+	
+	    this.mirrorWorldPosition.setFromMatrixPosition(this.matrixWorld);
+	    this.cameraWorldPosition.setFromMatrixPosition(this.camera.matrixWorld);
+	
+	    this.rotationMatrix.extractRotation(this.matrixWorld);
+	
+	    this.normal.set(0, 0, 1);
+	    this.normal.applyMatrix4(this.rotationMatrix);
+	
+	    var view = this.mirrorWorldPosition.clone().sub(this.cameraWorldPosition);
+	    view.reflect(this.normal).negate();
+	    view.add(this.mirrorWorldPosition);
+	
+	    this.rotationMatrix.extractRotation(this.camera.matrixWorld);
+	
+	    this.lookAtPosition.set(0, 0, -1);
+	    this.lookAtPosition.applyMatrix4(this.rotationMatrix);
+	    this.lookAtPosition.add(this.cameraWorldPosition);
+	
+	    var target = this.mirrorWorldPosition.clone().sub(this.lookAtPosition);
+	    target.reflect(this.normal).negate();
+	    target.add(this.mirrorWorldPosition);
+	
+	    this.up.set(0, -1, 0);
+	    this.up.applyMatrix4(this.rotationMatrix);
+	    this.up.reflect(this.normal).negate();
+	
+	    this.mirrorCamera.position.copy(view);
+	    this.mirrorCamera.up = this.up;
+	    this.mirrorCamera.lookAt(target);
+	
+	    this.mirrorCamera.updateProjectionMatrix();
+	    this.mirrorCamera.updateMatrixWorld();
+	    this.mirrorCamera.matrixWorldInverse.getInverse(this.mirrorCamera.matrixWorld);
+	
+	    // Update the texture matrix
+	    this.textureMatrix.set(0.5, 0.0, 0.0, 0.5, 0.0, 0.5, 0.0, 0.5, 0.0, 0.0, 0.5, 0.5, 0.0, 0.0, 0.0, 1.0);
+	    this.textureMatrix.multiply(this.mirrorCamera.projectionMatrix);
+	    this.textureMatrix.multiply(this.mirrorCamera.matrixWorldInverse);
+	
+	    // Now update projection matrix with new clip plane, implementing code from: http://www.terathon.com/code/oblique.html
+	    // Paper explaining this technique: http://www.terathon.com/lengyel/Lengyel-Oblique.pdf
+	    this.mirrorPlane.setFromNormalAndCoplanarPoint(this.normal, this.mirrorWorldPosition);
+	    this.mirrorPlane.applyMatrix4(this.mirrorCamera.matrixWorldInverse);
+	
+	    this.clipPlane.set(this.mirrorPlane.normal.x, this.mirrorPlane.normal.y, this.mirrorPlane.normal.z, this.mirrorPlane.constant);
+	
+	    var q = new THREE.Vector4();
+	    var projectionMatrix = this.mirrorCamera.projectionMatrix;
+	
+	    q.x = (Math.sign(this.clipPlane.x) + projectionMatrix.elements[8]) / projectionMatrix.elements[0];
+	    q.y = (Math.sign(this.clipPlane.y) + projectionMatrix.elements[9]) / projectionMatrix.elements[5];
+	    q.z = -1.0;
+	    q.w = (1.0 + projectionMatrix.elements[10]) / projectionMatrix.elements[14];
+	
+	    // Calculate the scaled plane vector
+	    var c = new THREE.Vector4();
+	    c = this.clipPlane.multiplyScalar(2.0 / this.clipPlane.dot(q));
+	
+	    // Replacing the third row of the projection matrix
+	    projectionMatrix.elements[2] = c.x;
+	    projectionMatrix.elements[6] = c.y;
+	    projectionMatrix.elements[10] = c.z + 1.0 - this.clipBias;
+	    projectionMatrix.elements[14] = c.w;
+	  };
+	
+	  THREE.Mirror.prototype.render = function () {
+	
+	    if (this.matrixNeedsUpdate) this.updateTextureMatrix();
+	
+	    this.matrixNeedsUpdate = true;
+	
+	    // Render the mirrored view of the current scene into the target texture
+	    var scene = this;
+	
+	    while (scene.parent !== null) {
+	
+	      scene = scene.parent;
+	    }
+	
+	    if (scene !== undefined && scene instanceof THREE.Scene) {
+	
+	      // We can't render ourself to ourself
+	      var visible = this.material.visible;
+	      this.material.visible = false;
+	
+	      this.renderer.render(scene, this.mirrorCamera, this.renderTarget, true);
+	
+	      this.material.visible = visible;
+	    }
+	  };
+	
+	  THREE.Mirror.prototype.renderTemp = function () {
+	
+	    if (this.matrixNeedsUpdate) this.updateTextureMatrix();
+	
+	    this.matrixNeedsUpdate = true;
+	
+	    // Render the mirrored view of the current scene into the target texture
+	    var scene = this;
+	
+	    while (scene.parent !== null) {
+	
+	      scene = scene.parent;
+	    }
+	
+	    if (scene !== undefined && scene instanceof THREE.Scene) {
+	
+	      this.renderer.render(scene, this.mirrorCamera, this.renderTarget2, true);
+	    }
+	  };
+	
+	  //======================================================== WATER SHADER ===================================================================
+	  /**
+	  * @author jbouny / https://github.com/jbouny
+	  *
+	  * Work based on :
+	  * @author Slayvin / http://slayvin.net : Flat mirror for three.js
+	  * @author Stemkoski / http://www.adelphi.edu/~stemkoski : An implementation of water shader based on the flat mirror
+	  * @author Jonas Wagner / http://29a.ch/ && http://29a.ch/slides/2012/webglwater/ : Water shader explanations in WebGL
+	  */
+	
+	  THREE.ShaderLib['water'] = {
+	
+	    uniforms: THREE.UniformsUtils.merge([THREE.UniformsLib["fog"], {
+	      "normalSampler": { value: null },
+	      "mirrorSampler": { value: null },
+	      "alpha": { value: 1.0 },
+	      "time": { value: 0.0 },
+	      "distortionScale": { value: 20.0 },
+	      "noiseScale": { value: 1.0 },
+	      "textureMatrix": { value: new THREE.Matrix4() },
+	      "sunColor": { value: new THREE.Color(0x7F7F7F) },
+	      "sunDirection": { value: new THREE.Vector3(0.70707, 0.70707, 0) },
+	      "eye": { value: new THREE.Vector3() },
+	      "waterColor": { value: new THREE.Color(0x555555) }
+	    }]),
+	
+	    vertexShader: ['uniform mat4 textureMatrix;', 'uniform float time;', 'varying vec4 mirrorCoord;', 'varying vec3 worldPosition;', THREE.ShaderChunk["fog_pars_vertex"], 'void main()', '{', '	mirrorCoord = modelMatrix * vec4( position, 1.0 );', '	worldPosition = mirrorCoord.xyz;', '	mirrorCoord = textureMatrix * mirrorCoord;', '	gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );', THREE.ShaderChunk["fog_vertex"], '}'].join('\n'),
+	
+	    fragmentShader: ['precision highp float;', 'uniform sampler2D mirrorSampler;', 'uniform float alpha;', 'uniform float time;', 'uniform float distortionScale;', 'uniform sampler2D normalSampler;', 'uniform vec3 sunColor;', 'uniform vec3 sunDirection;', 'uniform vec3 eye;', 'uniform vec3 waterColor;', 'varying vec4 mirrorCoord;', 'varying vec3 worldPosition;', 'vec4 getNoise( vec2 uv )', '{', '	vec2 uv0 = ( uv / 103.0 ) + vec2(time / 17.0, time / 29.0);', '	vec2 uv1 = uv / 107.0-vec2( time / -19.0, time / 31.0 );', '	vec2 uv2 = uv / vec2( 8907.0, 9803.0 ) + vec2( time / 101.0, time / 97.0 );', '	vec2 uv3 = uv / vec2( 1091.0, 1027.0 ) - vec2( time / 109.0, time / -113.0 );', '	vec4 noise = texture2D( normalSampler, uv0 ) +', '		texture2D( normalSampler, uv1 ) +', '		texture2D( normalSampler, uv2 ) +', '		texture2D( normalSampler, uv3 );', '	return noise * 0.5 - 1.0;', '}', 'void sunLight( const vec3 surfaceNormal, const vec3 eyeDirection, float shiny, float spec, float diffuse, inout vec3 diffuseColor, inout vec3 specularColor )', '{', '	vec3 reflection = normalize( reflect( -sunDirection, surfaceNormal ) );', '	float direction = max( 0.0, dot( eyeDirection, reflection ) );', '	specularColor += pow( direction, shiny ) * sunColor * spec;', '	diffuseColor += max( dot( sunDirection, surfaceNormal ), 0.0 ) * sunColor * diffuse;', '}', THREE.ShaderChunk["common"], THREE.ShaderChunk["fog_pars_fragment"], 'void main()', '{', '	vec4 noise = getNoise( worldPosition.xz );', '	vec3 surfaceNormal = normalize( noise.xzy * vec3( 1.5, 1.0, 1.5 ) );', '	vec3 diffuseLight = vec3(0.0);', '	vec3 specularLight = vec3(0.0);', '	vec3 worldToEye = eye-worldPosition;', '	vec3 eyeDirection = normalize( worldToEye );', '	sunLight( surfaceNormal, eyeDirection, 100.0, 2.0, 0.5, diffuseLight, specularLight );', '	float distance = length(worldToEye);', '	vec2 distortion = surfaceNormal.xz * ( 0.001 + 1.0 / distance ) * distortionScale;', '	vec3 reflectionSample = vec3( texture2D( mirrorSampler, mirrorCoord.xy / mirrorCoord.z + distortion ) );', '	float theta = max( dot( eyeDirection, surfaceNormal ), 0.0 );', '	float rf0 = 0.3;', '	float reflectance = rf0 + ( 1.0 - rf0 ) * pow( ( 1.0 - theta ), 5.0 );', '	vec3 scatter = max( 0.0, dot( surfaceNormal, eyeDirection ) ) * waterColor;', '	vec3 albedo = mix( sunColor * diffuseLight * 0.3 + scatter, ( vec3( 0.1 ) + reflectionSample * 0.9 + reflectionSample * specularLight ), reflectance );', '	vec3 outgoingLight = albedo;', THREE.ShaderChunk["fog_fragment"], '	gl_FragColor = vec4( outgoingLight, alpha );', '}'].join('\n')
+	
+	  };
+	
+	  THREE.Water = function (renderer, camera, scene, options) {
+	
+	    THREE.Object3D.call(this);
+	    this.name = 'water_' + this.id;
+	
+	    function optionalParameter(value, defaultValue) {
+	
+	      return value !== undefined ? value : defaultValue;
+	    }
+	
+	    options = options || {};
+	
+	    this.matrixNeedsUpdate = true;
+	
+	    var width = optionalParameter(options.textureWidth, 512);
+	    var height = optionalParameter(options.textureHeight, 512);
+	    this.clipBias = optionalParameter(options.clipBias, 0.0);
+	    this.alpha = optionalParameter(options.alpha, 1.0);
+	    this.time = optionalParameter(options.time, 0.0);
+	    this.normalSampler = optionalParameter(options.waterNormals, null);
+	    this.sunDirection = optionalParameter(options.sunDirection, new THREE.Vector3(0.70707, 0.70707, 0.0));
+	    this.sunColor = new THREE.Color(optionalParameter(options.sunColor, 0xffffff));
+	    this.waterColor = new THREE.Color(optionalParameter(options.waterColor, 0x7F7F7F));
+	    this.eye = optionalParameter(options.eye, new THREE.Vector3(0, 0, 0));
+	    this.distortionScale = optionalParameter(options.distortionScale, 20.0);
+	    this.side = optionalParameter(options.side, THREE.FrontSide);
+	    this.fog = optionalParameter(options.fog, false);
+	
+	    this.renderer = renderer;
+	    this.scene = scene;
+	    this.mirrorPlane = new THREE.Plane();
+	    this.normal = new THREE.Vector3(0, 0, 1);
+	    this.mirrorWorldPosition = new THREE.Vector3();
+	    this.cameraWorldPosition = new THREE.Vector3();
+	    this.rotationMatrix = new THREE.Matrix4();
+	    this.lookAtPosition = new THREE.Vector3(0, 0, -1);
+	    this.clipPlane = new THREE.Vector4();
+	
+	    if (camera instanceof THREE.PerspectiveCamera) {
+	
+	      this.camera = camera;
+	    } else {
+	
+	      this.camera = new THREE.PerspectiveCamera();
+	      console.log(this.name + ': camera is not a Perspective Camera!');
+	    }
+	
+	    this.textureMatrix = new THREE.Matrix4();
+	
+	    this.mirrorCamera = this.camera.clone();
+	
+	    this.renderTarget = new THREE.WebGLRenderTarget(width, height);
+	    this.renderTarget2 = new THREE.WebGLRenderTarget(width, height);
+	
+	    var mirrorShader = THREE.ShaderLib["water"];
+	    var mirrorUniforms = THREE.UniformsUtils.clone(mirrorShader.uniforms);
+	
+	    this.material = new THREE.ShaderMaterial({
+	      fragmentShader: mirrorShader.fragmentShader,
+	      vertexShader: mirrorShader.vertexShader,
+	      uniforms: mirrorUniforms,
+	      transparent: true,
+	      side: this.side,
+	      fog: this.fog
+	    });
+	
+	    this.material.uniforms.mirrorSampler.value = this.renderTarget.texture;
+	    this.material.uniforms.textureMatrix.value = this.textureMatrix;
+	    this.material.uniforms.alpha.value = this.alpha;
+	    this.material.uniforms.time.value = this.time;
+	    this.material.uniforms.normalSampler.value = this.normalSampler;
+	    this.material.uniforms.sunColor.value = this.sunColor;
+	    this.material.uniforms.waterColor.value = this.waterColor;
+	    this.material.uniforms.sunDirection.value = this.sunDirection;
+	    this.material.uniforms.distortionScale.value = this.distortionScale;
+	
+	    this.material.uniforms.eye.value = this.eye;
+	
+	    if (!THREE.Math.isPowerOfTwo(width) || !THREE.Math.isPowerOfTwo(height)) {
+	
+	      this.renderTarget.texture.generateMipmaps = false;
+	      this.renderTarget.texture.minFilter = THREE.LinearFilter;
+	      this.renderTarget2.texture.generateMipmaps = false;
+	      this.renderTarget2.texture.minFilter = THREE.LinearFilter;
+	    }
+	
+	    this.updateTextureMatrix();
+	    this.render();
+	  };
+	
+	  THREE.Water.prototype = Object.create(THREE.Mirror.prototype);
+	  THREE.Water.prototype.constructor = THREE.Water;
+	
+	  THREE.Water.prototype.updateTextureMatrix = function () {
+	
+	    function sign(x) {
+	
+	      return x ? x < 0 ? -1 : 1 : 0;
+	    }
+	
+	    this.updateMatrixWorld();
+	    this.camera.updateMatrixWorld();
+	
+	    this.mirrorWorldPosition.setFromMatrixPosition(this.matrixWorld);
+	    this.cameraWorldPosition.setFromMatrixPosition(this.camera.matrixWorld);
+	
+	    this.rotationMatrix.extractRotation(this.matrixWorld);
+	
+	    this.normal.set(0, 0, 1);
+	    this.normal.applyMatrix4(this.rotationMatrix);
+	
+	    var view = this.mirrorWorldPosition.clone().sub(this.cameraWorldPosition);
+	    view.reflect(this.normal).negate();
+	    view.add(this.mirrorWorldPosition);
+	
+	    this.rotationMatrix.extractRotation(this.camera.matrixWorld);
+	
+	    this.lookAtPosition.set(0, 0, -1);
+	    this.lookAtPosition.applyMatrix4(this.rotationMatrix);
+	    this.lookAtPosition.add(this.cameraWorldPosition);
+	
+	    var target = this.mirrorWorldPosition.clone().sub(this.lookAtPosition);
+	    target.reflect(this.normal).negate();
+	    target.add(this.mirrorWorldPosition);
+	
+	    this.up.set(0, -1, 0);
+	    this.up.applyMatrix4(this.rotationMatrix);
+	    this.up.reflect(this.normal).negate();
+	
+	    this.mirrorCamera.position.copy(view);
+	    this.mirrorCamera.up = this.up;
+	    this.mirrorCamera.lookAt(target);
+	    this.mirrorCamera.aspect = this.camera.aspect;
+	
+	    this.mirrorCamera.updateProjectionMatrix();
+	    this.mirrorCamera.updateMatrixWorld();
+	    this.mirrorCamera.matrixWorldInverse.getInverse(this.mirrorCamera.matrixWorld);
+	
+	    // Update the texture matrix
+	    this.textureMatrix.set(0.5, 0.0, 0.0, 0.5, 0.0, 0.5, 0.0, 0.5, 0.0, 0.0, 0.5, 0.5, 0.0, 0.0, 0.0, 1.0);
+	    this.textureMatrix.multiply(this.mirrorCamera.projectionMatrix);
+	    this.textureMatrix.multiply(this.mirrorCamera.matrixWorldInverse);
+	
+	    // Now update projection matrix with new clip plane, implementing code from: http://www.terathon.com/code/oblique.html
+	    // Paper explaining this technique: http://www.terathon.com/lengyel/Lengyel-Oblique.pdf
+	    this.mirrorPlane.setFromNormalAndCoplanarPoint(this.normal, this.mirrorWorldPosition);
+	    this.mirrorPlane.applyMatrix4(this.mirrorCamera.matrixWorldInverse);
+	
+	    this.clipPlane.set(this.mirrorPlane.normal.x, this.mirrorPlane.normal.y, this.mirrorPlane.normal.z, this.mirrorPlane.constant);
+	
+	    var q = new THREE.Vector4();
+	    var projectionMatrix = this.mirrorCamera.projectionMatrix;
+	
+	    q.x = (sign(this.clipPlane.x) + projectionMatrix.elements[8]) / projectionMatrix.elements[0];
+	    q.y = (sign(this.clipPlane.y) + projectionMatrix.elements[9]) / projectionMatrix.elements[5];
+	    q.z = -1.0;
+	    q.w = (1.0 + projectionMatrix.elements[10]) / projectionMatrix.elements[14];
+	
+	    // Calculate the scaled plane vector
+	    var c = new THREE.Vector4();
+	    c = this.clipPlane.multiplyScalar(2.0 / this.clipPlane.dot(q));
+	
+	    // Replacing the third row of the projection matrix
+	    projectionMatrix.elements[2] = c.x;
+	    projectionMatrix.elements[6] = c.y;
+	    projectionMatrix.elements[10] = c.z + 1.0 - this.clipBias;
+	    projectionMatrix.elements[14] = c.w;
+	
+	    var worldCoordinates = new THREE.Vector3();
+	    worldCoordinates.setFromMatrixPosition(this.camera.matrixWorld);
+	    this.eye = worldCoordinates;
+	    this.material.uniforms.eye.value = this.eye;
+	  };
+	};
+
+/***/ },
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	module.exports = __webpack_require__.p + "index.html";
+
+/***/ },
+/* 16 */
+/***/ function(module, exports) {
+
+	module.exports = "varying vec3 vNormal;\nuniform float time;\nvarying vec3 perlin_color;\n\nvarying vec3 frag_Pos;\n\n// uniform float num_octaves;\n// uniform float perlin_persistence;\n\n\nfloat cosineInterp(float x, float y, float z)\n{\n    float t = (1.0 - cos(z * 3.1459)) * 0.5;\n    return (x * (1.0 - t)) + (y * t);\n}\n\nfloat randomNoise3D(float x, float y, float z)\n{\n    vec3 a = vec3(x, y, z);\n    vec3 b = vec3(12.9898, 78.233, 140.394);\n\n    float dot_prod = (a.x * b.x) + (a.y * b.y) + (a.z * b.z);\n    float val = sin(dot_prod) * 43758.5453;\n\n    float int_val = floor(val);\n    return (val - int_val) * 2.0 - 1.0;\n}\n\nfloat smoothedNoise(float x, float y, float z)\n{\n    //edge connected (12) / 8\n    float edges = (randomNoise3D(x - 1.0, y + 1.0, z) + randomNoise3D(x, y + 1.0, z + 1.0) + randomNoise3D(x + 1.0, y + 1.0, z) + randomNoise3D(x, y + 1.0, z - 1.0)\n                  + randomNoise3D(x - 1.0, y, z + 1.0) + randomNoise3D(x + 1.0, y, z + 1.0) + randomNoise3D(x + 1.0, y, z - 1.0) + randomNoise3D(x - 1.0, y, z - 1.0)\n                  + randomNoise3D(x - 1.0, y - 1.0, z) + randomNoise3D(x, y - 1.0, z + 1.0) + randomNoise3D(x + 1.0, y - 1.0, z) + randomNoise3D(x, y - 1.0, z - 1.0))\n                  / 8.0;\n\n    //point connected (8) / 16\n    float points = randomNoise3D(x - 1.0, y + 1.0, z + 1.0) + randomNoise3D(x + 1.0, y + 1.0, z + 1.0) + randomNoise3D(x - 1.0, y - 1.0, z + 1.0) + randomNoise3D(x + 1.0, y - 1.0, z + 1.0)\n                    + randomNoise3D(x - 1.0, y + 1.0, z - 1.0) + randomNoise3D(x + 1.0, y + 1.0, z - 1.0) + randomNoise3D(x - 1.0, y - 1.0, z - 1.0) + randomNoise3D(x + 1.0, y - 1.0, z - 1.0)\n                    / 16.0;\n\n    //face connected (6) / 4\n    float faces = randomNoise3D(x - 1.0, y , z) + randomNoise3D(x, y + 1.0, z) + randomNoise3D(x , y, z + 1.0)\n                    + randomNoise3D(x + 1.0, y, z) + randomNoise3D(x , y, z - 1.0) + randomNoise3D(x , y - 1.0, z)\n                    / 4.0;\n\n    //center (1) / 2\n    float center = randomNoise3D(x , y, z) / 2.0;\n\n    return edges + points + faces + center;\n}\n\n//each sample point has a smoothed value, and then you interpolate between those smoothed values rather than the original ones\nfloat interpolatedNoise(float x, float y, float z)\n{\n    float floored_x = floor(x);\n    float difference_x = x - floored_x;\n\n    float floored_y = floor(y);\n    float difference_y = y - floored_y;\n\n    float floored_z = floor(z);\n    float difference_z = z - floored_z;\n\n    float v1 = smoothedNoise(floored_x, floored_y, floored_z);\n    float v2 = smoothedNoise(floored_x + 1.0, floored_y, floored_z);\n\n    float v3 = smoothedNoise(floored_x, floored_y + 1.0, floored_z);\n    float v4 = smoothedNoise(floored_x + 1.0, floored_y + 1.0, floored_z);\n\n    float v5 = smoothedNoise(floored_x, floored_y, floored_z + 1.0);\n    float v6 = smoothedNoise(floored_x + 1.0, floored_y, floored_z + 1.0);\n\n    float v7 = smoothedNoise(floored_x, floored_y + 1.0, floored_z + 1.0);\n    float v8 = smoothedNoise(floored_x + 1.0, floored_y + 1.0, floored_z + 1.0);\n\n\n    float interp_1 = cosineInterp(v1, v2, difference_x);\n    float interp_2 = cosineInterp(v3, v4, difference_x);\n\n    float interp_3 = cosineInterp(v5, v6, difference_x);\n    float interp_4 = cosineInterp(v7, v8, difference_x);\n\n    float interp_5 = cosineInterp(interp_1, interp_2, difference_y);\n    float interp_6 = cosineInterp(interp_3, interp_4, difference_y);\n\n    return cosineInterp(interp_5, interp_6, difference_z);\n}\n\nfloat perlinNoise(float x, float y, float z)\n{\n    float noise_total = 0.0;\n    float persistence = 0.5;//perlin_persistence;//0.75;  //0.75 makes it spikier. 0.5 makes it more gaseous\n    float numOctaves = 1.0;\n    float frequency = 0.0;\n    float amplitude = 0.0;\n\n    float i = 0.0;\n\n    // const int octaves = int(num_octaves); //8;\n    for (int j = 0; j < 20; j+= 1)\n    {\n        if (j < int(numOctaves)) {\n          frequency = 0.1 * pow(2.0, i);\n          amplitude = pow(persistence, i);\n\n          //call either randomNoise3D or interpolatedNoise here\n          noise_total += interpolatedNoise(x * frequency, y * frequency, z * frequency) * amplitude;\n          i++;\n        }\n    }\n\n    return noise_total;\n}\n\n\nvoid main() {\n\n    //to send to frag shader\n    vNormal = normal;\n    frag_Pos = position;\n\n\n\n    float height = 5.0;\n    float noise_output = height * perlinNoise(position.x, position.y, position.z);\n\n    // float noise_output = perlinNoise(position.x + sin(time), position.y + sin(time), position.z + sin(time));\n\n    //other calls to perlin that produce interesting results\n    //0.5 * perlinNoise(position.x + sin(time), position.y + sin(time), position.z + sin(time)) + 0.5;  //this will make it more gaseous like\n    //perlinNoise(position.x + sin(time), position.y + sin(time), position.z + sin(time))   //taking sin of time will make it look like rewinding back\n    //perlinNoise(position.x * sin(time) * 4.0, position.y * time * 4.0, position.z + sin(time) * 4.0);\n\n    perlin_color = vec3(noise_output);\n\n\n    //change position of mesh based on perlin output\n    vec3 new_pos = position;\n    new_pos = new_pos + (vNormal * 0.5 * noise_output);\n    gl_Position = projectionMatrix * modelViewMatrix * vec4( new_pos, 1.0 );\n}\n"
+
+/***/ },
+/* 17 */
+/***/ function(module, exports) {
+
+	module.exports = "varying vec3 vNormal;\nvarying vec3 perlin_color;\n\nvarying vec3 frag_Pos;\n\nvoid main() {\n  //Test your shader setup by applying the material to the icosahedron and color the mesh in the fragment shader using the normals' XYZ components as RGB.\n\n  //gl_FragColor = vec4(vNormal, 1.0);\n  //gl_FragColor = vec4(1.0 * perlin_color, 1.0);\n\n\n  // if (u_useTexture == 1) {\n  //     color = texture2D(texture, f_uv);\n  // }\n\n  float lightIntensity = 1.0;\n  vec3 lightPos = vec3(1.0, 10.0, 2.0);\n  vec3 ambient = vec3(17.0/255.0, 17.0/255.0, 17.0/255.0);\n  vec3 lightCol = vec3(255.0/255.0, 255.0/255.0, 255.0/255.0);\n  vec4 color = vec4(221.0/255.0, 221.0/255.0, 221.0/255.0, 1.0);\n\n  float d = clamp(dot(vNormal, normalize(lightPos - frag_Pos)), 0.0, 1.0);\n  gl_FragColor = vec4(d * color.rgb * lightCol * lightIntensity + ambient, 1.0);\n\n  // gl_FragColor = vec4(color.rgb, 1.0);\n\n}\n"
 
 /***/ }
 /******/ ]);
