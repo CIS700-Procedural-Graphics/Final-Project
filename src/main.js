@@ -2,6 +2,7 @@ const THREE = require('three'); // older modules are imported like this. You sho
 require('three-lut')
 
 import Framework from './framework'
+import ConvexGeometry from '../node_modules/three/examples/js/geometries/ConvexGeometry.js'
 
 
 // Reference
@@ -83,8 +84,52 @@ var waterMaterial = new THREE.ShaderMaterial({
   fragmentShader: require('./shaders/water-frag.glsl')
 });
 
+// ROCK MATERIAL
+var rockMat = new THREE.ShaderMaterial({
+     uniforms: {
+      t: {
+        type: "f",
+        value: 1.0
+      },
+      octaves: {
+        type: "f",
+        value: 3.0
+      },
+      persistence: {
+        type: "f",
+        value: 4.0
+      }, 
+      u_albedo: {
+        type: 'v3',
+        value: new THREE.Color(options.albedo)
+      },
+      u_ambient: {
+          type: 'v3',
+          value: new THREE.Color(options.ambient)
+      },
+      u_lightPos: {
+          type: 'v3',
+          value: new THREE.Vector3(30, 50, 40)
+      },
+      u_lightCol: {
+          type: 'v3',
+          value: new THREE.Color(options.lightColor)
+      },
+      u_lightIntensity: {
+          type: 'f',
+          value: options.lightIntensity
+      }
+     },
+    vertexShader: require('./shaders/rock-vert.glsl'),
+    fragmentShader: require('./shaders/rock-frag.glsl')
+  });
 
+
+// TODO: Clean this up into different functions
 // called after the scene loads
+// ----------------------------------
+// ONLOAD
+// ----------------------------------
 function onLoad(framework) {
   var scene = framework.scene;
   var camera = framework.camera;
@@ -92,7 +137,11 @@ function onLoad(framework) {
   var gui = framework.gui;
   var stats = framework.stats;
 
-  // LIGHTS ------------------- /
+  // CAMERA --------------------- / 
+  camera.position.set(0, 0, 250);
+  camera.lookAt(new THREE.Vector3(0,0,0));
+
+  // LIGHTS --------------------- /
   var directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
   directionalLight.color.setHSL(0.1, 1, 0.95);
   directionalLight.position.set(1, 3, 2);
@@ -105,40 +154,61 @@ function onLoad(framework) {
   dirLight.position.multiplyScalar( 50 );
   scene.add( dirLight );
 
-
   // Hemisphere Light
   var hemiLight = hemiLight = new THREE.HemisphereLight( 0xffffff, 0xffffff, 0.6 );
   hemiLight.color.setHSL( 0.6, 1, 0.6 );
   hemiLight.groundColor.setHSL( 0.095, 1, 0.75 );
   hemiLight.position.set( 0, 500, 0 );
   scene.add( hemiLight );
+  // END LIGHTS -------------------/
 
-
-  // END LIGHTS ----------------/
-
-  // waterMaterial.uniforms.light.value = directionalLight.position;
-
-  // set camera position
-  camera.position.set(0, 0, 250);
-  camera.lookAt(new THREE.Vector3(0,0,0));
-
-  // Water
+  // WATER ------------------------/
+  waterMaterial.uniforms.light.value = directionalLight.position;
   var waterGeo = new THREE.PlaneGeometry(options.water.width, 
                                          options.water.height, 
                                          options.water.widthSegments, 
                                          options.water.heightSegments);
-  //var waterMaterial = new THREE.MeshBasicMaterial( {color: 0x0000ff, side: THREE.DoubleSide, wireframe: true});
+
   var waterMesh = new THREE.Mesh(waterGeo, waterMaterial);
   waterMesh.rotateX(-Math.PI / 2.0);
   waterMesh.position.set(0, 0, 0);
   scene.add(waterMesh);
 
 
-  // // TODO: Remove Test Box
+  // BOX ----------------------------/
   var boxGeo = new THREE.BoxGeometry(10, 10, 10);
-  var boxMaterial = new THREE.MeshLambertMaterial({color: 0x42f465});
-  var boxMesh = new THREE.Mesh(boxGeo, boxMaterial);
-  scene.add(boxMesh);
+  var boxMat = new THREE.MeshLambertMaterial({color: 0x42f465});
+  var boxMesh = new THREE.Mesh(boxGeo, boxMat);
+  boxMesh.position.set(0, 10, 0);
+  //scene.add(boxMesh);
+
+  // ROCKS -------------------------/
+  // var rockGeo = new THREE.BoxGeometry(10, 10, 10, 10, 10, 10);
+  // var rockGeo = new THREE.IcosahedronGeometry(10, 4);
+  // // var rockMat = new THREE.MeshLambertMaterial({color: 0x605146, wireframe: true});
+  // var rockMesh = new THREE.Mesh(rockGeo, rockMat);
+  // rockMesh.position.set(0, 50, 0);
+  // scene.add(rockMesh);
+
+  // STONE ------------------------/
+  var stoneOptions = {
+    points: 20,
+    min: -10.0,
+    max: 10.0
+  }
+
+  var stonePoints = [];
+  for (var i = 0; i < stoneOptions.points; i++) {
+    stonePoints[i] = new THREE.Vector3(randomRange(stoneOptions.min, stoneOptions.max),
+                                       randomRange(stoneOptions.min, stoneOptions.max),
+                                       randomRange(stoneOptions.min, stoneOptions.max));
+  }
+
+  // // Generate a list of points and then generated a convex hull for those points
+  var stoneGeo = new THREE.ConvexGeometry(stonePoints);
+  var stoneMat = new THREE.MeshLambertMaterial({color: 0xaaaaaa});
+  var stoneMesh = new THREE.Mesh(stoneGeo, stoneMat);
+  scene.add(stoneMesh);
 
 
   // SKY BOX ----------------------/
@@ -160,7 +230,7 @@ function onLoad(framework) {
       offset:      { value: 33 },
       exponent:    { value: 0.6 }
     },
-    side: THREE.DoubleSide,
+    side: THREE.BackSide,
     vertexShader: require('./shaders/sky-vert.glsl'),
     fragmentShader: require('./shaders/sky-frag.glsl')
   });
@@ -182,6 +252,9 @@ function onLoad(framework) {
   });
 }
 
+function randomRange(min, max) {
+  return Math.random() * (max - min) + min;
+}
 
 function onUpdate(framework) {
   // Update Time
