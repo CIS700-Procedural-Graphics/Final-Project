@@ -7,6 +7,22 @@ export class GridCell {
 	}
 }
 
+class MoveOption {
+	constructor(cPos, gridDimension) {
+		this.cellPosition = new THREE.Vector3(cPos.x, cPos.y, cPos.z);
+
+		//calculates the gaussian distribution weighting, where center of grid has highest weight
+		//https://en.wikipedia.org/wiki/Gaussian_function#Two-dimensional_Gaussian_function
+		var gridRadius = gridDimension/2.0 - 0.5;
+		//treat gridDimension as FWHM, FWHM = 2.335*variance
+		//https://en.wikipedia.org/wiki/Full_width_at_half_maximum
+		var variance2 = (gridDimension / 2.355);
+		var x2 = (cPos.x - gridRadius) * (cPos.x - gridRadius);
+        var z2 = (cPos.z - gridRadius) * (cPos.z - gridRadius);
+        this.probability = Math.pow(2.71828, -(x2 + z2)/(2.0*variance2));
+	}
+}
+
 // A class used to simulate the player for depth first search level generation
 class FakePlayer {
 	//col0 is the face color for global POSITIVE X axis
@@ -117,26 +133,57 @@ export default class Grid {
 			//check the 4 directions the fake player can move, add it to possible options
 			var currPos = stack[stack.length-1];
 			var options = [];
+			var totalProbability = 0.0;
 			if (currPos.x+1 >= 0 && currPos.x+1 < gridDimension && this.gridArray[currPos.x+1][currPos.z].isMarked == false) {
-				options.push( new THREE.Vector3(currPos.x+1, 0, currPos.z) );
+				var mv = new MoveOption(new THREE.Vector3(currPos.x+1, 0, currPos.z), gridDimension);
+				console.log("(" + (currPos.x+1) + ", " + currPos.z + "): " + mv.probability);
+				totalProbability += mv.probability;
+				options.push(mv);
 				//rotate Z clockwise
 			}
 			if (currPos.x-1 >= 0 && currPos.x-1 < gridDimension && this.gridArray[currPos.x-1][currPos.z].isMarked == false) {
-				options.push( new THREE.Vector3(currPos.x-1, 0, currPos.z) );
+				var mv = new MoveOption(new THREE.Vector3(currPos.x-1, 0, currPos.z), gridDimension);
+				console.log("(" + (currPos.x-1) + ", " + currPos.z + "): " + mv.probability);
+				totalProbability += mv.probability;
+				options.push(mv);
 				//rotate Z counterclockwise
 			}
 			if (currPos.z+1 >= 0 && currPos.z+1 < gridDimension && this.gridArray[currPos.x][currPos.z+1].isMarked == false) {
-				options.push( new THREE.Vector3(currPos.x, 0, currPos.z+1) );
+				var mv = new MoveOption(new THREE.Vector3(currPos.x, 0, currPos.z+1), gridDimension);
+				console.log("(" + currPos.x + ", " + (currPos.z+1) + "): " + mv.probability);
+				totalProbability += mv.probability;
+				options.push(mv);
 				//rotate X counterclockwise
 			}
 			if (currPos.z-1 >= 0 && currPos.z-1 < gridDimension && this.gridArray[currPos.x][currPos.z-1].isMarked == false) {
-				options.push( new THREE.Vector3(currPos.x, 0, currPos.z-1) );
+				var mv = new MoveOption(new THREE.Vector3(currPos.x, 0, currPos.z-1), gridDimension);
+				console.log("(" + currPos.x + ", " + (currPos.z-1) + "): " + mv.probability);
+				totalProbability += mv.probability;
+				options.push(mv);
 				//rotate X clockwise
 			}
 
 			if (options.length > 0) {
-				//randomly pick a move option and move fakePlayer
-				var pickedOption = options[Math.floor(Math.random()*options.length)];
+
+				//normalize probabilities so that they add up to 1.0
+				for (var i = 0; i < options.length; i++) {
+					options[i].probability /= totalProbability;
+				}
+
+				//randomly pick a move option based on weighted options
+				var pickedOption;
+				var seed = Math.random();
+				var totalSampleProbability = 0.0;
+				for (var i = 0; i < options.length; i++) {
+					var cellProbability = options[i].probability;
+					totalSampleProbability += cellProbability;
+					if (seed <= totalSampleProbability) {
+						pickedOption = options[i].cellPosition;
+						break;
+					}
+				}
+
+				//move fakePlayer
 				if (pickedOption.x > currPos.x && pickedOption.z == currPos.z) {
 					//console.log("option x+1");
 					fakePlayer.rotateZClockwise();

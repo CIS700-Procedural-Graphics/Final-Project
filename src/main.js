@@ -6,7 +6,7 @@ import Player from './player.js'
 
 var player;
 var grid;
-var gridDimension = 5.0;
+var gridDimension = 10.0;
 var allMeshes = new Set();
 var fw;
 
@@ -27,15 +27,15 @@ function palette(t, option) {
         break;
     case 1:
         a = new THREE.Vector3(0.5, 0.5, 0.5);
-        b = new THREE.Vector3(0.5, 0.5, 0.5);
+        b = new THREE.Vector3(0.3, 0.3, 0.3);
         c = new THREE.Vector3(1.0, 1.0, 1.0);
         d = new THREE.Vector3(0.3, 0.2, 0.2);
         break;
     case 2:
         a = new THREE.Vector3(0.5, 0.5, 0.5);
-        b = new THREE.Vector3(0.5, 0.5, 0.5);
+        b = new THREE.Vector3(0.3, 0.3, 0.3);
         c = new THREE.Vector3(0.5, 0.5, 0.5);
-        d = new THREE.Vector3(1.0, 1.0, 1.0);
+        d = new THREE.Vector3(0.1, 0.1, 0.0);
         break;
     default:
         a = new THREE.Vector3(0.5, 0.5, 0.5);
