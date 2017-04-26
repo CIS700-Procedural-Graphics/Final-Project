@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class MetaballController : MonoBehaviour {
 
+    public bool writeToFile = true; //true if we are recording
+    System.IO.StreamReader readFile; //the file we will read metaball vertex data from
+    private int lineCounter = 0;
+
+
     public bool isPaused = false;
     public bool visualDebug = true;
     public bool showSpheres = true;
@@ -30,7 +35,7 @@ public class MetaballController : MonoBehaviour {
 
     private Mesh metaballsMesh;
 
-  
+
     void Awake()
     {
         this.gridCellWidth = this.gridWidth / this.res;
@@ -42,55 +47,54 @@ public class MetaballController : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        setupCells();
-        setupWalls();
-        setupMetaballs();
+        if (!writeToFile)
+        {
+            readFile =
+               new System.IO.StreamReader("metaballSim.txt");
+        }else
+        {
+            setupCells();
+            setupWalls();
+            setupMetaballs();
+        }
+
         makeMesh();
 	}
 
     // Update is called once per frame
     void Update() {
 
-        //Update isovalues of each voxel
-        for (int c = 0; c < this.res3; c++)
+        if (writeToFile) //only sample if we are recording
         {
+            //Update isovalues of each voxel
+            for (int c = 0; c < this.res3; c++)
+            {
 
-            this.voxels[c].v1.isovalue = this.sample
-                (this.voxels[c].v1.position);
+                this.voxels[c].v1.isovalue = this.sample
+                    (this.voxels[c].v1.position);
 
-            this.voxels[c].v2.isovalue = this.sample
-                (this.voxels[c].v2.position);
+                this.voxels[c].v2.isovalue = this.sample
+                    (this.voxels[c].v2.position);
 
-            this.voxels[c].v3.isovalue = this.sample
-                (this.voxels[c].v3.position);
+                this.voxels[c].v3.isovalue = this.sample
+                    (this.voxels[c].v3.position);
 
-            this.voxels[c].v4.isovalue = this.sample
-                (this.voxels[c].v4.position);
+                this.voxels[c].v4.isovalue = this.sample
+                    (this.voxels[c].v4.position);
 
-            this.voxels[c].v5.isovalue = this.sample
-                (this.voxels[c].v5.position);
+                this.voxels[c].v5.isovalue = this.sample
+                    (this.voxels[c].v5.position);
 
-            this.voxels[c].v6.isovalue = this.sample
-                (this.voxels[c].v6.position);
+                this.voxels[c].v6.isovalue = this.sample
+                    (this.voxels[c].v6.position);
 
-            this.voxels[c].v7.isovalue = this.sample
-                (this.voxels[c].v7.position);
+                this.voxels[c].v7.isovalue = this.sample
+                    (this.voxels[c].v7.position);
 
-            this.voxels[c].v8.isovalue = this.sample
-                (this.voxels[c].v8.position);
-
-            //if (visualDebug)
-            //{
-            //    if(this.voxels[c].center.isovalue > this.isoLevel)
-            //    {
-            //        this.voxels[c].show();
-            //    }else
-            //    {
-            //        this.voxels[c].hide();
-            //    }
-            //}
+                this.voxels[c].v8.isovalue = this.sample
+                    (this.voxels[c].v8.position);
+            }
         }
-
 
         updateMesh();
     }
@@ -105,15 +109,6 @@ public class MetaballController : MonoBehaviour {
             Vector3 voxelPos = this.i3toPos(i3);
             Voxel voxel = new Voxel(voxelPos, this.gridCellWidth);
 			this.voxels[i] = voxel;
-
-			//GameObject voxel = Instantiate(Resources.Load("Voxel")) as GameObject;
-			//voxel.isStatic = true;
-            //voxel.transform.localScale = Vector3.one * gridCellWidth;
-            //this.voxels.Add(voxel.GetComponent<Voxel>());
-            //if (visualDebug)
-            //{
-            //    voxel.GetComponent<MeshRenderer>().enabled = true;
-            //}
         }
 
      
@@ -206,22 +201,91 @@ public class MetaballController : MonoBehaviour {
     void updateMesh()
     {
         List<Vector3> meshVertices = new List<Vector3>();
+        List<Vector3> meshNormals = new List<Vector3>();
+        string meshVerticesString = "";
 
-        for (int i = 0; i < this.res3; i++)
+        if (writeToFile) //writing to file (recording metaball movement)
         {
-            var voxelPolygonMap = this.voxels[i].polygonize(this.isoLevel);
-            if (voxelPolygonMap["vertPositions"].Count > 0)
+            for (int i = 0; i < this.res3; i++)
             {
-                List<Vector3> voxelVertices = voxelPolygonMap["vertPositions"];
-
-                for (int c = 0; c < voxelVertices.Count; c++)
+                var voxelPolygonMap = this.voxels[i].polygonize(this.isoLevel);
+                if (voxelPolygonMap["vertPositions"].Count > 0)
                 {
-                    meshVertices.Add(voxelVertices[c]);
+                    List<Vector3> voxelVertices = voxelPolygonMap["vertPositions"];
+
+                    for (int c = 0; c < voxelVertices.Count; c++)
+                    {
+                        meshVertices.Add(voxelVertices[c]);
+
+                        string posString =
+                            voxelVertices[c].x.ToString()
+                            + " " + voxelVertices[c].y.ToString()
+                            + " " + voxelVertices[c].z.ToString()
+                            + " ";
+
+                        meshVerticesString += posString;
+
+                    }
+
+                }
+            }
+
+            using (System.IO.StreamWriter outputFile = new System.IO.StreamWriter("metaballSim.txt", true))
+            {
+
+                outputFile.WriteLine(meshVerticesString);
+            }
+        }else //reading from file
+        {
+            string line;
+            int vertexCount = 0;
+
+            if ((line = readFile.ReadLine()) != null)
+            {
+                string[] posValStrings = line.Split(' ');
+                for (int i = 0; i < posValStrings.Length - 3; i += 3)
+                {
+                    Vector3 meshVertex = new Vector3(
+                        float.Parse(posValStrings[i]),
+                        float.Parse(posValStrings[i + 1]),
+                        float.Parse(posValStrings[i + 2])
+                    );
+
+                    meshVertices.Add(meshVertex);
+                    vertexCount++;
+
+                    //normal calculation
+                    if (vertexCount % 3 == 0) //for every 3 vertices (triangle) calc normals
+                    {
+                        Vector3 triV2 = meshVertices[vertexCount - 1];
+                        Vector3 triV1 = meshVertices[vertexCount - 2];
+                        Vector3 triV0 = meshVertices[vertexCount - 3];
+
+                        Vector3 e1 = triV1 - triV0;
+                        Vector3 e2 = triV2 - triV1;
+
+                        Vector3 normal = Vector3.Cross(e1, e2);
+                        meshNormals.Add(normal);
+                        meshNormals.Add(normal);
+                        meshNormals.Add(normal);
+
+                    }
                 }
 
             }
+            else
+            {
+                readFile.Close();
+                readFile =
+              new System.IO.StreamReader("metaballSim.txt");
+            }
+
+
         }
 
+        
+
+  
 
         //create triangle indices
         int[] meshTriangles = new int[meshVertices.Count];
@@ -233,9 +297,9 @@ public class MetaballController : MonoBehaviour {
 
         }
 
-
         metaballsMesh.Clear();
         metaballsMesh.vertices = meshVertices.ToArray();
+        metaballsMesh.normals = meshNormals.ToArray();
         metaballsMesh.triangles = meshTriangles;
         //metaballsMesh.RecalculateBounds();
     }
