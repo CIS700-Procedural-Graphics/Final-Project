@@ -62,8 +62,10 @@ Inspiration from [Panoramical](http://panoramic.al/) and [Proteus](http://twiste
 * Integrate!
 * [Xiaomao] Full procedural control over the music generation (maybe have different randomization algorithms to see how well each works with the sounds)
 * [Xiaomao] Maybe allow some user input for parameters
-* [Brian] Experiment with more parameters to tune visuals
-* [Brian] Implement 2 scenes
+* [Brian] Experimented with music structures to get a feel for type of music we are able to generate  (https://onlinesequencer.net/464784, https://onlinesequencer.net/464779)
+* [Brian] Have callbacks in audio code trigger visual effects
+* [Brian] Experiment with more parameters to tune visuals (WIP)
+* [Brian] Working on implementing reflective water (WIP)
 #### 5/3 Final presentations (3-5 pm, Siglab), final reports due
 * Final Report
 * [Xiaomao] Have cool player input screen
