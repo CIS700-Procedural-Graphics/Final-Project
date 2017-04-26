@@ -2,8 +2,10 @@ const THREE = require('three'); // older modules are imported like this. You sho
 require('three-lut')
 
 import Framework from './framework'
-import ConvexGeometry from '../node_modules/three/examples/js/geometries/ConvexGeometry.js'
 
+// TODO: Haha, no really is this how I'm supposed to do this?
+import ConvexGeometry from '../node_modules/three/examples/js/geometries/ConvexGeometry.js'
+import SubdivisionModifier from '../node_modules/three/examples/js/modifiers/SubdivisionModifier.js'
 
 // Reference
 // Skybox: https://threejs.org/examples/?q=light#webgl_lights_hemisphere
@@ -25,6 +27,15 @@ var options = {
     widthSegments: 100,
     heightSegments: 100
   }
+}
+
+var modifer = new THREE.SubdivisionModifier(2);
+
+var stoneOptions = {
+  quantity: 100,
+  points: 20,
+  min: -10.0,
+  max: 10.0
 }
 
 // Water Material
@@ -180,36 +191,21 @@ function onLoad(framework) {
   var boxMat = new THREE.MeshLambertMaterial({color: 0x42f465});
   var boxMesh = new THREE.Mesh(boxGeo, boxMat);
   boxMesh.position.set(0, 10, 0);
-  //scene.add(boxMesh);
+  scene.add(boxMesh);
 
-  // ROCKS -------------------------/
-  // var rockGeo = new THREE.BoxGeometry(10, 10, 10, 10, 10, 10);
-  // var rockGeo = new THREE.IcosahedronGeometry(10, 4);
-  // // var rockMat = new THREE.MeshLambertMaterial({color: 0x605146, wireframe: true});
-  // var rockMesh = new THREE.Mesh(rockGeo, rockMat);
-  // rockMesh.position.set(0, 50, 0);
-  // scene.add(rockMesh);
+  // STONES ------------------------/
+  var radius = 150;
 
-  // STONE ------------------------/
-  var stoneOptions = {
-    points: 20,
-    min: -10.0,
-    max: 10.0
+  var stones = [];
+  for (var i = 0; i < stoneOptions.quantity; i++) {
+    var angle = Math.random() * Math.PI * 2; // Random Angle
+    var size = Math.random() * 2.0;
+    
+    stones[i] = generateStone(stoneOptions.points, stoneOptions.min, stoneOptions.max);
+    stones[i].position.set(Math.cos(angle) * radius, 0, Math.sin(angle) * radius);
+    stones[i].scale.set(size, size, size);
+    scene.add(stones[i]);
   }
-
-  var stonePoints = [];
-  for (var i = 0; i < stoneOptions.points; i++) {
-    stonePoints[i] = new THREE.Vector3(randomRange(stoneOptions.min, stoneOptions.max),
-                                       randomRange(stoneOptions.min, stoneOptions.max),
-                                       randomRange(stoneOptions.min, stoneOptions.max));
-  }
-
-  // // Generate a list of points and then generated a convex hull for those points
-  var stoneGeo = new THREE.ConvexGeometry(stonePoints);
-  var stoneMat = new THREE.MeshLambertMaterial({color: 0xaaaaaa});
-  var stoneMesh = new THREE.Mesh(stoneGeo, stoneMat);
-  scene.add(stoneMesh);
-
 
   // SKY BOX ----------------------/
   // // GROUND
@@ -250,6 +246,22 @@ function onLoad(framework) {
   fcamera.add(camera, 'fov', 0, 180).onChange(function(newVal) {
     camera.updateProjectionMatrix();
   });
+}
+
+function generateStone(points, min, max) {
+  var stonePoints = [];
+  for (var i = 0; i < stoneOptions.points; i++) {
+    stonePoints[i] = new THREE.Vector3(randomRange(stoneOptions.min, stoneOptions.max),
+                                       randomRange(stoneOptions.min, stoneOptions.max),
+                                       randomRange(stoneOptions.min, stoneOptions.max));
+  }
+
+  // // Generate a list of points and then generated a convex hull for those points
+  var stoneGeo = new THREE.ConvexGeometry(stonePoints); // Creates a 
+  modifer.modify(stoneGeo); // Subdivides the stone, Comment out for lower poly
+
+  var stoneMat = new THREE.MeshLambertMaterial({color: 0xaaaaaa});
+  return new THREE.Mesh(stoneGeo, stoneMat);
 }
 
 function randomRange(min, max) {
