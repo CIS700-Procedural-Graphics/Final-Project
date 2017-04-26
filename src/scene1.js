@@ -34,7 +34,7 @@ function initScene(framework, visualConfig) {
 
 function updateScene(scene, visualConfig, delta) {
   if (visualConfig.sceneReady) {
-    console.log("wat")
+    // console.log("wat")
 
     for (var i = 0; i < visualConfig.sceneProps.particles.length; i++) {
       visualConfig.sceneProps.particles[i].update(0.01);
