@@ -1,19 +1,19 @@
 
 const THREE = require('three'); // older modules are imported like this. You shouldn't have to worry about this much
 import Framework from './framework'
-import Grid from './grid.js'
+import Grid, {GridCell} from './grid.js'
 import Player from './player.js'
 
 var player;
 var grid;
-var gridDimension = 9;
+var gridDimension = 9.0;
 
 var Sliders = function() {
   this.anglefactor = 1.0;
 };
 var sliders = new Sliders();
 
-function palette(t) {
+function palette(t, option) {
   return new THREE.Color(
     0.5 + 0.3*Math.cos( 6.28318*(1.0*t+0.0) ), 
     0.5 + 0.3*Math.cos( 6.28318*(1.0*t+0.1) ), 
@@ -27,6 +27,7 @@ function onLoad(framework) {
   var renderer = framework.renderer;
   var gui = framework.gui;
   var stats = framework.stats;
+  var controls = framework.controls;
 
   // initialize a simple box and material
   var directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
@@ -37,16 +38,16 @@ function onLoad(framework) {
   scene.add(directionalLight);
 
   // set camera position
-  camera.position.set(1, 1, 2);
-  camera.lookAt(new THREE.Vector3(0,0,0));
+  //camera.position.set(1, 1, 2);
+  //camera.lookAt(new THREE.Vector3(0,0,0));
 
   var colors = [];
-  colors.push(palette(0.0));
-  colors.push(palette(0.167));
-  colors.push(palette(0.333));
-  colors.push(palette(0.5));
-  colors.push(palette(0.666));
-  colors.push(palette(0.833));
+  colors.push(palette(0.0, 1));
+  colors.push(palette(0.167, 1));
+  colors.push(palette(0.333, 1));
+  colors.push(palette(0.5, 1));
+  colors.push(palette(0.666, 1));
+  colors.push(palette(0.833, 1));
   //[ palette(0.0), palette(0.167), palette(0.333), palette(0.5), palette(0.666), palette(0.833) ];
   
   // GRID
@@ -67,6 +68,11 @@ function onLoad(framework) {
     }
   }
   */
+
+  //set camera position
+  framework.camera.position.set(2.0*gridDimension, 1.5*gridDimension, 2.0*gridDimension);
+  framework.camera.lookAt(new THREE.Vector3(gridDimension/2.0, 0.0, gridDimension/2.0));
+  framework.controls.target.set(gridDimension/2.0, 0.0, gridDimension/2.0);
 
   grid = new Grid(scene, gridDimension, new THREE.Vector3(gridDimension-1, 0, gridDimension-1), colors);
 
@@ -109,29 +115,33 @@ function checkKey(e) {
     e = e || window.event;
     if (e.keyCode == '38') {
       // up arrow
-      if (player.position.x - 1 >= 0) {
+      if (player.position.x - 1 >= 0 && player.faceXNegative.equals(grid.gridArray[player.position.x - 1][player.position.z].color)) {
         player.rotateZCounter();
       }
     }
     else if (e.keyCode == '40') {
       // down arrow
-      if (player.position.x + 1 < gridDimension) {
+      if (player.position.x + 1 < gridDimension && player.faceXPositive.equals(grid.gridArray[player.position.x + 1][player.position.z].color)) {
         player.rotateZClockwise();
       }
     }
     else if (e.keyCode == '37') {
       // left arrow
-      if (player.position.z + 1 < gridDimension) {
+      if (player.position.z + 1 < gridDimension && player.faceZPositive.equals(grid.gridArray[player.position.x][player.position.z + 1].color)) {
         player.rotateXCounter();
       }
     }
     else if (e.keyCode == '39') {
        // right arrow
-       if (player.position.z - 1 >= 0) {
-         player.rotateXClockwise();
-       }
+      if (player.position.z - 1 >= 0 && player.faceZNegative.equals(grid.gridArray[player.position.x][player.position.z - 1].color)) {
+        player.rotateXClockwise();
+      }
     }
     //console.log(player.position);
+}
+
+function restart(framework) {
+
 }
 
 /*

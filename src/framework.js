@@ -34,6 +34,7 @@ function init(callback, update) {
 
     var controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
+    controls.enableRotate = false;
     controls.enableZoom = true;
     controls.target.set(0, 0, 0);
     controls.rotateSpeed = 0.3;
@@ -54,6 +55,7 @@ function init(callback, update) {
     framework.scene = scene;
     framework.camera = camera;
     framework.renderer = renderer;
+    framework.controls = controls;
 
     // begin the animation loop
     (function tick() {
