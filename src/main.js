@@ -55,7 +55,7 @@ var songLen = 3*60+8;
 
 var all; // ALL SHOOTERS
 
-var analyser;
+var analyser; // MUSIC ANALYSER
 
 var visElements = {
   volume: 2,
