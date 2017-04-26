@@ -6,22 +6,53 @@ import Player from './player.js'
 
 var player;
 var grid;
-var gridDimension = 9.0;
+var gridDimension = 5.0;
+var allMeshes = new Set();
+var fw;
 
 var Sliders = function() {
   this.anglefactor = 1.0;
 };
 var sliders = new Sliders();
 
+//http://www.iquilezles.org/www/articles/palettes/palettes.htm
 function palette(t, option) {
+  var a, b, c, d;
+  switch(option) {
+    case 0:
+        a = new THREE.Vector3(0.5, 0.5, 0.5);
+        b = new THREE.Vector3(0.3, 0.3, 0.3);
+        c = new THREE.Vector3(1.0, 1.0, 1.0);
+        d = new THREE.Vector3(0.0, 0.1, 0.2);
+        break;
+    case 1:
+        a = new THREE.Vector3(0.5, 0.5, 0.5);
+        b = new THREE.Vector3(0.5, 0.5, 0.5);
+        c = new THREE.Vector3(1.0, 1.0, 1.0);
+        d = new THREE.Vector3(0.3, 0.2, 0.2);
+        break;
+    case 2:
+        a = new THREE.Vector3(0.5, 0.5, 0.5);
+        b = new THREE.Vector3(0.5, 0.5, 0.5);
+        c = new THREE.Vector3(0.5, 0.5, 0.5);
+        d = new THREE.Vector3(1.0, 1.0, 1.0);
+        break;
+    default:
+        a = new THREE.Vector3(0.5, 0.5, 0.5);
+        b = new THREE.Vector3(0.3, 0.3, 0.3);
+        c = new THREE.Vector3(1.0, 1.0, 1.0);
+        d = new THREE.Vector3(0.0, 0.1, 0.2);
+  }
+
   return new THREE.Color(
-    0.5 + 0.3*Math.cos( 6.28318*(1.0*t+0.0) ), 
-    0.5 + 0.3*Math.cos( 6.28318*(1.0*t+0.1) ), 
-    0.5 + 0.3*Math.cos( 6.28318*(1.0*t+0.2) ));
+    a.x + b.x*Math.cos( 6.28318*(c.x*t+d.x) ), 
+    a.y + b.y*Math.cos( 6.28318*(c.y*t+d.y) ), 
+    a.z + b.z*Math.cos( 6.28318*(c.z*t+d.z) ));
 }
 
 // called after the scene loads
 function onLoad(framework) {
+  fw = framework;
   var scene = framework.scene;
   var camera = framework.camera;
   var renderer = framework.renderer;
@@ -29,64 +60,28 @@ function onLoad(framework) {
   var stats = framework.stats;
   var controls = framework.controls;
 
-  // initialize a simple box and material
   var directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
   directionalLight.color.set(0xffffff);
   //directionalLight.color.setHSL(0.1, 1, 0.95);
-  directionalLight.position.set(1, 3, 2);
-  directionalLight.position.multiplyScalar(10);
+  directionalLight.position.set(-10, 50, 20);
+  //directionalLight.position.multiplyScalar(10);
+  directionalLight.castShadow = true;
   scene.add(directionalLight);
 
-  // set camera position
-  //camera.position.set(1, 1, 2);
-  //camera.lookAt(new THREE.Vector3(0,0,0));
-
-  var colors = [];
-  colors.push(palette(0.0, 1));
-  colors.push(palette(0.167, 1));
-  colors.push(palette(0.333, 1));
-  colors.push(palette(0.5, 1));
-  colors.push(palette(0.666, 1));
-  colors.push(palette(0.833, 1));
-  //[ palette(0.0), palette(0.167), palette(0.333), palette(0.5), palette(0.666), palette(0.833) ];
-  
-  // GRID
   /*
-  var gridDimension = 7;
-  var cellDimension = 1;
-  for (var x = 0.0; x < gridDimension; x += cellDimension) {
-    for (var z = 0.0; z < gridDimension; z += cellDimension) {
-      var planeGeometry = new THREE.PlaneGeometry( cellDimension, cellDimension, 1, 1);
-      //var planeMaterial = new THREE.MeshLambertMaterial(cubeMaterials[Math.floor(Math.random()*6.0)]);
-      var planeMaterial = new THREE.MeshBasicMaterial({color: colors[Math.floor(Math.random()*6.0)], transparent:true, opacity:1.0, side: THREE.DoubleSide});
-      planeMaterial.opacity = 1.0;
-      var plane = new THREE.Mesh( planeGeometry, planeMaterial );
-      plane.position.x = x+cellDimension/2.0;
-      plane.position.z = z+cellDimension/2.0;
-      plane.rotation.x = Math.PI/2.0;
-      scene.add( plane );
-    }
-  }
+  //shadows
+  renderer.shadowMapEnabled = true;
+  renderer.shadowMapSoft = true;
+  renderer.shadowCameraNear = 1;
+  renderer.shadowCameraFar = 1000;
+  renderer.shadowCameraFov = 50;
+  renderer.shadowMapBias = 0.0039;
+  renderer.shadowMapDarkness = 0.9;
+  renderer.shadowMapWidth = 2048;
+  renderer.shadowMapHeight = 2048;
   */
 
-  //set camera position
-  framework.camera.position.set(2.0*gridDimension, 1.5*gridDimension, 2.0*gridDimension);
-  framework.camera.lookAt(new THREE.Vector3(gridDimension/2.0, 0.0, gridDimension/2.0));
-  framework.controls.target.set(gridDimension/2.0, 0.0, gridDimension/2.0);
-
-  grid = new Grid(scene, gridDimension, new THREE.Vector3(gridDimension-1, 0, gridDimension-1), colors);
-
-  // PLAYER
-  player = new Player(new THREE.Vector3(gridDimension-1, 0, gridDimension-1), colors);
-  scene.add(player.cube);
-
-  
-
-  /*
-  // initialize LSystem and a Turtle to draw
-  var lsys = new Lsystem();
-  turtle = new Turtle(scene);
-  */
+  restart(framework);
 
   /*
   gui.add(camera, 'fov', 0, 180).onChange(function(newVal) {
@@ -110,6 +105,82 @@ function onLoad(framework) {
   */
 }
 
+function restart(framework) {
+
+  //disposes all meshses in scene
+  for (var mesh of allMeshes) {
+      //mesh.material.dispose();
+      //mesh.geometry.dispose();
+      framework.scene.remove(mesh);
+      //framework.renderer.deallocateObject( mesh );
+  }
+
+  //set camera position
+  //1.5 is a rough estimate of root(2), moves camera 45 degrees above horizon line for isometric view
+  framework.camera.position.set(2.0*gridDimension, 1.5*gridDimension, 2.0*gridDimension);
+  framework.camera.lookAt(new THREE.Vector3(gridDimension/2.0, 0.0, gridDimension/2.0));
+  framework.controls.target.set(gridDimension/2.0, 0.0, gridDimension/2.0);
+
+  //randomly pick a color pallette
+  var colorOption = Math.floor(Math.random()*3.0);
+  var colors = [];
+  colors.push(palette(0.0, colorOption));
+  colors.push(palette(0.167, colorOption));
+  colors.push(palette(0.333, colorOption));
+  colors.push(palette(0.5, colorOption));
+  colors.push(palette(0.666, colorOption));
+  colors.push(palette(0.833, colorOption));
+  //[ palette(0.0), palette(0.167), palette(0.333), palette(0.5), palette(0.666), palette(0.833) ];
+
+  //GRID AND LEVEL GENERATION
+  grid = new Grid(framework.scene, gridDimension, new THREE.Vector3(gridDimension-1, 0, gridDimension-1), colors);
+  //add planes to scene
+  for (var x = 0.0; x < gridDimension; x += 1) {
+    for (var z = 0.0; z < gridDimension; z += 1) {
+
+      var cellMaterials = [ 
+          new THREE.MeshBasicMaterial({color: 0x606060}),
+          new THREE.MeshBasicMaterial({color: 0xffffff}), 
+          new THREE.MeshLambertMaterial({color: grid.gridArray[x][z].color}),
+          new THREE.MeshBasicMaterial({color: 0xffffff}), 
+          new THREE.MeshBasicMaterial({color: 0x808080}), 
+          new THREE.MeshBasicMaterial({color: 0xffffff}) 
+      ]; 
+      var cellMaterial = new THREE.MeshFaceMaterial(cellMaterials);
+      var cell = new THREE.Mesh( new THREE.BoxGeometry(1,1,1), cellMaterial);
+
+      cell.position.x = x+0.5;
+      cell.position.y = -0.5;
+      cell.position.z = z+0.5;
+      cell.receiveShadow = true;
+      framework.scene.add(cell);
+      allMeshes.add(cell);
+
+      /*
+      var planeGeometry = new THREE.PlaneGeometry( 1, 1, 1, 1);
+      var planeMaterial = new THREE.MeshLambertMaterial({color: grid.gridArray[x][z].color, 
+        transparent:true, opacity:1.0, side: THREE.DoubleSide});
+      var plane = new THREE.Mesh( planeGeometry, planeMaterial );
+      plane.position.x = x+0.5;
+      plane.position.z = z+0.5;
+      plane.rotation.x = Math.PI/2.0;
+      plane.receiveShadow = true;
+      framework.scene.add( plane );
+      allMeshes.add(plane);
+      */
+    }
+  }
+
+  // PLAYER
+  player = new Player(new THREE.Vector3(gridDimension-1, 0, gridDimension-1), colors);
+  player.cube.castShadow = true;
+  framework.scene.add(player.cube);
+  allMeshes.add(player.cube);
+
+  //increase grid size for next level
+  gridDimension++;
+}
+
 document.onkeydown = checkKey;
 function checkKey(e) {
     e = e || window.event;
@@ -117,54 +188,45 @@ function checkKey(e) {
       // up arrow
       if (player.position.x - 1 >= 0 && player.faceXNegative.equals(grid.gridArray[player.position.x - 1][player.position.z].color)) {
         player.rotateZCounter();
+        if (player.position.x == 0 && player.position.z == 0) {
+          restart(fw);
+        }
       }
     }
     else if (e.keyCode == '40') {
       // down arrow
       if (player.position.x + 1 < gridDimension && player.faceXPositive.equals(grid.gridArray[player.position.x + 1][player.position.z].color)) {
         player.rotateZClockwise();
+        if (player.position.x == 0 && player.position.z == 0) {
+          restart(fw);
+        }
       }
     }
     else if (e.keyCode == '37') {
       // left arrow
       if (player.position.z + 1 < gridDimension && player.faceZPositive.equals(grid.gridArray[player.position.x][player.position.z + 1].color)) {
         player.rotateXCounter();
+        if (player.position.x == 0 && player.position.z == 0) {
+          restart(fw);
+        }
       }
     }
     else if (e.keyCode == '39') {
        // right arrow
       if (player.position.z - 1 >= 0 && player.faceZNegative.equals(grid.gridArray[player.position.x][player.position.z - 1].color)) {
         player.rotateXClockwise();
+        if (player.position.x == 0 && player.position.z == 0) {
+          restart(fw);
+        }
       }
     }
+
     //console.log(player.position);
 }
 
-function restart(framework) {
-
-}
-
-/*
-// clears the scene by removing all geometries added by turtle.js
-function clearScene(turtle) {
-  var obj;
-  for( var i = turtle.scene.children.length - 1; i > 2; i--) {
-      obj = turtle.scene.children[i];
-      turtle.scene.remove(obj);
-  }
-}
-
-function doLsystem(lsystem, iterations, turtle, anglefactor) {
-    var result = lsystem.doIterations(iterations);
-    turtle.clear();
-    turtle = new Turtle(turtle.scene, iterations, anglefactor);
-    turtle.renderSymbols(result);
-}
-*/
-
 // called on frame updates
 function onUpdate(framework) {
-
+    
 }
 
 // when the scene is done initializing, it will call onLoad, then on frame updates, call onUpdate

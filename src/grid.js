@@ -158,8 +158,8 @@ export default class Grid {
 				stack.push(new THREE.Vector3(fakePlayer.position.x, fakePlayer.position.y, fakePlayer.position.z));
 				this.gridArray[fakePlayer.position.x][fakePlayer.position.z].isMarked = true;
 				this.gridArray[fakePlayer.position.x][fakePlayer.position.z].color = fakePlayer.faceYNegative;
-				console.log("(" + fakePlayer.position.x + ", " + fakePlayer.position.z + ") is now color (" + 
-					fakePlayer.faceYNegative.r + ", " + fakePlayer.faceYNegative.g + ", " + fakePlayer.faceYNegative.b + ")");
+				//console.log("(" + fakePlayer.position.x + ", " + fakePlayer.position.z + ") is now color (" + 
+				//	fakePlayer.faceYNegative.r + ", " + fakePlayer.faceYNegative.g + ", " + fakePlayer.faceYNegative.b + ")");
 			}
 			else {
 				//no options, step back one
@@ -186,19 +186,6 @@ export default class Grid {
 			}
 		}
 
-		//add planes to grid
-		for (var x = 0.0; x < gridDimension; x += 1) {
-			for (var z = 0.0; z < gridDimension; z += 1) {
-				var planeGeometry = new THREE.PlaneGeometry( 1, 1, 1, 1);
-				var planeMaterial = new THREE.MeshBasicMaterial({color: this.gridArray[x][z].color, 
-					transparent:true, opacity:1.0, side: THREE.DoubleSide});
-				var plane = new THREE.Mesh( planeGeometry, planeMaterial );
-				plane.position.x = x+0.5;
-				plane.position.z = z+0.5;
-				plane.rotation.x = Math.PI/2.0;
-				scene.add( plane );
-			}
-		}
 
 	}
 

@@ -27,12 +27,12 @@ export default class Player {
         this.rotation = new THREE.Quaternion();
 
         this.cubeMaterials = [ 
-          new THREE.MeshBasicMaterial({color:colors[0], transparent:true, opacity:0.8}),
-          new THREE.MeshBasicMaterial({color:colors[1], transparent:true, opacity:0.8}), 
-          new THREE.MeshBasicMaterial({color:colors[2], transparent:true, opacity:0.8}),
-          new THREE.MeshBasicMaterial({color:colors[3], transparent:true, opacity:0.8}), 
-          new THREE.MeshBasicMaterial({color:colors[4], transparent:true, opacity:0.8}), 
-          new THREE.MeshBasicMaterial({color:colors[5], transparent:true, opacity:0.8}) 
+          new THREE.MeshBasicMaterial({color:colors[0], transparent:true, opacity:1.0}),
+          new THREE.MeshBasicMaterial({color:colors[1], transparent:true, opacity:1.0}), 
+          new THREE.MeshBasicMaterial({color:colors[2], transparent:true, opacity:1.0}),
+          new THREE.MeshBasicMaterial({color:colors[3], transparent:true, opacity:1.0}), 
+          new THREE.MeshBasicMaterial({color:colors[4], transparent:true, opacity:1.0}), 
+          new THREE.MeshBasicMaterial({color:colors[5], transparent:true, opacity:1.0}) 
         ]; 
         this.cubeMaterial = new THREE.MeshFaceMaterial(this.cubeMaterials);
         this.cube = new THREE.Mesh( new THREE.BoxGeometry(1,1,1), this.cubeMaterial);
