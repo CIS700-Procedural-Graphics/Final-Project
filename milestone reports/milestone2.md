@@ -20,4 +20,17 @@
 - Demo (of marble texture): https://rms13.github.io/Project1-Noise
 - Source: https://github.com/rms13/Project1-Noise
 
+
 ### Rudraksha Shah
+
+
+
+- With the server working (thanks to Austin!) I worked on setting up the tiles of the sphere to procedurally generate the terrain andf render it out per tile. I was able to get the terrain (though flat) to show up instead of each tile but I am having issues with the normals which is why I do not have any Images to show as mostly everything looks black without shading.
+
+
+
+- Also as the code is not working correctly I have not pushed it to git will do as soon as I get it up and running.
+
+
+
+- For the future I will work on either gerenating the terrain with spherical coordinates as is the way Austin has gave us the implementation or will change the code to render a flat 2D plane which renders tiles which I will use to render the terrain.
