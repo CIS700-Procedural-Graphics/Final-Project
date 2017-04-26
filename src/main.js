@@ -55,6 +55,8 @@ var songLen = 3*60+8;
 
 var all; // ALL SHOOTERS
 
+var analyser;
+
 var visElements = {
   volume: 2,
   loop: false,
@@ -82,6 +84,8 @@ function loadMusic()
       visElements.sound.setVolume(visElements.volume);
       visElements.sound.play();
   });
+
+  analyser = new THREE.AudioAnalyser( visElements.sound, 32 );
 }
 
 function createMaterials() {
@@ -304,7 +308,8 @@ function onUpdate(framework) {
 
   stepTime += 1.0;
   if (stepTime % 5.0 == 0) {
-    all.update();
+    var f = analyser.getFrequencyData();
+    all.update(f);
   }
 
   if (stepTime % 60.0 == 0 && visElements.sound.isPlaying) {

@@ -13,9 +13,9 @@ var mat4Locations = [
                 new THREE.Matrix4().makeTranslation(0, dim * Math.sin(7* 2*Math.PI/8.0), dim * Math.cos(7* 2*Math.PI/8.0) ) ];
 
 var origin = new THREE.Vector3(0, 0, 0);
-var max_x = 15;
+var max_x = 25;
 
-function calcShooterOrigLocation(musicData) {
+function calcShooterIndexLocation(musicData) {
     // TO BE IMPLEMENTED
     // returns proper index
 
@@ -131,11 +131,13 @@ export default class AllShooters {
     this.playing = bool;
   }
 
-  update() {
+  update(freq) {
     // console.log("AllShooters: update");
 
     if (this.playing) {
-      // console.log(this.playing);
+        var ind = calcShooterIndexLocation(freq);
+        this.addShooter(ind, this.f);
+        
         this.updateShootersPos();
         this.removeShootersByDistance(this.f);
     }
