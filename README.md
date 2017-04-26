@@ -11,7 +11,7 @@ In this milestone, I completed the following:
 
 - Fixed the bug I had in my previous milestone where I couldn't get multiple metaballs to animate. I now have deltaT being passed in from main.js into the update functions in marching_cubes.js and metaball.js.
 
-- Positioned camera accordingly to emulate the image above.
+- Set a fixed camera position to be according to the image above.
 
 - Now, I have multiple metaballs sprouting from a side with varying accelerations and positions. This is set up accordingly to the image above. ("setupMetaballs" function in marching_cubes.js)
     * I'm in the middle of updating the logic of this to rather be in the "update" function than "setupMetaballs" to provide more flexibility in the spawning of metaballs.
