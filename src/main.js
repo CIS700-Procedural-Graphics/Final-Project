@@ -10,20 +10,45 @@ import Framework from './framework'
 import LUT from './marching_cube_LUT.js'
 import MarchingCubes from './marching_cubes.js'
 
+var clock = new THREE.Clock();
 
 import WaterShader from './waterShader.js'
 WaterShader(THREE);
 var waterNormals;   //to get water texture
 var water;
 
+var time_update = 0.0;
+var start = Date.now();
+
+
+//create ground plane
+var gridDim = 100;
+var terrainGeo = new THREE.PlaneGeometry( gridDim, gridDim, gridDim, gridDim); //width, height, widthSegments, heightSegments
+terrainGeo.rotateX(-Math.PI / 2.0);  //make the grid flat
+
+var noiseMaterial = new THREE.ShaderMaterial({
+  uniforms: {
+    time: {
+      type : "float",
+      value : time_update
+    }
+  },
+  vertexShader : require('./glsl/noise-vert.glsl'),
+  fragmentShader : require('./glsl/noise-frag.glsl')
+});
+var terrainMesh = new THREE.Mesh(terrainGeo, noiseMaterial);
+terrainMesh.rotateY(-Math.PI / 2.0);
+terrainMesh.translateZ(-10);
+terrainMesh.translateY(3);
+
 
 const DEFAULT_VISUAL_DEBUG = false; //true;
 const DEFAULT_ISO_LEVEL = 1.0;
-const DEFAULT_GRID_RES = 12;//12;//4;  //32 should make it look real nice and smooth
+const DEFAULT_GRID_RES = 15;//12;//12;//4;  //32 should make it look real nice and smooth
 const DEFAULT_GRID_WIDTH = 10;
 const DEFAULT_NUM_METABALLS = 1;//10;
 const DEFAULT_MIN_RADIUS = 0.5;
-const DEFAULT_MAX_RADIUS = 1;
+const DEFAULT_MAX_RADIUS = 0.5;//1;
 const DEFAULT_MAX_SPEED = 0.01;
 
 var App = {
@@ -79,61 +104,35 @@ function onLoad(framework) {
   App.renderer = renderer;
 
   renderer.setClearColor( 0xbfd1e5 );
-  scene.add(new THREE.AxisHelper(20));
+  //scene.add(new THREE.AxisHelper(20));
 
   setupCamera(App.camera);
   setupLights(App.scene);
   setupScene(App.scene);
   setupGUI(gui);
 
+  setupBackground(App.scene);
+  setupWater(App.scene, App.renderer, App.camera);
 
-  //WATER SHADER -----------------------------------------------------------------------
-  scene.add( new THREE.AmbientLight( 0x444444 ) );
-	var light = new THREE.DirectionalLight( 0xffffbb, 1 );
-	light.position.set( - 1, 1, - 1 );
-	scene.add( light );
+  //set up obj mesh in scene
+  var treeObj = 'geometry/feather.obj';  //'geometry/lowpolytree.obj';
+  //setupObj(App.scene, treeObj);
 
-  waterNormals = new THREE.TextureLoader().load('textures/waternormals.jpg');
-  waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping;
-  // debugger;
-  var parameters = {
-		width: 2000,
-		height: 2000,
-		widthSegments: 250,
-		heightSegments: 250,
-		depth: 1500,
-		param: 4,
-		filterparam: 1
-	};
-
-  water = new THREE.Water(renderer, camera, scene, {
-    textureWidth: 512,
-    textureHeight: 512,
-    waterNormals: waterNormals,
-    alpha: 1.0,
-    sunDirection: light.position.clone().normalize(),
-    sunColor: 0xffffff,
-    waterColor: 0x001e0f,
-    distortionScale: 50.0
-  });
-
-  var mirrorMesh = new THREE.Mesh(
-    new THREE.PlaneBufferGeometry(parameters.width * 500, parameters.height * 500),
-    water.material
-  );
-
-  mirrorMesh.add(water);
-  mirrorMesh.rotation.x = - Math.PI * 0.5;
-  scene.add(mirrorMesh);
-  //END WATER SHADER -----------------------------------------------------------------------
+  //add terrain
+  scene.add(terrainMesh);
 
 }//end onload
 
 // called on frame updates
 function onUpdate(framework) {
 
+  var deltaT = clock.getDelta();
+
+  time_update = (Date.now() - start) * 0.00025;
+  noiseMaterial.uniforms.time.value = time_update;
+
   if (App.marchingCubes) {
-    App.marchingCubes.update();
+    App.marchingCubes.update(deltaT); //send get delta value here
   }
 
   if (water) {
@@ -141,29 +140,23 @@ function onUpdate(framework) {
     water.render();
   }
 
-}
+}//end onUpdate
 
 function setupCamera(camera) {
   // set camera position
-  camera.position.set(5, 5, 30);
-  camera.lookAt(new THREE.Vector3(0,0,0));
+  //camera.position.set(5, 5, 30);
+  camera.position.set(-25.26, 6.7, -20.14);
+  camera.lookAt(new THREE.Vector3(-15,4,0));    //FIDGET WITH THIS
 }
 
 function setupLights(scene) {
-
   // Directional light
   var directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
   directionalLight.color.setHSL(0.1, 1, 0.95);
   directionalLight.position.set(1, 10, 2);
   directionalLight.position.multiplyScalar(10);
-
   scene.add(directionalLight);
 }
-
-function setupScene(scene) {
-  App.marchingCubes = new MarchingCubes(App);
-}
-
 
 function setupGUI(gui) {
 
@@ -210,6 +203,80 @@ function setupGUI(gui) {
   });
   debugFolder.open();
 }
+
+function setupBackground(scene) {
+  // set skybox
+  var loader = new THREE.CubeTextureLoader();
+  var urlPrefix = 'images/skymap/';
+
+  var skymap = new THREE.CubeTextureLoader().load([
+    urlPrefix + 'px.jpg', urlPrefix + 'nx.jpg',
+    urlPrefix + 'py.jpg', urlPrefix + 'ny.jpg',
+    urlPrefix + 'pz.jpg', urlPrefix + 'nz.jpg'
+  ] );
+
+  scene.background = skymap;
+}
+
+function setupScene(scene) {
+  App.marchingCubes = new MarchingCubes(App);
+}
+
+function setupWater(scene, renderer, camera){
+  //water shader
+  scene.add( new THREE.AmbientLight( 0x444444 ) );
+  var light = new THREE.DirectionalLight( 0xffffbb, 1 );
+  light.position.set( - 1, 1, - 1 );
+  scene.add( light );
+
+  waterNormals = new THREE.TextureLoader().load('textures/waternormals.jpg');
+  waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping;
+
+  var parameters = {
+    width: 2000,
+    height: 2000,
+    widthSegments: 250,
+    heightSegments: 250,
+    depth: 1500,
+    param: 4,
+    filterparam: 1
+  };
+
+  water = new THREE.Water(renderer, camera, scene, {
+    textureWidth: 512,
+    textureHeight: 512,
+    waterNormals: waterNormals,
+    alpha: 1.0,
+    sunDirection: light.position.clone().normalize(),
+    sunColor: 0xffffff,
+    waterColor: 0x001e0f,
+    distortionScale: 50.0
+  });
+
+  var mirrorMesh = new THREE.Mesh(
+    new THREE.PlaneBufferGeometry(parameters.width * 500, parameters.height * 500),
+    water.material
+  );
+
+  mirrorMesh.add(water);
+  mirrorMesh.rotation.x = - Math.PI * 0.5;
+  scene.add(mirrorMesh);
+}
+
+// function setupObj(scene, file) {
+//   //FOR WHEN I GET THE OBJ I WANT
+//
+//   // load a simple obj mesh
+//   var objLoader = new THREE.OBJLoader();
+//   objLoader.load(file, function(obj) {
+//
+//       // LOOK: This function runs after the obj has finished loading
+//       var geo = obj.children[0].geometry; //the actual mesh could have more than 1 part. hence the array
+//       var mesh = new THREE.Mesh(geo, lambertWhite);
+//       mesh.translateY(10);
+//       scene.add(mesh);
+//   });
+// }
 
 // when the scene is done initializing, it will call onLoad, then on frame updates, call onUpdate
 Framework.init(onLoad, onUpdate);

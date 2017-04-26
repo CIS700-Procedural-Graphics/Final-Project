@@ -1,5 +1,39 @@
 # CIS700 Procedural Graphics: Final Project
 
+## Milestone 2
+
+To start off, this is (somewhat) the look I'm trying to achieve:
+
+![alt text](https://github.com/MegSesh/Final-Project/blob/master/documentation/referenceImages/facefountainforest.jpg "Image 1")
+
+
+In this milestone, I completed the following:
+
+- Fixed the bug I had in my previous milestone where I couldn't get multiple metaballs to animate. I now have deltaT being passed in from main.js into the update functions in marching_cubes.js and metaball.js.
+
+- Positioned camera accordingly to emulate the image above.
+
+- Now, I have multiple metaballs sprouting from a side with varying accelerations and positions. This is set up accordingly to the image above. ("setupMetaballs" function in marching_cubes.js)
+    * I'm in the middle of updating the logic of this to rather be in the "update" function than "setupMetaballs" to provide more flexibility in the spawning of metaballs.
+
+- Created a noise generated terrain with perlin noise on the GPU as a shader
+
+- Added lambertian shading
+
+- Added a skybox and implementation for uploading an .obj mesh (commented out for now because I don't have an obj I want to place in the scene yet)
+
+
+Results:
+
+![alt text](https://github.com/MegSesh/Final-Project/blob/master/documentation/milestone2_images/1.png "Image 1")
+
+
+To work on next milestone:
+
+- Changing the size of the voxel grid in order to create more elongated, fluid looking metaballs
+- Adding ambient music for the water
+
+
 
 ## Milestone 1
 

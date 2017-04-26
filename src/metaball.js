@@ -11,6 +11,7 @@ var clock = new THREE.Clock();
 //can be independent from metaball
 //i could use a different simulation -- create the curving motion or any other motion here
 
+var globalID = 0;
 
 export default class Metaball {
   constructor(pos, radius, vel, gridWidth, visualDebug, spawnLoc, spawnVel, accel) {
@@ -31,6 +32,9 @@ export default class Metaball {
     this.radius = radius;
     this.radius2 = radius * radius;
     this.mesh = null;
+
+    this.id = globalID;
+    globalID += 1;
 
     if (visualDebug) {
       this.makeMesh();
@@ -60,7 +64,7 @@ export default class Metaball {
     this.vel = this.spawnVelocity.clone();
   };
 
-  update() {
+  update(deltaT) {
     // @TODO
     //Implement the update for metaballs to move its position based velocity.
     //Reverse the velocity whenever the metaball goes out of bounds.
@@ -68,7 +72,12 @@ export default class Metaball {
     //maintain an additional small margin so that the metaball
     //can reverse its moving direction before reaching the bounds.
 
-    var deltaT = clock.getDelta();
+    // console.log("ID: ");
+    // console.log(ball.id);
+    // console.log("POS: ");
+    // console.log(ball.pos);
+
+    //var deltaT = clock.getDelta();
 
     var bottomOffset = 1.0;  //this should be radius of the metaball
     var topOffset = this.gridWidth - bottomOffset;

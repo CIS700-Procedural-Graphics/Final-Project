@@ -79,6 +79,10 @@ export default class MarchingCubes {
     this.meshGeom = new THREE.Mesh( new THREE.Geometry(), LAMBERT_GREEN);
 
 
+    //max number of metaballs
+    this.maxNumBalls = 1;//8;
+
+
     this.showSpheres = true;
     this.showGrid = true;
 
@@ -142,52 +146,123 @@ export default class MarchingCubes {
   };
 
   setupMetaballs() {
-
     this.balls = [];
     var x, y, z, vx, vy, vz, radius, pos, vel;
     var spawn_x, spawn_y, spawn_z, spawnLoc, spawnVel, accel;
 
-    //var matLambertWhite = LAMBERT_WHITE;
-    //var maxRadiusTrippled = this.maxRadius * 3;
-    //var maxRadiusDoubled = this.maxRadius * 2;
+    // ---------------- METABLL ONE ----------------
+    // -------- Position --------
+    x = this.gridWidth - 2;
+    y = this.gridWidth - 2;
+    z = this.gridWidth / 2 - 3.5;
+    pos = new THREE.Vector3(x, y, z);
+    spawn_x = this.gridWidth - 2;
+    spawn_y = this.gridWidth - 2;
+    spawn_z = this.gridWidth / 2 - 3.5;
+    spawnLoc = new THREE.Vector3(spawn_x, spawn_y, spawn_z);
+    // -------- Velocity --------
+    vx = (Math.random() * 2 - 1) * this.maxSpeed;
+    vy = (Math.random() * 2 - 1) * this.maxSpeed;
+    vz = (Math.random() * 2 - 1) * this.maxSpeed;
+    vel = new THREE.Vector3(vx, vy, vz);
+    spawnVel = new THREE.Vector3(-1.0, vy, vz);
+    // -------- Other things --------
+    accel = new THREE.Vector3(0.0, -10.0, 0.0);
+    radius = Math.random() * (this.maxRadius - this.minRadius) + this.minRadius;
+    this.setupBall(pos, vel, radius, spawnLoc, spawnVel, accel);
 
-    //GENERATE STARTING POSITION AND VELOCITY
-    // Randomly generate metaballs with different sizes and velocities
+    // ---------------- METABLL TWO ----------------
+    // -------- Position --------
+    z = this.gridWidth / 2 - 2.5;
+    pos = new THREE.Vector3(x, y, z);
+    spawn_z = this.gridWidth / 2 - 2.5;
+    spawnLoc = new THREE.Vector3(spawn_x, spawn_y, spawn_z);
+    // -------- Other things --------
+    //spawnVel = new THREE.Vector3(-1.0, vy, vz);
+    accel = new THREE.Vector3(0.0, -5.0, 0.0);
+    this.setupBall(pos, vel, radius, spawnLoc, spawnVel, accel);
 
+
+    // ---------------- METABLL THREE ----------------
+    // -------- Position --------
+    z = this.gridWidth / 2 - 1.5;
+    pos = new THREE.Vector3(x, y, z);
+    spawn_z = this.gridWidth / 2 - 1.5;
+    spawnLoc = new THREE.Vector3(spawn_x, spawn_y, spawn_z);
+    // -------- Other things --------
+    //spawnVel = new THREE.Vector3(-1.0, vy, vz);
+    accel = new THREE.Vector3(0.0, -7.0, 0.0);
+    this.setupBall(pos, vel, radius, spawnLoc, spawnVel, accel);
+
+
+    // ---------------- METABLL FOUR ----------------
+    // -------- Position --------
+    z = this.gridWidth / 2 - 0.5;
+    pos = new THREE.Vector3(x, y, z);
+    spawn_z = this.gridWidth / 2 - 0.5;
+    spawnLoc = new THREE.Vector3(spawn_x, spawn_y, spawn_z);
+    // -------- Other things --------
+    //spawnVel = new THREE.Vector3(-1.0, vy, vz);
+    accel = new THREE.Vector3(0.0, -3.0, 0.0);
+    this.setupBall(pos, vel, radius, spawnLoc, spawnVel, accel);
+
+
+    // ---------------- METABLL FIVE ----------------
+    // -------- Position --------
+    z = this.gridWidth / 2 + 1;
+    pos = new THREE.Vector3(x, y, z);
+    spawn_z = this.gridWidth / 2 + 1;
+    spawnLoc = new THREE.Vector3(spawn_x, spawn_y, spawn_z);
+    // -------- Other things --------
+    //spawnVel = new THREE.Vector3(-1.0, vy, vz);
+    accel = new THREE.Vector3(0.0, -9.0, 0.0);
+    this.setupBall(pos, vel, radius, spawnLoc, spawnVel, accel);
+
+
+    // ---------------- METABLL SIX ----------------
+    // -------- Position --------
+    z = this.gridWidth / 2 + 2;
+    pos = new THREE.Vector3(x, y, z);
+    spawn_z = this.gridWidth / 2 + 2;
+    spawnLoc = new THREE.Vector3(spawn_x, spawn_y, spawn_z);
+    // -------- Other things --------
+    //spawnVel = new THREE.Vector3(-1.0, vy, vz);
+    accel = new THREE.Vector3(0.0, -4.0, 0.0);
+    this.setupBall(pos, vel, radius, spawnLoc, spawnVel, accel);
+
+
+
+
+    // // ---------------- METABLL FOUR ----------------
+    // // -------- Position --------
+    // x = this.gridWidth / 2;
+    // y = this.gridWidth - 2;
+    // z = this.gridWidth - 2;
+    // pos = new THREE.Vector3(x, y, z);
+    // // -------- Other things --------
+    // spawn_x = this.gridWidth / 2;
+    // spawn_y = this.gridWidth - 2;
+    // spawn_z = this.gridWidth - 2;
+    // spawnLoc = new THREE.Vector3(spawn_x, spawn_y, spawn_z);
+    // spawnVel = new THREE.Vector3(vx, vy, -1.0);
+    // accel = new THREE.Vector3(0.0, -15.0, 0.0);
+    // radius = Math.random() * (this.maxRadius - this.minRadius) + this.minRadius;
+    //
+    // this.setupBall(pos, vel, radius, spawnLoc, spawnVel, accel);
+
+  };//end setupMetaballs
+
+  //use this to spawn metaballs with specified locations, velocities, accel, etc
+  setupBall(pos, vel, radius, spawnLoc, spawnVel, accel)
+  {
     for (var i = 0; i < this.numMetaballs; i++)
     {
-      /*
-        var setupBallOutput = setupBall();
-        for example --> x = setupBallOutput.x
-      */
-
-        // -------- Position --------
-        x = this.gridWidth - 2;
-        y = this.gridWidth - 2;
-        z = this.gridWidth / 2;
-        pos = new THREE.Vector3(x, y, z);
-
-        // -------- Velocity --------
-        vx = (Math.random() * 2 - 1) * this.maxSpeed;
-        vy = (Math.random() * 2 - 1) * this.maxSpeed;
-        vz = (Math.random() * 2 - 1) * this.maxSpeed;
-        vel = new THREE.Vector3(vx, vy, vz);
-
-        radius = Math.random() * (this.maxRadius - this.minRadius) + this.minRadius;
-
-        spawn_x = this.gridWidth - 2;
-        spawn_y = this.gridWidth - 2;
-        spawn_z = this.gridWidth / 2;
-        spawnLoc = new THREE.Vector3(spawn_x, spawn_y, spawn_z);
-        spawnVel = new THREE.Vector3(-1.0, vy, vz);
-        accel = new THREE.Vector3(0.0, -1.0, 0.0);
-
-        //another spawn location
-      // spawn_x = this.gridWidth / 2;
-      // spawn_y = this.gridWidth - 2;
-      // spawn_z = this.gridWidth - 2;
-      // spawnVel = new THREE.Vector3(vx, vy, -1.0);
-
+        pos = pos;
+        vel = vel;
+        radius = radius;
+        spawnLoc = spawnLoc;
+        spawnVel = spawnVel
+        accel = accel
 
         var ball = new Metaball(pos, radius, vel, this.gridWidth, VISUAL_DEBUG, spawnLoc, spawnVel, accel);
         this.balls.push(ball);
@@ -196,72 +271,7 @@ export default class MarchingCubes {
           this.scene.add(ball.mesh);
         }//end if
       }//end for
-
-
-      //THIS ONE APPEARS BUT WONT MOVE FOR SOME REASON. WHY?!?! IS IT NOT BEING UPDATED????
-      // var _x, _y, _z, _vx, _vy, _vz, _radius, _pos, _vel;
-      // var _spawn_x, _spawn_y, _spawn_z, _spawnLoc, _spawnVel, _accel;
-      //
-      // for (var i = 0; i < this.numMetaballs; i++)
-      // {
-      //   console.log("IM IN THE SECOND FOR LOOP")
-      //   /*
-      //     var setupBallOutput = setupBall();
-      //     for example --> x = setupBallOutput.x
-      //   */
-      //
-      //     // -------- Position --------
-      //     _x = this.gridWidth / 2;
-      //     _y = this.gridWidth - 2;
-      //     _z = this.gridWidth - 2;
-      //     _pos = new THREE.Vector3(_x, _y, _z);
-      //
-      //     // -------- Velocity --------
-      //     _vx = (Math.random() * 2 - 1) * this.maxSpeed;
-      //     _vy = (Math.random() * 2 - 1) * this.maxSpeed;
-      //     _vz = (Math.random() * 2 - 1) * this.maxSpeed;
-      //     _vel = new THREE.Vector3(_vx, _vy, _vz);
-      //
-      //     _radius = Math.random() * (this.maxRadius - this.minRadius) + this.minRadius;
-      //
-      //     _spawn_x = this.gridWidth / 2;
-      //     _spawn_y = this.gridWidth - 2;
-      //     _spawn_z = this.gridWidth - 2;
-      //     _spawnLoc = new THREE.Vector3(_spawn_x, _spawn_y, _spawn_z);
-      //     _spawnVel = new THREE.Vector3(_vx, _vy, -1.0);
-      //     _accel = new THREE.Vector3(0.0, -1.0, 0.0);
-      //
-      //     var ball = new Metaball(_pos, _radius, _vel, this.gridWidth, VISUAL_DEBUG, _spawnLoc, _spawnVel, _accel);
-      //     this.balls.push(ball);
-      //
-      //     if (VISUAL_DEBUG) {
-      //       this.scene.add(ball.mesh);
-      //     }//end if
-      //
-      //   }//end for
-
-
-  };//end setupMetaballs
-
-  //use this to spawn multiple metaballs in various locations
-  setupBall()
-  {
-    var x, y, z, vx, vy, vz, radius, pos, vel;
-    var spawn_x, spawn_y, spawn_z, spawnLoc, spawnVel, accel;
-
-    return {
-      x : x,
-      y : y,
-      z : z,
-      vx : vx,
-      vy : vy,
-      vz : vz,
-      radius : radius,
-      pos : pos,
-      vel : vel
-    };
-
-  };
+  };//end setupBall
 
 
 //THE POINT YOU PASS INTO SAMPLE IS POINT ON THE GRID OR SPACE THAT YOU'RE DOING SIMULATION IN
@@ -294,15 +304,58 @@ export default class MarchingCubes {
   };//end sample function
 
 
-  update() {
+  update(deltaT) {
 
     if (this.isPaused) {
       return;
     }
 
+    //if list isn't at max num of metaballs
+        //generate random number and check if it's less than a threshold
+            //if so, create a new metaball and add to the list
+
+    //put logic in setupMetaballs here instead
+
+    // if(this.balls.length < this.maxNumBalls)
+    // {
+    //   var randNum = (Math.random() * 10 - 1);
+    //   if(randNum < 5.0)
+    //   {
+    //
+    //     var x, y, z, vx, vy, vz, radius, pos, vel;
+    //     var spawn_x, spawn_y, spawn_z, spawnLoc, spawnVel, accel;
+    //
+    //     // ---------------- METABLL ONE ----------------
+    //     // -------- Position --------
+    //     x = this.gridWidth - 2;
+    //     y = this.gridWidth - 2;
+    //     z = this.gridWidth / 2 - 3.5;
+    //     pos = new THREE.Vector3(x, y, z);
+    //     spawn_x = this.gridWidth - 2;
+    //     spawn_y = this.gridWidth - 2;
+    //     spawn_z = this.gridWidth / 2 - 3.5;
+    //     spawnLoc = new THREE.Vector3(spawn_x, spawn_y, spawn_z);
+    //     // -------- Velocity --------
+    //     vx = (Math.random() * 2 - 1) * this.maxSpeed;
+    //     vy = (Math.random() * 2 - 1) * this.maxSpeed;
+    //     vz = (Math.random() * 2 - 1) * this.maxSpeed;
+    //     vel = new THREE.Vector3(vx, vy, vz);
+    //     spawnVel = new THREE.Vector3(-1.0, vy, vz);
+    //     // -------- Other things --------
+    //     accel = new THREE.Vector3(0.0, -10.0, 0.0);
+    //     radius = Math.random() * (this.maxRadius - this.minRadius) + this.minRadius;
+    //     this.setupBall(pos, vel, radius, spawnLoc, spawnVel, accel);
+    //   }
+    // }
+
+
     // This should move the metaballs
     this.balls.forEach(function(ball) {
-      ball.update();
+      ball.update(deltaT);
+      // console.log("ID: ");
+      // console.log(ball.id);
+      // console.log("POS: ");
+      // console.log(ball.pos);
     });
 
 
