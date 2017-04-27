@@ -2,9 +2,10 @@ varying vec2 vUv;
 varying float noise;
 varying vec3 fragPos;
 varying vec3 vNormal;
+uniform float time;
 
 #define M_PI 3.14159265
-const int N_OCTAVES = 5;
+const int N_OCTAVES = 2;
 
 float sampleNoise(vec3 pos) {
 	float x = fract(sin(dot(pos, vec3(134.9235, 63.5879, 218.9542))) * 27495.2467);
@@ -66,11 +67,11 @@ float multiOctaveNoise(vec3 worldPosition, float offset) {
 }
 
 void main() {
-    vUv = uv;
+    vUv = vec2(uv.x * 5.0, uv.y * 5.0);
     float scale = 100.0;
 		vec4 worldPosition = modelMatrix * vec4( position.xy, 0.0, 1.0 );
 
-    noise = multiOctaveNoise(position.xyz, 0.4);
+    noise = multiOctaveNoise( vec3(time, position.xy), 0.4);
     vec3 noisePosition = vec3( position.x, position.y, position.z ) + normal * noise;
     fragPos = position;
     vNormal = normal;

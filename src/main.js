@@ -8,10 +8,10 @@ import Framework from './framework'
 import MIDI from 'midi.js'
 import Soundfont from 'soundfont-player'
 import {euclid} from './utils/euclid.js'
-import {beatGenerator, 
-		MorseThue, 
-		melodyGenerator, 
-		rhythmicMelodyGenerator, 
+import {beatGenerator,
+		MorseThue,
+		melodyGenerator,
+		rhythmicMelodyGenerator,
 		EarthWorm,
 		noteBeats} from './utils/musicGenerator.js'
 
@@ -23,7 +23,8 @@ const EffectComposer = require('three-effectcomposer')(THREE);
 import Scene1 from './scene1';
 import Scene2 from './scene2';
 import Scene3 from './scene3';
-var Visual = Scene3;
+import Scene4 from './scene4';
+var Visual = Scene4;
 
 
 
@@ -202,6 +203,8 @@ function rate_limit(func) {
     }
 }
 
+var mirrorCube, mirrorCubeCamera; // for mirror material
+
 // called after the scene loads
 function onLoad(framework) {
 
@@ -213,6 +216,14 @@ function onLoad(framework) {
 
 	camera.position.set(10,10,10);
 	camera.lookAt(new THREE.Vector3(0,0,0));
+
+
+	// TESTINg
+
+
+	// RENDERER
+
+
 
 	// edit params and listen to changes like this
 	// more information here: https://workshop.chromeexperiments.com/examples/gui/#1--Basic-Usage
@@ -251,9 +262,9 @@ function onLoad(framework) {
   visualConfig.startTime = clock.getElapsedTime();
 	visualConfig.prevTime = clock.getElapsedTime();
 
-		var geometry = new THREE.BoxGeometry( 1,1,1 );
-		var mesh = new THREE.Mesh(geometry);
-		scene.add(mesh);
+		// var geometry = new THREE.BoxGeometry( 1,1,1 );
+		// var mesh = new THREE.Mesh(geometry);
+		// scene.add(mesh);
 
 }
 
@@ -302,12 +313,12 @@ function onUpdate(framework) {
 	deltaT = (nTime - time[1]) / 1000;
 	if (deltaT > music[melIdx][1][indices[1]] * bpm[1] && indices[1] < music[melIdx][0].length) {
 
-		melodyInstr.then(function(melIn) {
+		melodyInstr.then((function(melIn) {
 			if (music[melIdx][0][indices[1]] > 0) {
 				melIn.play(music[melIdx][0][indices[1]]).stop(ac.currentTime + music[melIdx][1][indices[1]] * bpm[1]);
+				Visual.melodyCallback(framework, visualConfig);
 			}
-			
-		})
+		}).bind(this))
 		indices[1]++;
 		time[1] = nTime;
 	}
@@ -315,11 +326,12 @@ function onUpdate(framework) {
 	deltaT = (nTime - time[2]) / 1000;
 	if (deltaT > beats[0][1][indices[2]] * bpm[2] && indices[2] < beats[0][0].length) {
 
-		baseInstr.then(function (baseIn) {
+		baseInstr.then((function (baseIn) {
 			if (beats[0][0][indices[2]] > 0) {
 				baseIn.start(beats[0][0][indices[2]], ac.currentTime, {gain: 0.5});
+				Visual.bassCallback(framework, visualConfig);
 			}
-		})
+		}).bind(this))
 		indices[2]++;
 		time[2] = nTime;
 	}
@@ -355,10 +367,10 @@ function onUpdate(framework) {
 	var gui = framework.gui;
 	var stats = framework.stats;
 
-	var delta = visualConfig.prevTime - clock.getElapsedTime();
+	var delta = clock.getElapsedTime() - visualConfig.prevTime;
 	visualConfig.prevTime = clock.getElapsedTime();
 
-	Visual.updateScene(scene, visualConfig, delta);
+	Visual.updateScene(framework, visualConfig, delta);
 
 	// visualConfig.camera.vel = visualConfig.camera.vel.clone().add(visualConfig.camera.acc.clone().multiplyScalar(delta));
 	// visualConfig.camera.pos = visualConfig.camera.pos.clone().add(visualConfig.camera.vel.clone().multiplyScalar(delta));
@@ -375,6 +387,16 @@ function onUpdate(framework) {
 	// if (composer){
 		// composer.render();
 	// } else {
+
+//
+// if (mirrorCube && mirrorCubeCamera) {
+//
+// 			mirrorCube.visible = false;
+// 			mirrorCubeCamera.updateCubeMap( renderer, scene );
+// 			mirrorCube.visible = true;
+// }
+
+
 		renderer.render(scene, camera); // render the scene
 	// }
 }

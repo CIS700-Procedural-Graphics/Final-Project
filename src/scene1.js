@@ -39,10 +39,6 @@ function updateScene(scene, visualConfig, delta) {
       visualConfig.sceneProps.particles[i].update(0.01);
       visualConfig.sceneProps.particles[i].meshLine.advance(visualConfig.sceneProps.particles[i].pos);
     }
-
-    if (Math.random() < 0.01) {
-      visualConfig.sceneProps.particles.push(genParticle(scene));
-    }
   }
 }
 
@@ -94,6 +90,12 @@ function genParticle(scene) {
   };
 }
 
+
+function bassCallback(framework, visualConfig) {
+  var scene = framework.scene;
+  visualConfig.sceneProps.particles.push(genParticle(scene));
+}
+
 function changeTrigger(visualConfig) {
   return visualConfig.camera.pos.x < 1;
 }
@@ -110,8 +112,9 @@ function cleanupScene(scene) {
 export default {
   initScene: initScene,
   updateScene: updateScene,
+  bassCallback: bassCallback,
   changeTrigger: changeTrigger,
-  cleanupScene: cleanupScene
+  cleanupScene: cleanupScene,
 }
 
 export function other() {
