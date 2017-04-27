@@ -15,6 +15,14 @@ The Soundfont-player and Tonal.js libaries are used to generate scales and play 
 
 One noticeable issue is that sometimes the melody generation sometimes is too random. One new goal for the next week is to "decrease" the randomness by artificially introducing constant structures and musical motifs. One example present in the code currently is that the `EarthWorm` function takes the generated EarthWorm sequence and injects a constant note at every other interval, which makes the resulting sequence sound more "musical".
 
+#### Milestone 2
+The bass line is completely procedural, generated using a random chord (which right now is hand selected, but will be changed to just picking 1 note and letting the program generate the chord). Then, there are 6 parameters that can be tuned to change the rhythm.  The parameters so far are hard coded and need to be changed into variables to allow for user input.
+
+The harmony lines are approached similarly to the bass line. However, instead of using individual notes in a chord, random music motifs and transformations are applied to the note (e.g. C -> C D C).  The transformations are chosen randomly. This needs to be tuned a bit so it sounds better. The number of repetitions for each motif can be controlled using one of the random sequences described above.
+
+The melody line is the least random. Currently, it takes a descending sequence of notes and applies slight variations to create a theme. This barely takes any random input at all currently. Furthermore, this needs additional variations to be coded in and is a work in progress.
+
+
 ### Visualizer (Brian)
 Milestone 1:
 
@@ -62,8 +70,10 @@ Inspiration from [Panoramical](http://panoramic.al/) and [Proteus](http://twiste
 * Integrate!
 * [Xiaomao] Full procedural control over the music generation (maybe have different randomization algorithms to see how well each works with the sounds)
 * [Xiaomao] Maybe allow some user input for parameters
-* [Brian] Experiment with more parameters to tune visuals
-* [Brian] Implement 2 scenes
+* [Brian] Experimented with music structures to get a feel for type of music we are able to generate  (https://onlinesequencer.net/464784, https://onlinesequencer.net/464779)
+ * [Brian] Have callbacks in audio code trigger visual effects
+ * [Brian] Experiment with more parameters to tune visuals (WIP)
+ * [Brian] Working on implementing reflective water (WIP)
 #### 5/3 Final presentations (3-5 pm, Siglab), final reports due
 * Final Report
 * [Xiaomao] Have cool player input screen

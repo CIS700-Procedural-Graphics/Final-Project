@@ -29,14 +29,14 @@ function CBA(baseNote) {
 
 function randMofif(baseNote) {
 	var r = Math.random();
-	if (r < 0.25) {
-		return [ABA(baseNote),[1,1,1]];
-	} else if (r < 0.5) {
-		return [ABC(baseNote),[1,1,1]];
-	} else if (r < 0.75) {
-		return [CBA(baseNote),[1,1,1]];
+	if (r < 0.4) {
+		return ABA(baseNote);
+	} else if (r < 0.7) {
+		return ABC(baseNote);
+	} else if (r <= 1) {
+		return CBA(baseNote);
 	} else {
-		return [[baseNote],[3]];
+		return [baseNote];
 	}
 }
 
@@ -49,20 +49,69 @@ function randMofif(baseNote) {
 // Use all notes in scale once?
 export function createMainTheme(note) {
 	var s = tonal.scale.get('major', note);
-	var ss = shuffle(s);
+	
+	// 1st and 3rd notes are beat keeping
+	var tempo = [2,1];
+	var notes = [s[0],s[2]];
 
-	var theme = [[],[]];
-	for (var i = 0; i < ss.length; i++) {
-		var m = randMofif(tonal.note.midi(ss[i]));
-		
-		for (var j = 0; j < m[0].length; j++) {
-			console.log('i: ' + i + 'j: ' + j + ' Pushing note: ' + m[0][j] + ' length: ' + m[1][j]);
-			theme[0].push(m[0][j]);
-			theme[1].push(m[1][j]);
+	// Pick 3 random notes, not 1 or 3 to create harmony/melody line
+	var options = [];
+	for (var i = 0; i < s.length; i++) {
+		if (i != 0 && 1 != 2) { options.push(s[i]); }
+	}
+	options = shuffle(options);
+
+	// Create 3 random delays for the 3 main notes. 
+	var delays = [];
+	for (var i = 0; i < 3; i++) {
+		delays.push(1);
+	}
+
+	// Create main music line
+	var sumTerm = [0,3,7];
+	var mainNotes = [[],[]];
+	for (var i = 0; i < 6; i++) {
+		// // Add delay
+		// for (var j = 0; j < delays[i%3]; j++) {
+		// 	mainNotes[0].push(-1);
+		// 	mainNotes[1].push(1);
+		// }
+
+		// Push motif
+		var m = randMofif(tonal.note.midi(options[0]) + sumTerm[i%3] );
+		for (var j = 0; j < m.length; j++) {
+			mainNotes[0].push(m[j]);
+			mainNotes[1].push(1);
+
+			// mainNotes[0].push(-1);
+			// mainNotes[1].push(1);
 		}
 	}
 
-	return theme;
+	// Create beat line based on length of main line
+	var l = mainNotes[0].length;
+	var tl = (Math.ceil(l/2));
+	var beatNotes = [[],[]];
+	for (var i = 0; i < tl; i++) {
+		for (var j = 0; j < tempo.length; j++) {
+			if (isNaN(notes[j]))
+				beatNotes[0].push(tonal.note.midi(notes[j]));
+			else
+				beatNotes[0].push(notes[j]);
+			beatNotes[1].push(tempo[j]);
+		}
+	}
+
+	// repeat the melodies a few times
+	var repeat = 3;
+	for (var i = 0; i < repeat; i++) {
+		mainNotes[0] = mainNotes[0].concat(mainNotes[0]);
+		mainNotes[1] = mainNotes[1].concat(mainNotes[1]);
+		beatNotes[0] = beatNotes[0].concat(beatNotes[0]);
+		beatNotes[1] = beatNotes[1].concat(beatNotes[1]);
+	}
+
+	return [mainNotes, beatNotes];
 }
 
 export function patternedMelody(notes) {
@@ -95,6 +144,77 @@ export function patternedMelody(notes) {
 
 	console.log(newNotes)
 	return newNotes;
+}
+
+export function createMelody(note) {
+	var s = tonal.scale.get('major', note);
+
+	// pick 4 notes to descend along scale
+	var noteNum = [];
+	for (var i = 0; i < s.length; i++) { noteNum.push(i); };
+	noteNum = shuffle(noteNum);
+	noteNum = noteNum.slice(0,4);
+	noteNum = noteNum.sort();
+	noteNum = noteNum.reverse();
+
+	console.log(noteNum)
+
+	var notes = [[],[]];
+
+	// Variation 1
+	for (var i = 0; i < noteNum.length; i++) {
+		notes[0].push(tonal.note.midi(s[noteNum[i]]));
+		notes[1].push(1);
+	}
+
+	var rIdx = Math.floor(Math.random() * 3);
+	for (var i = 0; i < 2; i++) {
+		notes[0].push(tonal.note.midi(s[noteNum[rIdx]]));
+		notes[0].push(tonal.note.midi(s[noteNum[rIdx + 1]]));
+		notes[1].push(1);
+		notes[1].push(1);
+	}
+
+	notes[0].push(tonal.note.midi(s[noteNum[rIdx + 1]]) - 3);
+	notes[0].push(-1);
+	notes[1].push(2);
+	notes[1].push(1);
+
+	// Variation 2
+	for (var i = 0; i < noteNum.length; i++) {
+		notes[0].push(tonal.note.midi(s[noteNum[i]]));
+		notes[1].push(1);
+	}
+
+	var delta = [0,3,4];
+	rIdx = Math.floor(Math.random() * 2) + 1;
+	for (var i = 0; i < 3; i++) {
+		var j = i + rIdx;
+		notes[0].push(tonal.note.midi(s[noteNum[j % 4]]) - Math.floor(j/4) * 12);
+		notes[1].push(1);
+	}
+
+	rIdx = Math.floor(Math.random() * 2) + 2;
+	for (var i = 0; i < 3; i++) {
+		var j = i + rIdx;
+		notes[0].push(tonal.note.midi(s[noteNum[j % 4]]) - Math.floor(j/4) * 12);
+		notes[1].push(1);
+	}
+
+	notes[0].push(tonal.note.midi(s[noteNum[rIdx]]) - delta[i] - 3);
+	notes[0].push(-1);
+	notes[1].push(4);
+	notes[1].push(1);
+
+	// repeat the melodies a few times
+	var repeat = 3;
+	for (var i = 0; i < repeat; i++) {
+		notes[0] = notes[0].concat(notes[0]);
+		notes[1] = notes[1].concat(notes[1]);
+
+	}
+
+	return notes;
 }
 
 // http://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
