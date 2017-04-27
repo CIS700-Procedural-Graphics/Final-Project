@@ -35,6 +35,8 @@ Milestone 1:
 
 ![scene 2](http://i.imgur.com/vTInVNX.png)
 
+![scene 3](https://i.imgur.com/ke9A7gN.png)
+
 Milestone 2:
 
 * User input to trigger musical and visual effect
@@ -72,8 +74,8 @@ Inspiration from [Panoramical](http://panoramic.al/) and [Proteus](http://twiste
 * [Xiaomao] Maybe allow some user input for parameters
 * [Brian] Experimented with music structures to get a feel for type of music we are able to generate  (https://onlinesequencer.net/464784, https://onlinesequencer.net/464779)
  * [Brian] Have callbacks in audio code trigger visual effects
- * [Brian] Experiment with more parameters to tune visuals (WIP)
- * [Brian] Working on implementing reflective water (WIP)
+ * [Brian] Experiment with more parameters to tune visuals
+ * [Brian] Working on implementing reflective water - still need to fix the mirror shading
 #### 5/3 Final presentations (3-5 pm, Siglab), final reports due
 * Final Report
 * [Xiaomao] Have cool player input screen
