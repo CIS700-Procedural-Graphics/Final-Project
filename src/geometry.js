@@ -2,18 +2,19 @@ const THREE = require('three');
 
 export function initSceneGeo(scene, meshes, materials, spline, radius) {
 
-  var plane_geo = new THREE.PlaneBufferGeometry(2*radius, 2*radius, 2 * radius, 2*radius).rotateX(-Math.PI/2).translate(radius, 0, radius);
+  var s = 2 * radius;
+  var plane_geo = new THREE.PlaneBufferGeometry(s,s,s,s).rotateX(-Math.PI/2).rotateY(-Math.PI/2).translate(radius, 0, radius);
   var plane_material = new THREE.ShaderMaterial(materials.canyon_mat);
   meshes.plane = new THREE.Mesh(plane_geo, plane_material);
   scene.add(meshes.plane);
 
-  var ground_geo = new THREE.PlaneBufferGeometry(10, 10, 100, 100).rotateX(-Math.PI/2).translate(radius, -2, radius);
+  var ground_geo = new THREE.PlaneBufferGeometry(s,s,s,s).rotateX(-Math.PI/2).translate(radius, -2, radius);
   var ground_material = new THREE.MeshBasicMaterial( { color: 0x444444 , wireframe: true} );
   meshes.ground = new THREE.Mesh(ground_geo, ground_material);
   scene.add(meshes.ground);
 
-  var water_geo = new THREE.PlaneBufferGeometry(10, 10, 100, 100).rotateX(-Math.PI/2).translate(radius, -1, radius);
-  var water_material = new THREE.MeshBasicMaterial( { color: 0x0000FF , wireframe: true} );
+  var water_geo = new THREE.PlaneBufferGeometry(s,s,s,s).rotateX(-Math.PI/2).translate(radius, 0.1, radius);
+  var water_material = new THREE.ShaderMaterial(materials.water_mat);
   meshes.water = new THREE.Mesh(water_geo, water_material);
   scene.add(meshes.water);
 
@@ -27,7 +28,7 @@ export function initSceneGeo(scene, meshes, materials, spline, radius) {
   // for (var i = 0; i < vertices.length; i ++) {
   // 	var cluster = Math.random() * 10;
   // 	for (var j = 0; j < cluster; j ++) {
-  		var size_x = 3*Math.random() + 2; var size_y = Math.random() + 2; var size_z = 3*Math.random() + 2;
+  		var size_x = 2*Math.random(); var size_y = Math.random(); var size_z = 2*Math.random();
   		var icoOrdeco = (Math.random() > 0.6);
   		var rock_geo;
   		if (icoOrdeco) {

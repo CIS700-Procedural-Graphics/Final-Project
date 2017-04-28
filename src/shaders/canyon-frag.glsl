@@ -12,8 +12,8 @@ vec3 v_lerp(vec3 a, vec3 b, float t) {
 void main() {
  
   vec3 ncolor = v_lerp(vec3(0.0, 0.0, 0.0), vec3(0.0, 0.0, 1.0), vNoise);
-  vec4 color = texture2D(spline_tex, vUV);
-  //vec3 color = v_lerp(ncolor, vec3(1.0, 0.0, 0.0), vUV.x);
+  float scale = texture2D(spline_tex, vUV).r;
+  vec3 color = v_lerp(ncolor, vec3(1.0, 0.0, 0.0), scale);
 
   gl_FragColor = vec4( color.rgb, 1.0 );
 

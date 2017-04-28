@@ -16,8 +16,8 @@ float noised (vec3 x)
 	vec3 w = fract(x);
 
 	vec3 u = w*w*w*(w*(w*6.0 - 15.0)+10.0);
-	vec3 du = 30.0*w*w*(w*(w-2.0)+1.0);
 
+    vec3 du = 30.0*w*w*(w*(w-2.0)+1.0);
 	float n = p.x + 317.0*p.y + 157.0*p.z;
     
     float a = hash(n+0.0);
@@ -48,6 +48,7 @@ void main() {
     vUV =  uv;
     vec3 offset = vec3(0.0);
     float scale = 1.0 - texture2D(spline_tex, uv).r;
-    if (scale > 0.5) offset = 10.0 * scale * (vNoise) * normal;
+    if (scale > 0.5) offset = 20.0 * scale * abs(vNoise) * normal;
+    if (scale > 0.999) offset = 20.0 * normal;
     gl_Position = projectionMatrix * modelViewMatrix * vec4( position + offset, 1.0 );
 }

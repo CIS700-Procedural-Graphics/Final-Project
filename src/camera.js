@@ -11,7 +11,7 @@ function distribution(previous, radius, smoothness)
 	// var delta = Math.random();
 	// var r += Math.min(smoothness, delta);
 	// return Math.min(r, radius);
-	return Math.min(radius, previous + (Math.random() - 0.5) * 20);
+	return Math.min(radius, previous + (Math.random() - 0.5) * 10);
 }
 
 function clamp(x, min, max) {
@@ -82,12 +82,12 @@ export function makeSpline(radius, num, smoothness)
 {
   var randomPoints = [];
   var two_pi = 2 * Math.PI;
-  var r = radius;
+  var r = radius / 2;
   for ( var i = 0; i < two_pi; i += two_pi/num ) {
   	// stratified angle sampling
   	var angle = i + Math.random() * two_pi/num;
   	r = distribution(r, radius, smoothness);
-  	var point = new THREE.Vector3(r * Math.cos(angle) + radius, 0, r * Math.sin(angle) + radius);
+  	var point = new THREE.Vector3(r * Math.cos(angle) + radius, 2, r * Math.sin(angle) + radius);
 
     randomPoints.push(point);
   }
@@ -143,5 +143,7 @@ export function updateCamera(camera, spline, camPosIndex)
       camera.rotation.y = camRot.y;
       camera.rotation.z = camRot.z;
 
-      camera.lookAt(spline.getPoint((camPosIndex+1) / 10000));
+      // smooth camera movement
+      var look = spline.getPoint((camPosIndex+1) / 10000);
+      camera.lookAt(look);
 }

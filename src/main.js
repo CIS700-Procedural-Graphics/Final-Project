@@ -14,7 +14,7 @@ var variables = {
   audioAnalyser : null,
   enableSound : true,
   initialized : false,
-  isPaused : true, 
+  isPaused : false, 
 
   // spline
   spline : null,
@@ -55,6 +55,12 @@ function onLoad(framework) {
   variables.spline = splineData;
   // pass spline to material
   materials.canyon_mat.uniforms.spline_tex.value = makeSplineTexture(variables.spline, variables.path_radius);
+
+  var geometry = new THREE.Geometry();
+  geometry.vertices = variables.spline.getPoints( 100 );
+  var material = new THREE.LineBasicMaterial( { color : 0xff0000 } );
+  var curveObject = new THREE.Line( geometry, material );
+  scene.add(curveObject);
 
   updateCamera(camera, variables.spline, 0);
 
