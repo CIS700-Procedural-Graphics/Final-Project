@@ -46,7 +46,8 @@ void main() {
     vNormal = normal;
     vPoint = position;
     vUV =  uv;
-    //vec3 offset = texture2D(spline_tex, uv) * (vNoise) * normal;
-    vec3 offset = abs(position.x) * (vNoise) * normal;
+    vec3 offset = vec3(0.0);
+    float scale = 1.0 - texture2D(spline_tex, uv).r;
+    if (scale > 0.5) offset = 10.0 * scale * (vNoise) * normal;
     gl_Position = projectionMatrix * modelViewMatrix * vec4( position + offset, 1.0 );
 }

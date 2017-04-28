@@ -1,5 +1,6 @@
 const THREE = require('three'); 
 const OrbitControls = require('three-orbit-controls')(THREE)
+require('three-obj-loader')(THREE)
 
 import Framework from './framework'
 import {updateCamera, makeSpline, makeSplineTexture} from './camera'
@@ -50,21 +51,15 @@ function onLoad(framework) {
   var stats = framework.stats;
 
   // set camera position
-  var splineData = makeSpline(variables.path_radius, variables.num_points, variables.jitter, variables.smoothness);
-  variables.spline = splineData.spline;
+  var splineData = makeSpline(variables.path_radius, variables.num_points, variables.smoothness);
+  variables.spline = splineData;
   // pass spline to material
-  materials.canyon_mat.uniforms.spline_tex.value = makeSplineTexture(variables.spline, splineData.dim, splineData.center);
-
-  var geometry = new THREE.Geometry();
-  geometry.vertices = variables.spline.getPoints( 100 );
-  var material = new THREE.LineBasicMaterial( { color : 0xff0000 } );
-  var curveObject = new THREE.Line( geometry, material );
-  scene.add(curveObject);
+  materials.canyon_mat.uniforms.spline_tex.value = makeSplineTexture(variables.spline, variables.path_radius);
 
   updateCamera(camera, variables.spline, 0);
 
   // objects and geometry
-  initSceneGeo(scene, meshes, materials, variables.spline);
+  initSceneGeo(scene, meshes, materials, variables.spline, variables.path_radius);
 
   // audio
   var listener = new THREE.AudioListener();
