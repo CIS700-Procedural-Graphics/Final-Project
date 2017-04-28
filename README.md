@@ -53,7 +53,9 @@ I will try the various techniques and choose the one or ones that look the best 
 ![](./milestone1.png)
 
 ### Week of 04/17
-* Add detail to the rocks and water
+* Create the canyon dugout
+
+![](./milestone2.png)
 
 ### Week of 04/24
 * Polish with shaders
