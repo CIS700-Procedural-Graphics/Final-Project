@@ -96,10 +96,8 @@ export function makeSpline(radius, num, smoothness)
   return spline;
 }
 
-export function makeSplineTexture(spline, radius) 
+export function makeSplineTexture(spline, radius, w, h) 
 {
-	var w = 128;
-	var h = 128;
 	var r2 = 2 * radius;
 	var data = new Uint8Array( w * h);
 	data.fill(0);
@@ -122,11 +120,7 @@ export function makeSplineTexture(spline, radius)
 		data4[4*i + 3] = data[i];
 	}
 
-	var texture = new THREE.DataTexture(data4, w, h, THREE.RGBAFormat);
-	texture.type = THREE.UnsignedByteType;
-	texture.needsUpdate = true;
-
-	return texture;
+	return data4;
 }
 
 export function updateCamera(camera, spline, camPosIndex) 

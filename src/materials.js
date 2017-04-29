@@ -53,9 +53,10 @@ export var water_mat = {
     amplitude: {value: 0.8},
     frequency: {value: 2.0},
     num_octaves: {value: 5},
-    bcolor: {value: [0, 0, 128/255]},
-    rcolor: {value: [25/255, 25/255,112/255]},
-    tcolor: {value: [12/255,40/255,183/255]},
+    buckets: {value: 10},
+    spline_tex: {type: "t", value: null},
+    color1: {value: [46/255, 20/255, 150/255]},
+    color2: {value: [32/255, 80/255, 170/255]},
     grads: {type: 'vec3', value: [new THREE.Vector3(1,1,0), new THREE.Vector3(-1,1,0), new THREE.Vector3(1,-1,0),        new THREE.Vector3(-1,-1,0), new THREE.Vector3(1,0,1), new THREE.Vector3(-1,0,1), new THREE.Vector3(1,0,-1), 
       new THREE.Vector3(-1,0,-1), new THREE.Vector3(0,1,1), new THREE.Vector3(0,-1,1), new THREE.Vector3(0,1,-1), 
       new THREE.Vector3(0,-1,-1)]}

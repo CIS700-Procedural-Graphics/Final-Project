@@ -13,7 +13,7 @@ export function initSceneGeo(scene, meshes, materials, spline, radius) {
   meshes.ground = new THREE.Mesh(ground_geo, ground_material);
   scene.add(meshes.ground);
 
-  var water_geo = new THREE.PlaneBufferGeometry(s,s,s,s).rotateX(-Math.PI/2).translate(radius, 0.1, radius);
+  var water_geo = new THREE.PlaneBufferGeometry(s,s,s,s).rotateX(-Math.PI/2).rotateY(-Math.PI/2).translate(radius, 0.5, radius);
   var water_material = new THREE.ShaderMaterial(materials.water_mat);
   meshes.water = new THREE.Mesh(water_geo, water_material);
   scene.add(meshes.water);

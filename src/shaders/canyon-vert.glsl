@@ -49,6 +49,6 @@ void main() {
     vec3 offset = vec3(0.0);
     float scale = 1.0 - texture2D(spline_tex, uv).r;
     if (scale > 0.5) offset = 20.0 * scale * abs(vNoise) * normal;
-    if (scale > 0.999) offset = 20.0 * normal;
+    if (scale > 0.999) offset = (20.0  +  4.0 * abs(vNoise)) * normal;
     gl_Position = projectionMatrix * modelViewMatrix * vec4( position + offset, 1.0 );
 }

@@ -6,15 +6,18 @@ import Framework from './framework'
 import {updateCamera, makeSpline, makeSplineTexture} from './camera'
 import {initSceneGeo, updateRocks} from './geometry'
 import {canyon_mat, water_mat, sky_mat, ground_mat, rock_mat} from './materials'
+import ParticleSystem from './rain'
 
 var time, count;
+var particleSys;
 
 var variables = {
   music : null,
   audioAnalyser : null,
-  enableSound : true,
+  enableSound : false,
   initialized : false,
-  isPaused : false, 
+  isPaused : true, 
+  res: 128,
 
   // spline
   spline : null,
@@ -54,13 +57,12 @@ function onLoad(framework) {
   var splineData = makeSpline(variables.path_radius, variables.num_points, variables.smoothness);
   variables.spline = splineData;
   // pass spline to material
-  materials.canyon_mat.uniforms.spline_tex.value = makeSplineTexture(variables.spline, variables.path_radius);
-
-  var geometry = new THREE.Geometry();
-  geometry.vertices = variables.spline.getPoints( 100 );
-  var material = new THREE.LineBasicMaterial( { color : 0xff0000 } );
-  var curveObject = new THREE.Line( geometry, material );
-  scene.add(curveObject);
+   var data = makeSplineTexture(variables.spline, variables.path_radius, variables.res, variables.res);
+   var texture = new THREE.DataTexture(data, variables.res, variables.res, THREE.RGBAFormat);
+   texture.type = THREE.UnsignedByteType;
+   texture.needsUpdate = true;
+   materials.canyon_mat.uniforms.spline_tex.value = texture;
+   materials.water_mat.uniforms.spline_tex.value = texture;
 
   updateCamera(camera, variables.spline, 0);
 
@@ -85,6 +87,17 @@ function onLoad(framework) {
   });
   variables.audioAnalyser = new THREE.AudioAnalyser( variables.music, 64 );
 
+  // rain
+  var rain = {
+    density : 1.0,
+    direction : new THREE.Vector3(0,-1,0),
+    width : 2 * variables.path_radius,
+    depth : 2 * variables.path_radius,
+    height : 25
+  };
+
+  particleSys = new ParticleSystem(rain, scene, data, variables.res, variables.res);
+
   // gui
   gui.add(variables, 'enableSound').onChange(function(value) {
     if (value) variables.music.play();
@@ -105,6 +118,7 @@ function onUpdate(framework) {
         time = 0;
       }
       updateCamera(framework.camera, variables.spline, time % 10000);
+      particleSys.update(0.1);
     }
 
     materials.water_mat.uniforms.time.value = time;
