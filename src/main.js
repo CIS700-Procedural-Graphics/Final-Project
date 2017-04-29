@@ -49,15 +49,25 @@ var mat4Locations = [
                 new THREE.Matrix4().makeTranslation(0, dim * Math.sin(6* 2*Math.PI/8.0), dim * Math.cos(6* 2*Math.PI/8.0) ),
                 new THREE.Matrix4().makeTranslation(0, dim * Math.sin(7* 2*Math.PI/8.0), dim * Math.cos(7* 2*Math.PI/8.0) ) ];
 
+var music = [
+            
+            './music/wav_WindWakerTheme.wav',
+            './music/wav_MozartRondoAllaTurcaOrchestra.wav',
+            './music/wav_MapleStory_Ellinia.wav',
+            './music/wav_PiratesOfTheCaribbeanThemeSong.wav'];
+
 
 var planeDim = 20;
-var songLen = 3*60+8;
+var songLen = [5*60+22, 3*60+4, 3*60+8 - 85, 2*60+53];
 
 var all; // ALL SHOOTERS
 
 var analyser; // MUSIC ANALYSER
 var frequencyData; // MUSIC DATA INTERPRETER
 // var testAnalyser; // USED FOR INTERPRETING THE MUSIC
+
+var audioLoader;
+var listener;
 
 var visElements = {
   volume: 2,
@@ -66,40 +76,36 @@ var visElements = {
   play: true,
   materialOne: planeMatOne,
   materialTwo: planeMatTwo,
-  playTime: songLen//0.0
+  playTime: 0,
+  displayTime: "",
+  restart: false,
+  musicIndex: 0
 }
 
 /******************/
-/* Helper Methods */
+/* Helper Functions */
 /******************/
-function loadMusic()
+function loadMusic(index)
 {  
-  var listener = new THREE.AudioListener();
-  visElements.sound = new THREE.Audio(listener);
+  listener = new THREE.AudioListener();
+  var audLoad = new THREE.Audio(listener);
+  visElements.sound = audLoad;
 
-  var audioLoader = new THREE.AudioLoader();
+  audioLoader = new THREE.AudioLoader();
+
+  var mVal = music[index];
+  visElements.playTime = songLen[index];
+  updateDisplayTime();
 
   //Load a sound and set it as the Audio object's buffer
-  audioLoader.load('./music/MapleStory_Ellinia.mp3', function( buffer ) {
+  audioLoader.load(mVal, function( buffer ) {
       visElements.sound.setBuffer( buffer );
       visElements.sound.setLoop(visElements.loop);
       visElements.sound.setVolume(visElements.volume);
       visElements.sound.play();
   });
 
-  analyser = new THREE.AudioAnalyser( visElements.sound, 32 );
-
-
-  //
-
-
-  // var ctx = new AudioContext();
-  // var audio = document.getElementById('./music/MapleStory_Ellinia.mp3');
-  // var audioSrc = ctx.createMediaElementSource(audio);
-  // testAnalyser = ctx.createAnalyser();
-  // // we have to connect the MediaElementSource with the analyser 
-  // audioSrc.connect(analyser);
-  // frequencyData = new Uint8Array(analyser.frequencyBinCount);
+  analyser = new THREE.AudioAnalyser( audLoad, 32 );
 }
 
 function createMaterials() {
@@ -207,6 +213,15 @@ function createMesh() {
   scenePlane.applyMatrix( new THREE.Matrix4().makeRotationX( -Math.PI / 2));
 }
 
+function updateDisplayTime() {
+  var minTime = Math.floor(visElements.playTime / 60);
+  var secTime = visElements.playTime % 60;
+  var mid = ":";
+  if (secTime < 10) { mid += "0"; } 
+
+  visElements.displayTime = "" + minTime + mid + secTime; 
+}
+
 /***********/
 /* ON LOAD */
 /***********/
@@ -306,10 +321,33 @@ function onLoad(framework) {
     all.play(visElements.play);
   });
 
-  gui.add(visElements, 'playTime').listen(); //
+  gui.add(visElements, 'restart').onChange(function(newVal) {
+    visElements.restart = false;
+
+    visElements.sound.pause();
+
+    all.removeAllShootersFromScene(framework);
+
+    loadMusic(visElements.musicIndex);
+    visElements.playTime = songLen[visElements.musicIndex];
+  });
+
+  gui.add(visElements, 'playTime').listen();
+  gui.add(visElements, 'displayTime').listen();
+
+  gui.add(visElements, 'musicIndex', 0, 3).step(1).onChange(function(newVal) {
+    visElements.restart = false;
+
+    visElements.sound.pause();
+
+    all.removeAllShootersFromScene(framework);
+
+    loadMusic(visElements.musicIndex);
+    visElements.playTime = songLen[visElements.musicIndex];
+  });
 
   // start music
-  loadMusic();
+  loadMusic(visElements.musicIndex);
   
 }
 
@@ -332,8 +370,14 @@ function onUpdate(framework) {
   if (stepTime % 60.0 == 0 && visElements.sound.isPlaying) {
     if (visElements.loop && visElements.playTime < 0) {
       visElements.playTime += songLen;
+      updateDisplayTime();
     }
     visElements.playTime -= 1.0;
+    updateDisplayTime();
+  }
+
+  if ((visElements.sound != null) && (!visElements.sound.isPlaying) && visElements.playTime < 0) {
+    all.removeAllShootersFromScene(framework);
   }
 
 }

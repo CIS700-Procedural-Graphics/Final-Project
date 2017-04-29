@@ -56,6 +56,16 @@ export default class AllShooters {
     framework.scene.add(s.mesh);
   }
 
+  removeAllShootersFromScene(framework) {
+    for (var i = 0; i < this.numShooters; i++) {
+      // remove element from scene
+      framework.scene.remove(this.allShooters[i].mesh);
+    }//end for loop
+
+    this.allShooters = new Array();
+    this.numShooters = 0;
+  }
+
   removeShootersByDistance(framework) {
     // console.log("AllShooters: removeShooters by Distance");
 
@@ -170,13 +180,13 @@ export default class AllShooters {
     var thresh1 = minThresh + 15;
     var thresh2 = thresh1 + 30;
     var thresh3 = thresh2 + 45;
-    var thresh4 = thresh3 + 90;
+    var thresh4 = thresh3 + 45;
 
     if (sum <= thresh1) { return 0xffffff; } //white
-    if (sum <= thresh2) { console.log("yellow"); return 0xffff00; } //yellow
-    if (sum <= thresh3) { console.log("orange"); return 0xff9933; } //orange
-    if (sum <= thresh4) { console.log("red"); return 0xff0000; } //red
-    else { console.log("pink"); return 0xff33cc; } //pink
+    if (sum <= thresh2) { return 0xffff00; } //yellow
+    if (sum <= thresh3) { return 0xff9933; } //orange
+    if (sum <= thresh4) { return 0xff0000; } //red
+    else { return 0xff33cc; } //pink
   }
 
   update(freq, time) {
