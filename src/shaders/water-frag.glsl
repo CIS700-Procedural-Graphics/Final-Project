@@ -10,6 +10,8 @@ uniform vec3 color3;
 
 varying vec2 vUV;
 varying float noise;
+varying vec3 ePosition;
+varying vec3 vPosition;
 
 #define PI 3.14159265
 
@@ -75,6 +77,12 @@ float p_noise(vec2 point, float freq, float amp, float t) {
 	return amp * tlerp(a,b,c,d,e,f,g,h,u,v,w);
 }
 
+vec3 applyFog(vec3 color, float distance, float b) {
+	float fogAmount = 1.0 - exp( -distance*b );
+    vec3  fogColor  = vec3(0.5,0.6,0.7);
+    return mix( color, fogColor, fogAmount );
+}
+
 void main() {
 
 
@@ -83,6 +91,8 @@ void main() {
 	vec3 color = vec3(0.0, d, 2.0 * d);
 	float noise = p_noise(vUV, 5000.0, 2.0, time);
 	if (noise > 1.1) color = color3;
+
+	color = applyFog(color, length(vPosition - ePosition), 0.035);
 
     gl_FragColor = vec4(color, 1.0);
 }

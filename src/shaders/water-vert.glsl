@@ -7,6 +7,8 @@ uniform float audioFreq;
 
 varying float noise;
 varying vec2 vUV;
+varying vec3 vPosition;
+varying vec3 ePosition;
 
 #define PI 3.14159265
 
@@ -71,6 +73,8 @@ float p_noise(vec2 point, float freq, float amp, float t) {
 void main() {
 
     vUV =  uv;
+    vPosition = position;
+    ePosition = cameraPosition;
     vec2 p = vec2(position.x, position.z);
     noise = p_noise(p, frequency, amplitude, time);
 
