@@ -57,7 +57,7 @@ var all; // ALL SHOOTERS
 
 var analyser; // MUSIC ANALYSER
 var frequencyData; // MUSIC DATA INTERPRETER
-var testAnalyser; // USED FOR INTERPRETING THE MUSIC
+// var testAnalyser; // USED FOR INTERPRETING THE MUSIC
 
 var visElements = {
   volume: 2,
@@ -93,13 +93,13 @@ function loadMusic()
   //
 
 
-  var ctx = new AudioContext();
-  var audio = document.getElementById('./music/MapleStory_Ellinia.mp3');
-  var audioSrc = ctx.createMediaElementSource(audio);
-  testAnalyser = ctx.createAnalyser();
-  // we have to connect the MediaElementSource with the analyser 
-  audioSrc.connect(analyser);
-  frequencyData = new Uint8Array(analyser.frequencyBinCount);
+  // var ctx = new AudioContext();
+  // var audio = document.getElementById('./music/MapleStory_Ellinia.mp3');
+  // var audioSrc = ctx.createMediaElementSource(audio);
+  // testAnalyser = ctx.createAnalyser();
+  // // we have to connect the MediaElementSource with the analyser 
+  // audioSrc.connect(analyser);
+  // frequencyData = new Uint8Array(analyser.frequencyBinCount);
 }
 
 function createMaterials() {
@@ -275,9 +275,7 @@ function onLoad(framework) {
   /* CREATE SHOOTERS */
   /*******************/
 
-  //all = new AllShooters(framework);
-  console.log("ALL");
-  // console.log(all);
+  all = new AllShooters(framework);
 
   /***********************/
   /* SET UP GUI ELEMENTS */
@@ -323,11 +321,11 @@ function onUpdate(framework) {
   var count = 60.0;
 
   stepTime += 1.0;
-  if (stepTime % 5.0 == 0 && visElements.sound.isPlaying) {
+  if (stepTime % 2.0 == 0 && visElements.sound.isPlaying) {
     // console.log(analyser.getFrequencyData());
     
-    // var f = analyser.getFrequencyData();
-    //all.update(f);
+    var f = analyser.getFrequencyData();
+    all.update(f, stepTime);
     //console.log(f);
   }
 

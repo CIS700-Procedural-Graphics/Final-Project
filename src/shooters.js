@@ -12,18 +12,14 @@ var mat4Locations = [
                 new THREE.Matrix4().makeTranslation(0, dim * Math.sin(6* 2*Math.PI/8.0), dim * Math.cos(6* 2*Math.PI/8.0) ),
                 new THREE.Matrix4().makeTranslation(0, dim * Math.sin(7* 2*Math.PI/8.0), dim * Math.cos(7* 2*Math.PI/8.0) ) ];
 
+var thresholdFor16Array = [500, 400, 250, 240, 200, 220, 50, 20];//[250, 200, 200, 200, 100, 90, 110];//[242, 240, 335, 220, 120, 100, 105];
+
 var origin = new THREE.Vector3(0, 0, 0);
 var max_x = 25;
 
-function calcShooterIndexLocation(musicData) {
-    // TO BE IMPLEMENTED
-    // returns proper index
-
-    // for (var i = 0; i < )
-    // var data = val & musicData;
-
-    return 0;
-}
+var colorData = [0,0,0,0,0,0,0,0];
+var indexData = [0,0,0,0,0,0,0,0];
+var indexSums = [0,0,0,0,0,0,0,0];
 
 /*******************************************************************/
 /************ Class for all Shooters as a Collective ***************/
@@ -45,7 +41,7 @@ export default class AllShooters {
     this.addShooter(0, framework); // for testing
   }
 
-  addShooter(index, framework) {
+  addShooter(index, framework, colorVal) {
     // console.log("AllShooters: addShooter");
     // index from 0 - 7 for which ball going to start at
 
@@ -53,7 +49,7 @@ export default class AllShooters {
 
     var pos = new THREE.Vector3(0,0,0);
     pos = pos.applyMatrix4(mat4Locations[index]);
-    var s = new Shooter(pos, index);
+    var s = new Shooter(pos, index, colorVal);
 
     this.allShooters.push(s);
 
@@ -90,8 +86,10 @@ export default class AllShooters {
     return val - Math.floor(val);
   }
 
-  noiseByDist(loc) {
-    var ampl = loc.x / max_x;
+  noiseByDist(loc, val) {
+    // var ampl = loc.x / max_x / 2.0;
+    // var n = this.rand(loc) * this.rand(val);
+    var ampl = loc.x / max_x  / 5.0;
     var n = this.rand(loc);
     loc.applyMatrix4( new THREE.Matrix4().makeTranslation(0, Math.cos(2 * Math.PI * n) * ampl, Math.sin(2 * Math.PI * n) * ampl) );
 
@@ -110,7 +108,7 @@ export default class AllShooters {
       // console.log(loc);
 
       // adjust loc by dist
-      loc = this.noiseByDist(loc);
+      loc = this.noiseByDist(loc, i);
 
       // update positions
       this.allShooters[i].mesh.geometry.vertices[0].x = loc.x;
@@ -134,15 +132,70 @@ export default class AllShooters {
     this.playing = bool;
   }
 
-  update(freq) {
+  arrayIndexToFreqBin(i) {
+    //console.log("index loc: " + (Math.floor(i/2)));
+    if (i <= 11) { return Math.floor(i/2); }
+
+    if (i == 12) { return 6; }
+    if (i == 13) { return 7; }
+
+    // if (i <= 4) { return i; }
+    // if (i == 5) { return 4; }
+    // if (i == 6 || i == 7) { return 5; }
+    // if (i == 8 || i == 9 || i == 10) { return 6; }
+    // if (i == 11 || i == 12) { return 7; }
+  }
+
+  calcShooterIndexLocations(musicData) {
+    indexData = [0, 0, 0, 0, 0, 0, 0, 0];
+    indexSums = [0, 0, 0, 0, 0, 0, 0, 0];
+    colorData = [0,0,0,0,0,0,0,0];
+
+    for (var i = 0; i < 16; i++) {
+      indexSums[this.arrayIndexToFreqBin(i)] += musicData[i];
+    }
+
+    for (var i = 0; i < 8; i++) {
+      //if (i == 7) { console.log(indexSums[i]); }
+      if (indexSums[i] >= thresholdFor16Array[i]) {
+        indexData[i] = 1;
+        colorData[i] = this.calcColorDataFromIndexAndSums(indexSums[i], i);
+      }
+    }
+  }
+
+  calcColorDataFromIndexAndSums(sum, index) {
+    var minThresh = thresholdFor16Array[index];
+
+    var thresh1 = minThresh + 15;
+    var thresh2 = thresh1 + 30;
+    var thresh3 = thresh2 + 45;
+    var thresh4 = thresh3 + 90;
+
+    if (sum <= thresh1) { return 0xffffff; } //white
+    if (sum <= thresh2) { console.log("yellow"); return 0xffff00; } //yellow
+    if (sum <= thresh3) { console.log("orange"); return 0xff9933; } //orange
+    if (sum <= thresh4) { console.log("red"); return 0xff0000; } //red
+    else { console.log("pink"); return 0xff33cc; } //pink
+  }
+
+  update(freq, time) {
     // console.log("AllShooters: update");
 
     if (this.playing) {
-        var ind = calcShooterIndexLocation(freq);
-        this.addShooter(ind, this.f);
-        
         this.updateShootersPos();
         this.removeShootersByDistance(this.f);
+
+        //if (time % 30 == 0) {
+          this.calcShooterIndexLocations(freq);
+          for (var i = 0; i < 8; i++) {
+            if (indexData[i] == 1) {
+              var cVal = colorData[i];
+
+              this.addShooter(i, this.f, cVal);
+            }
+          }
+        //}
     }
   }
 
@@ -158,11 +211,11 @@ class Shooter {
    *
    * Location, index of which ball to shoot out of
    */
-  constructor(pos, index) {
-    this.init(pos, index);
+  constructor(pos, index, col) {
+    this.init(pos, index, col);
   }
 
-  init(pos, index) {
+  init(pos, index, col) {
     // console.log("Shooter: init");
 
     // console.log(pos);
@@ -170,16 +223,28 @@ class Shooter {
     this.pos = pos;
     this.index = index;
     
-    this.makeMesh();
+    this.makeMesh(col);
   }
 
-  makeMesh() {
+  makeMesh(col) {
     // console.log("Shooter: makeMesh");
 
-    var geo = new THREE.Geometry();
-    var material = new THREE.PointsMaterial( { size:.1 } );
+    var geo = new THREE.Geometry(); 
+    var colorObj = new THREE.Color( col );
+
+    // var particleMaterial = new THREE.PointsMaterial(
+    //         {color: col, 
+    //          size: .1,
+    //          //map: THREE.ImageUtils.loadTexture("images/snowflake.png"),
+    //          //blending: THREE.AdditiveBlending,
+    //          //transparent: true,
+    //         });
+
+
+    var material = new THREE.PointsMaterial( { size:.1, color: colorObj} );
 
     geo.vertices.push(new THREE.Vector3(this.pos.x, this.pos.y, this.pos.z));
+    //geo.vertices[0].setColor(colorObj);
 
     this.mesh = new THREE.Points(geo, material);
     this.mesh.visible = true;
