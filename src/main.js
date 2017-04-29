@@ -44,6 +44,14 @@ var materials = {
   rock_mat : rock_mat
 }
 
+var rain = {
+  density : 0.5,
+  direction : new THREE.Vector3(0,-1,0),
+  width : 2 * variables.path_radius,
+  depth : 2 * variables.path_radius,
+  height : 25
+}
+
 // called after the scene loads
 function onLoad(framework) {
   time = 0; count = 0;
@@ -67,6 +75,7 @@ function onLoad(framework) {
   updateCamera(camera, variables.spline, 0);
 
   // objects and geometry
+  materials.water_mat.uniforms.density.value = 5 * rain.density;
   initSceneGeo(scene, meshes, materials, variables.spline, variables.path_radius);
 
   // audio
@@ -88,14 +97,6 @@ function onLoad(framework) {
   variables.audioAnalyser = new THREE.AudioAnalyser( variables.music, 64 );
 
   // rain
-  var rain = {
-    density : 1.0,
-    direction : new THREE.Vector3(0,-1,0),
-    width : 2 * variables.path_radius,
-    depth : 2 * variables.path_radius,
-    height : 25
-  };
-
   particleSys = new ParticleSystem(rain, scene, data, variables.res, variables.res);
 
   // gui
@@ -112,13 +113,14 @@ function onLoad(framework) {
 function onUpdate(framework) {
   if (variables.initialized) {
 
+    var velocity = new THREE.Vector3(0,-1,0);
     if (!variables.isPaused) {
       time ++;
       if (time == 10000) {
         time = 0;
       }
       updateCamera(framework.camera, variables.spline, time % 10000);
-      particleSys.update(0.1);
+      particleSys.update(0.1, velocity);
     }
 
     materials.water_mat.uniforms.time.value = time;

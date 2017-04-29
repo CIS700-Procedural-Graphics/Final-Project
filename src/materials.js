@@ -31,17 +31,9 @@ export var rock_mat = {
 export var canyon_mat = {
   uniforms: {
     time: {value: new Date().getMilliseconds()},
-    amplitude: {value: 0.8},
-    frequency: {value: 2.0},
-    num_octaves: {value: 5},
-    bcolor: {value: [0,128/255, 0]},
-    rcolor: {value: [25/255, 25/255,112/255]},
-    tcolor: {value: [205/255,133/255,63/255]},
+    base_color: {value: [0,128/255, 0]},
+    tip_color: {value: [25/255, 25/255,112/255]},
     spline_tex: {type: "t", value: null},
-    grads: {type: 'vec3', value: [new THREE.Vector3(1,1,0), new THREE.Vector3(-1,1,0), new THREE.Vector3(1,-1,0),        
-      new THREE.Vector3(-1,-1,0), new THREE.Vector3(1,0,1), new THREE.Vector3(-1,0,1), new THREE.Vector3(1,0,-1), 
-      new THREE.Vector3(-1,0,-1), new THREE.Vector3(0,1,1), new THREE.Vector3(0,-1,1), new THREE.Vector3(0,1,-1), 
-      new THREE.Vector3(0,-1,-1)]}
     },
   vertexShader: require('./shaders/canyon-vert.glsl'),
   fragmentShader: require('./shaders/canyon-frag.glsl')
@@ -55,8 +47,10 @@ export var water_mat = {
     num_octaves: {value: 5},
     buckets: {value: 10},
     spline_tex: {type: "t", value: null},
-    color1: {value: [46/255, 20/255, 150/255]},
-    color2: {value: [32/255, 80/255, 170/255]},
+    density : {value: 5.0},
+    color1: {value: [0, 139/255, 139/255]},
+    color2: {value: [0, 128/255, 128/255]},
+    color3: {value: [0.2, 0.2, 0.5]},
     grads: {type: 'vec3', value: [new THREE.Vector3(1,1,0), new THREE.Vector3(-1,1,0), new THREE.Vector3(1,-1,0),        new THREE.Vector3(-1,-1,0), new THREE.Vector3(1,0,1), new THREE.Vector3(-1,0,1), new THREE.Vector3(1,0,-1), 
       new THREE.Vector3(-1,0,-1), new THREE.Vector3(0,1,1), new THREE.Vector3(0,-1,1), new THREE.Vector3(0,1,-1), 
       new THREE.Vector3(0,-1,-1)]}
@@ -88,9 +82,9 @@ export var sky_mat = {
     amplitude: {value: 3},
     frequency: {value: 0.2},
     audioFreq: {value: 0},
-    horizon: {value: [135/255, 206/255, 250/255]},
-    mid: {value: [0.976, 0.537, 0.718]},
-    sky: {value: [254/255, 91/255, 53/255]},
+    horizon: {value: [40/255, 60/255, 90/255]},
+    mid: {value: [0.276, 0.537, 0.718]},
+    sky: {value: [20/255, 30/255, 70/255]},
     buckets: {value: 2},
     grads: {type: 'vec3', value: [
       new THREE.Vector3(1,1,0), new THREE.Vector3(-1,1,0), new THREE.Vector3(1,-1,0),        

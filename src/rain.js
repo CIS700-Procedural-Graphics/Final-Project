@@ -49,8 +49,9 @@ export default class ParticleSystem {
 	    this.scene.add( this.rain );
   	}
 
-	update(dt) {
+	update(dt, velocity) {
 		for (var i = 0; i < this.particles.length; i ++) {
+			this.particles[i].vel = velocity;
 			this.particles[i].pos1.add((this.particles[i].vel).clone().multiplyScalar(dt));
 		    this.particles[i].pos2.add((this.particles[i].vel).clone().multiplyScalar(dt));
 		    if (this.particles[i].pos2.y < 0) {

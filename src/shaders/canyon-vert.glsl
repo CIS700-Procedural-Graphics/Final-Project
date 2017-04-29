@@ -1,9 +1,7 @@
 uniform sampler2D spline_tex;
 
-varying vec3 vNormal;
 varying vec2 vUV;
 varying float vNoise;
-varying vec3 vPoint;
 
 float hash (float n)
 {
@@ -43,8 +41,6 @@ float noised (vec3 x)
 
 void main() {
     vNoise = noised(position);
-    vNormal = normal;
-    vPoint = position;
     vUV =  uv;
     vec3 offset = vec3(0.0);
     float scale = 1.0 - texture2D(spline_tex, uv).r;
