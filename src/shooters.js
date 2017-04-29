@@ -19,6 +19,9 @@ function calcShooterIndexLocation(musicData) {
     // TO BE IMPLEMENTED
     // returns proper index
 
+    // for (var i = 0; i < )
+    // var data = val & musicData;
+
     return 0;
 }
 
