@@ -18,6 +18,7 @@ import {beatGenerator,
 import {patternedMelody,
 		createMainTheme,
 		createMelody} from './utils/musicMotifs.js'
+import MusicBox from './musicBox.js'
 
 // Visual
 const EffectComposer = require('three-effectcomposer')(THREE);
@@ -150,6 +151,7 @@ var composer;
 
 /******************************************************************************/
 
+// Audio vars
 var ac = new AudioContext()
 
 // parameters
@@ -160,15 +162,13 @@ var additionalControls = {
 
 // update flag
 var update = true;
-
-// Local global to allow for modifying variables
-var noiseCloud = {
-	mesh : {},
-};
+var allInit = false;
 
 var testInstrument = Soundfont.instrument(ac, 'acoustic_grand_piano', { soundfont: 'MusyngKite', gain: 1 });//
 var melodyInstr = Soundfont.instrument(ac, 'acoustic_grand_piano', { soundfont: 'MusyngKite', asdr: [0,0.8,0.8,0.8], gain: 1 });
 var baseInstr = Soundfont.instrument(ac, 'acoustic_bass', { soundfont: 'MusyngKite', gain: 0.8 });
+var musicPlayer = new MusicBox();
+
 
 function rate_limit(func) {
     var running = false;
@@ -224,7 +224,16 @@ function onLoad(framework) {
 
 	// RENDERER
 
+	// Initialize music instruments
+	musicPlayer.setMelodicInstrument( 'acoustic_grand_piano', ac );
+	musicPlayer.setHarmonicInstrument( 'acoustic_grand_piano', ac );
+	musicPlayer.setBassInstrument( 'acoustic_bass', ac );
 
+	// Initialize bass line
+	musicPlayer.createBassLine();
+	console.log(musicPlayer)
+
+	allInit = true;
 
 	// edit params and listen to changes like this
 	// more information here: https://workshop.chromeexperiments.com/examples/gui/#1--Basic-Usage
@@ -293,87 +302,58 @@ function onUpdate(framework) {
 
 		music.push(createMelody('F5'));
 
-		console.log(createMelody('F6'))
+		
 
 		beats.push(beatGenerator(euclid(2,8), 180, 400, 'F3'));
 		beats.push(beatGenerator(euclid(9,12), 120, 400, 'C4'));
 		beats.push(beatGenerator(euclid(7,15), 180, 400, 'D2'));
-
-		console.log('Music 2:')
-		console.log(music)
+		// console.log(beats)
+		// console.log('Music 2:')
+		// console.log(music)
 		update = false;
+
+		// musicPlayer.createBassLine();
+		// console.log(musicPlayer)
 	}
 
 	var nTime = Date.now();
+	if (allInit) {
+		musicPlayer.playBassLine( nTime, function() {
+			Visual.bassCallback(framework, visualConfig);
+		});
+	}
 
 
 	var deltaT = (nTime - time[0]) / 1000;
-	if (deltaT > music[melIdxB][1][indices[0]] * bpm[0] && indices[0] < music[melIdxB][0].length) {
+	// if (deltaT > music[melIdxB][1][indices[0]] * bpm[0] && indices[0] < music[melIdxB][0].length) {
 
-		melodyInstr.then(function(melIn) {
-			// console.log(music[melIdxB][0][indices[0]])
-			if (music[melIdxB][0][indices[0]] > 0) {
-				// console.log(music[melIdxB][1][indices[0]])
-				melIn.play(music[melIdxB][0][indices[0]], ac.currentTime, {gain: 0.5})
-				     .stop(ac.currentTime + music[melIdxB][1][indices[0]] * bpm[0]);
-			}
-		})
+	// 	melodyInstr.then(function(melIn) {
+	// 		// console.log(music[melIdxB][0][indices[0]])
+	// 		if (music[melIdxB][0][indices[0]] > 0) {
+	// 			// console.log(music[melIdxB][1][indices[0]])
+	// 			melIn.play(music[melIdxB][0][indices[0]], ac.currentTime, {gain: 0.5})
+	// 			     .stop(ac.currentTime + music[melIdxB][1][indices[0]] * bpm[0]);
+	// 		}
+	// 	})
 
-		indices[0]++;
-		time[0] = nTime;
-	}
+	// 	indices[0]++;
+	// 	time[0] = nTime;
+	// }
 
-	deltaT = (nTime - time[1]) / 1000;
-	if (deltaT > music[melIdx][1][indices[1]] * bpm[1] && indices[1] < music[melIdx][0].length) {
+	// deltaT = (nTime - time[1]) / 1000;
+	// if (deltaT > music[melIdx][1][indices[1]] * bpm[1] && indices[1] < music[melIdx][0].length) {
 
-		melodyInstr.then((function(melIn) {
-			if (music[melIdx][0][indices[1]] > 0) {
-				// console.log(music[melIdx][1][indices[0]])
-				melIn.start(music[melIdx][0][indices[1]], ac.currentTime, {gain: 1})
-					 .stop(ac.currentTime + music[melIdx][1][indices[1]] * bpm[1]);
-				 Visual.melodyCallback(framework, visualConfig);
-			}
-		}).bind(this))
-		indices[1]++;
-		time[1] = nTime;
-	}
-
-	deltaT = (nTime - time[2]) / 1000;
-	if (deltaT > beats[0][1][indices[2]] * bpm[2] && indices[2] < beats[0][0].length) {
-
-		baseInstr.then((function (baseIn) {
-			if (beats[0][0][indices[2]] > 0) {
-				baseIn.start(beats[0][0][indices[2]], ac.currentTime, {gain: 0.5});
-				Visual.bassCallback(framework, visualConfig);
-			}
-		}).bind(this))
-		indices[2]++;
-		time[2] = nTime;
-	}
-
-	deltaT = (nTime - time[3]) / 1000;
-	if (deltaT > beats[1][1][indices[3]] * bpm[3] && indices[3] < beats[1][0].length) {
-
-		baseInstr.then(function (baseIn) {
-			if (beats[1][0][indices[3]] > 0) {
-				baseIn.start(beats[1][0][indices[3]], ac.currentTime, {gain: 1});
-			}
-		})
-		indices[3]++;
-		time[3] = nTime;
-	}
-
-	deltaT = (nTime - time[4]) / 1000;
-	if (deltaT > beats[2][1][indices[4]] * bpm[4] && indices[4] < beats[2][0].length) {
-
-		baseInstr.then(function (baseIn) {
-			if (beats[2][0][indices[4]] > 0) {
-				baseIn.start(beats[2][0][indices[4]], ac.currentTime, {gain: 1});
-			}
-		})
-		indices[4]++;
-		time[4] = nTime;
-	}
+	// 	melodyInstr.then((function(melIn) {
+	// 		if (music[melIdx][0][indices[1]] > 0) {
+	// 			// console.log(music[melIdx][1][indices[0]])
+	// 			melIn.start(music[melIdx][0][indices[1]], ac.currentTime, {gain: 1})
+	// 				 .stop(ac.currentTime + music[melIdx][1][indices[1]] * bpm[1]);
+	// 			 Visual.melodyCallback(framework, visualConfig);
+	// 		}
+	// 	}).bind(this))
+	// 	indices[1]++;
+	// 	time[1] = nTime;
+	// }
 
 
 	// Visual

@@ -6,14 +6,13 @@ export function beatGenerator(rhythm, tempo, n, drumNote = 'G3') {
 	var analogRhythm = getAnalogRhythm(rhythm);
 	// console.log(analogRhythm)
 
-	var notes = [[],[]];
+	var notes = [];
 	var t = 0;
 	for (var i = 0; i < n; i++) {
 		var r = rhythm[i % rhythm.length];
 		var note = (r == 1) ? drumNote : -1;
 
-		notes[0].push(tonal.note.midi(note));
-		notes[1].push(1);
+		notes.push( {note: tonal.note.midi(note), time: 1});
 		
 	}
 

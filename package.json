@@ -19,7 +19,8 @@
     "three": "^0.82.1",
     "three-orbit-controls": "^82.1.0",
     "three.meshline": "^1.0.3",
-    "tonal": "0.69.0"
+    "tonal": "0.69.0",
+    "three-effectcomposer": "0.0.1"
   },
   "devDependencies": {
     "babel-core": "^6.18.2",
