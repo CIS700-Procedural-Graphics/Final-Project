@@ -17,6 +17,9 @@ var thresholdFor16Array = [500, 400, 250, 240, 200, 220, 50, 20];//[250, 200, 20
 var origin = new THREE.Vector3(0, 0, 0);
 var max_x = 25;
 
+var deathProb0 = 0.2;
+var deathProb1 = 0.6;
+
 var colorData = [0,0,0,0,0,0,0,0];
 var indexData = [0,0,0,0,0,0,0,0];
 var indexSums = [0,0,0,0,0,0,0,0];
@@ -66,20 +69,27 @@ export default class AllShooters {
     this.numShooters = 0;
   }
 
-  removeShootersByDistance(framework) {
+  removeShootersByDistance(framework, time) {
     // console.log("AllShooters: removeShooters by Distance");
 
     var removShootersArr = new Array();
     var numRemoved = 0;
 
     for (var i = 0; i < this.numShooters; i++) {
-      if (this.dist(this.allShooters[i].pos, origin) > max_x) {
-        // remove element from scene
-        framework.scene.remove(this.allShooters[i].mesh);
 
-        // decrement num shooters
-        removShootersArr.push(i);
-        numRemoved = numRemoved + 1;
+      var d = this.dist(this.allShooters[i].pos, origin);
+      if (d > max_x) {
+        // var prob = (time % 100) / 100.0;
+        // console.log("prob: " + prob + " deathProb0: " + deathProb0);
+        // console.log("prob: " + prob + " deathProb1 mul: " + (10 * deathProb1 * ((d - max_x) / max_x)));
+        // if (prob > deathProb0 && prob < deathProb1 * 10 * ((d - max_x) / max_x)) {
+          // remove element from scene
+          framework.scene.remove(this.allShooters[i].mesh);
+
+          // decrement num shooters
+          removShootersArr.push(i);
+          numRemoved = numRemoved + 1;
+        // }
       }
     }//end for loop
 
@@ -194,7 +204,7 @@ export default class AllShooters {
 
     if (this.playing) {
         this.updateShootersPos();
-        this.removeShootersByDistance(this.f);
+        this.removeShootersByDistance(this.f, time);
 
         //if (time % 30 == 0) {
           this.calcShooterIndexLocations(freq);
