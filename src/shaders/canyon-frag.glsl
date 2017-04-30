@@ -25,6 +25,6 @@ void main() {
 
   color = applyFog(color, length(vPosition - ePosition), 0.035);
 
-  gl_FragColor = vec4( color.rgb, 1.0 );
+  gl_FragColor = vec4( color , 1.0 );
 
 }

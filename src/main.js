@@ -5,7 +5,7 @@ require('three-obj-loader')(THREE)
 import Framework from './framework'
 import {updateCamera, makeSpline, makeSplineTexture} from './camera'
 import {initSceneGeo, updateRocks} from './geometry'
-import {canyon_mat, water_mat, sky_mat, ground_mat, rock_mat} from './materials'
+import {canyon_mat, water_mat, sky_mat, rock_mat} from './materials'
 import ParticleSystem from './rain'
 
 var time, count;
@@ -28,8 +28,7 @@ var variables = {
 }
 
 var meshes = {
-  plane : null, 
-  ground : null,
+  plane : null,
   water : null,
   sky : null, 
   boat : null,
@@ -40,8 +39,7 @@ var meshes = {
 var materials = {
   canyon_mat : canyon_mat,
   water_mat : water_mat,
-  sky_mat : sky_mat, 
-  ground_mat : ground_mat, 
+  sky_mat : sky_mat,  
   rock_mat : rock_mat
 }
 

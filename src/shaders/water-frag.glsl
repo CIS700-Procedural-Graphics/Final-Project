@@ -15,10 +15,6 @@ varying vec3 vPosition;
 
 #define PI 3.14159265
 
-vec3 color_lerp(vec3 a, vec3 b, float t) {
-  return a * (1.0-t) + b * t;
-}
-
 int hash(vec3 p) {
 	return int(mod(sin(dot(p, vec3(12.9898, 78.233,1938.2)))*43758.5453,12.0));
 }

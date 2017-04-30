@@ -1,10 +1,20 @@
 # Zionical
 
-This project is inspired by [Panoramical][1], a musical landscape with highly abstracted and colorful environments. 
+This project is inspired by [Panoramical][1], a game where players can manipulate landscapes musically. In this game, the environments are highly abstracted and colorful 
 
 ## Goal
 
-![](./images/zionPark.jpg =250x250) ![](./images/panoramical.png) ![](./images/panoramical2.jpg)
+I would like to create an environment inspired by Zion National Park. The environment will be interactive with mouse and camera control. In addition, parts of the environment will move or pulse at the frequency of a chosen song. The entire program will be written in Javascript using the THREE.js library. 
+
+## References
+
+### Zion
+
+- #### Zion Canyon
+![](./images/zionPark.jpg)
+
+### Art Abstraction
+![](./images/panoramical.png) ![](./images/panoramical2.jpg)
 
 ## Specification
 
