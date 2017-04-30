@@ -5,19 +5,6 @@ const MeshLine = require( 'three.meshline' );
 
 // Audio
 import Framework from './framework'
-import MIDI from 'midi.js'
-import Soundfont from 'soundfont-player'
-import {euclid} from './utils/euclid.js'
-import {beatGenerator,
-		MorseThue,
-		melodyGenerator,
-		rhythmicMelodyGenerator,
-		EarthWorm,
-		noteBeats} from './utils/musicGenerator.js'
-
-import {patternedMelody,
-		createMainTheme,
-		createMelody} from './utils/musicMotifs.js'
 import MusicBox from './musicBox.js'
 
 // Visual
@@ -164,9 +151,7 @@ var additionalControls = {
 var update = true;
 var allInit = false;
 
-var testInstrument = Soundfont.instrument(ac, 'acoustic_grand_piano', { soundfont: 'MusyngKite', gain: 1 });//
-var melodyInstr = Soundfont.instrument(ac, 'acoustic_grand_piano', { soundfont: 'MusyngKite', asdr: [0,0.8,0.8,0.8], gain: 1 });
-var baseInstr = Soundfont.instrument(ac, 'acoustic_bass', { soundfont: 'MusyngKite', gain: 0.8 });
+// Create a music player object which handles all the behind the scenes work.
 var musicPlayer = new MusicBox();
 
 
@@ -231,6 +216,7 @@ function onLoad(framework) {
 
 	// Initialize music
 	musicPlayer.createBassLine();
+	musicPlayer.createHarmonyLine();
 	musicPlayer.createMelodyLine();
 	// console.log(musicPlayer)
 
@@ -252,7 +238,7 @@ function onLoad(framework) {
 		update = true;
 	}));
 
-  Visual.initScene(framework, visualConfig);
+	Visual.initScene(framework, visualConfig);
 
 	composer = new EffectComposer( renderer );
 	composer.addPass( new EffectComposer.RenderPass( scene, camera ) );
@@ -268,9 +254,9 @@ function onLoad(framework) {
 
 
 
-  initInputHandler(framework);
+	initInputHandler(framework);
 
-  visualConfig.startTime = clock.getElapsedTime();
+	visualConfig.startTime = clock.getElapsedTime();
 	visualConfig.prevTime = clock.getElapsedTime();
 
 		// var geometry = new THREE.BoxGeometry( 1,1,1 );
@@ -279,46 +265,19 @@ function onLoad(framework) {
 
 }
 
-var music = [];
-var beats = [];
-var now = Date.now();
-var indices = [0,0,0,0,0];
-var time = [now,now,now,now,now];
-var bpm = [1/4, 1/4, 1/4, 1/4, 1/4];
-var melIdx = 6;
-var melIdxB = 5;
 
 // called on frame updates
 function onUpdate(framework) {
 	if (update) {
-		music.push(patternedMelody(EarthWorm(343, 13, 4, 100, 240)));
-		music.push(rhythmicMelodyGenerator(100, euclid(5,8), 60, additionalControls.base, additionalControls.multi));
-		music.push(noteBeats(euclid(5,8), 'A3', 100));
-		music.push(beatGenerator(euclid(4,8), 180, 400, 'C4'))
-
-		// Testing stuff
-		var mTheme = createMainTheme('C4');
-		music.push(mTheme[0]);
-		music.push(mTheme[1]);
-
-		music.push(createMelody('F5'));
-
-		
-
-		beats.push(beatGenerator(euclid(2,8), 180, 400, 'F3'));
-		beats.push(beatGenerator(euclid(9,12), 120, 400, 'C4'));
-		beats.push(beatGenerator(euclid(7,15), 180, 400, 'D2'));
-		// console.log(beats)
-		// console.log('Music 2:')
-		// console.log(music)
 		update = false;
-
-		// musicPlayer.createBassLine();
-		// console.log(musicPlayer)
 	}
 
+	// Audio updates
 	var nTime = Date.now();
 	if (allInit) {
+		musicPlayer.playHarmony( nTime, function() {
+		});
+
 		musicPlayer.playMelody( nTime, function() {
 			Visual.melodyCallback(framework, visualConfig);
 		});
@@ -328,22 +287,6 @@ function onUpdate(framework) {
 		});
 	}
 
-
-	var deltaT = (nTime - time[0]) / 1000;
-	// if (deltaT > music[melIdxB][1][indices[0]] * bpm[0] && indices[0] < music[melIdxB][0].length) {
-
-	// 	melodyInstr.then(function(melIn) {
-	// 		// console.log(music[melIdxB][0][indices[0]])
-	// 		if (music[melIdxB][0][indices[0]] > 0) {
-	// 			// console.log(music[melIdxB][1][indices[0]])
-	// 			melIn.play(music[melIdxB][0][indices[0]], ac.currentTime, {gain: 0.5})
-	// 			     .stop(ac.currentTime + music[melIdxB][1][indices[0]] * bpm[0]);
-	// 		}
-	// 	})
-
-	// 	indices[0]++;
-	// 	time[0] = nTime;
-	// }
 
 	// Visual
 	var scene = framework.scene;

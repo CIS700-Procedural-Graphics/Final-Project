@@ -91,27 +91,21 @@ export function createMainTheme(note) {
 	// Create beat line based on length of main line
 	var l = mainNotes[0].length;
 	var tl = (Math.ceil(l/2));
-	var beatNotes = [[],[]];
+	var beatNotes = [];
 	for (var i = 0; i < tl; i++) {
 		for (var j = 0; j < tempo.length; j++) {
-			if (isNaN(notes[j]))
-				beatNotes[0].push(tonal.note.midi(notes[j]));
-			else
-				beatNotes[0].push(notes[j]);
-			beatNotes[1].push(tempo[j]);
+			var nextNote = (isNaN(notes[j])) ? tonal.note.midi(notes[j]) : notes[j];
+			beatNotes.push({note: nextNote, time: tempo[j]});
 		}
 	}
 
 	// repeat the melodies a few times
 	var repeat = 3;
 	for (var i = 0; i < repeat; i++) {
-		mainNotes[0] = mainNotes[0].concat(mainNotes[0]);
-		mainNotes[1] = mainNotes[1].concat(mainNotes[1]);
-		beatNotes[0] = beatNotes[0].concat(beatNotes[0]);
-		beatNotes[1] = beatNotes[1].concat(beatNotes[1]);
+		beatNotes = beatNotes.concat(beatNotes);
 	}
 
-	return [mainNotes, beatNotes];
+	return beatNotes;
 }
 
 export function patternedMelody(notes) {

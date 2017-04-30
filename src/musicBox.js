@@ -21,6 +21,7 @@ export default class MusicBox {
 	// Private functions
 	_init() {
 		this.instruments = [null,null,null];
+		this.noise = [1, 0.5, 0.5];
 	}
 
 	_setInstrument( instrumentName, ac, type ) {
@@ -58,7 +59,9 @@ export default class MusicBox {
 				// Play first note
 				instrument.instrument.then( (function(index, instr) {
 					instr.start(instrument.notes[index][instrument.noteCount[index]].note, 
-								instrument.ac.currentTime, {gain: 0.5});
+								instrument.ac.currentTime, 
+								{gain: this.noise[type]});
+					
 					if (index == 0) { callback(); }
 					instrument.played[index] = true;
 					instrument.noteCount[index]++;
@@ -79,7 +82,9 @@ export default class MusicBox {
 					instrument.instrument.then((function(index, instr) {
 
 						if (instrument.notes[index][instrument.noteCount[index]].note > 0) {
-							instr.start(instrument.notes[index][instrument.noteCount[index]].note, instrument.ac.currentTime, {gain: 0.5});
+							instr.start(instrument.notes[index][instrument.noteCount[index]].note, 
+										instrument.ac.currentTime, 
+										{gain: this.noise[type]});
 							if (index == 0) { callback(); }
 						}
 						instrument.played[index] = true;
@@ -128,8 +133,12 @@ export default class MusicBox {
 	// Functions for the harmony
 	createHarmonyLine() {
 		this._clearGeneratedMusic( 1 );
+		this.instruments[1].notes.push(createMainTheme('C4'));
 	}
 
+	playHarmony( time, callback ) {
+		this._playMusic( 1, time, callback );
+	}
 
 	// Functions for the melody
 	createMelodyLine() {
