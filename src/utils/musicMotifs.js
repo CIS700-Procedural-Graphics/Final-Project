@@ -157,61 +157,49 @@ export function createMelody(note) {
 	noteNum = noteNum.sort();
 	noteNum = noteNum.reverse();
 
-	console.log(noteNum)
+	// console.log(noteNum)
 
-	var notes = [[],[]];
+	var notes = [];
 
 	// Variation 1
 	for (var i = 0; i < noteNum.length; i++) {
-		notes[0].push(tonal.note.midi(s[noteNum[i]]));
-		notes[1].push(1);
+		notes.push({note: tonal.note.midi(s[noteNum[i]]), time: 1});
 	}
 
 	var rIdx = Math.floor(Math.random() * 3);
 	for (var i = 0; i < 2; i++) {
-		notes[0].push(tonal.note.midi(s[noteNum[rIdx]]));
-		notes[0].push(tonal.note.midi(s[noteNum[rIdx + 1]]));
-		notes[1].push(1);
-		notes[1].push(1);
+		notes.push({note: tonal.note.midi(s[noteNum[rIdx]]), time: 1});
+		notes.push({note: tonal.note.midi(s[noteNum[rIdx + 1]]), time: 1});
 	}
 
-	notes[0].push(tonal.note.midi(s[noteNum[rIdx + 1]]) - 3);
-	notes[0].push(-1);
-	notes[1].push(2);
-	notes[1].push(1);
+	notes.push({note: tonal.note.midi(s[noteNum[rIdx + 1]]) - 3, time: 2});
+	notes.push({note: -1, time: 1});
 
 	// Variation 2
 	for (var i = 0; i < noteNum.length; i++) {
-		notes[0].push(tonal.note.midi(s[noteNum[i]]));
-		notes[1].push(1);
+		notes.push({note: tonal.note.midi(s[noteNum[i]]), time: 1});
 	}
 
 	var delta = [0,3,4];
 	rIdx = Math.floor(Math.random() * 2) + 1;
 	for (var i = 0; i < 3; i++) {
 		var j = i + rIdx;
-		notes[0].push(tonal.note.midi(s[noteNum[j % 4]]) - Math.floor(j/4) * 12);
-		notes[1].push(1);
+		notes.push({note: tonal.note.midi(s[noteNum[j % 4]]) - Math.floor(j/4) * 12, time: 1});
 	}
 
 	rIdx = Math.floor(Math.random() * 2) + 2;
 	for (var i = 0; i < 3; i++) {
 		var j = i + rIdx;
-		notes[0].push(tonal.note.midi(s[noteNum[j % 4]]) - Math.floor(j/4) * 12);
-		notes[1].push(1);
+		notes.push({note: tonal.note.midi(s[noteNum[j % 4]]) - Math.floor(j/4) * 12, time: 1});
 	}
 
-	notes[0].push(tonal.note.midi(s[noteNum[rIdx]]) - delta[i] - 3);
-	notes[0].push(-1);
-	notes[1].push(4);
-	notes[1].push(1);
+	notes.push({note: tonal.note.midi(s[noteNum[rIdx]]) - delta[i] - 3, time: 4});
+	notes.push({note: -1, time: 1});
 
 	// repeat the melodies a few times
 	var repeat = 3;
 	for (var i = 0; i < repeat; i++) {
-		notes[0] = notes[0].concat(notes[0]);
-		notes[1] = notes[1].concat(notes[1]);
-
+		notes = notes.concat(notes);
 	}
 
 	return notes;

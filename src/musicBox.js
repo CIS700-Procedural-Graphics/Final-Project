@@ -15,10 +15,14 @@ import {beatGenerator,
 
 export default class MusicBox {
 	constructor() {
-		this.instruments = [null,null,null];
+		this._init();
 	}
 
 	// Private functions
+	_init() {
+		this.instruments = [null,null,null];
+	}
+
 	_setInstrument( instrumentName, ac, type ) {
 		var instrument = Soundfont.instrument(ac, instrumentName, { soundfont: 'MusyngKite', gain: 1 });
 		var detailedInstrument = {
@@ -50,24 +54,16 @@ export default class MusicBox {
 				instrument.noteCount[i] = 0;
 				instrument.time[i] = time;
 				instrument.played[i] = false;
-				// console.log(instrument.ac.currentTime)
 
 				// Play first note
 				instrument.instrument.then( (function(index, instr) {
-					// instr.start(instrument.notes[i][instrument.noteCount[i]].note, instrument.ac.currentTime, {gain: 0.5});
-					// console.log(instrument.noteCount[index])
-					// console.log(instrument.notes[index])
-					// console.log(instrument.notes[index][instrument.noteCount[index]].note)
 					instr.start(instrument.notes[index][instrument.noteCount[index]].note, 
 								instrument.ac.currentTime, {gain: 0.5});
 					if (index == 0) { callback(); }
 					instrument.played[index] = true;
-					
+					instrument.noteCount[index]++;
 				}).bind(this, i) );
-
-				instrument.noteCount[i]++;
 			}
-
 		}
 
 		// Case where we are currently playing music
@@ -77,22 +73,19 @@ export default class MusicBox {
 			for ( var i = 0; i < instrument.notes.length; i++) {
 				if (!instrument.played[i]) { continue; }
 
-				var delta = ( time - instrument.time[i] ) / 1000;
+				var delta = (time - instrument.time[i]) / 1000;
 				if (delta > instrument.notes[i][instrument.noteCount[i]-1].time * instrument.noteLength &&
 					instrument.noteCount[i] < instrument.notes[i].length) {
-
 					instrument.instrument.then((function(index, instr) {
-						// console.log(instrument.notes[index])
 
 						if (instrument.notes[index][instrument.noteCount[index]].note > 0) {
 							instr.start(instrument.notes[index][instrument.noteCount[index]].note, instrument.ac.currentTime, {gain: 0.5});
 							if (index == 0) { callback(); }
 						}
 						instrument.played[index] = true;
-						
+						instrument.noteCount[index]++;
 					}).bind(this, i))
 
-					instrument.noteCount[i]++;
 					instrument.time[i] = time;
 				}
 			}
@@ -104,6 +97,7 @@ export default class MusicBox {
 		this.instruments[type].noteCount = [];
 		this.instruments[type].notes = [];
 		this.instruments[type].time = [];
+		this.instruments[type].played = [];
 	}
 
 	// Public functions
@@ -119,7 +113,7 @@ export default class MusicBox {
 		this._setInstrument( instrumentName, ac, 2 );
 	}
 
-	// Functions for creating bass line
+	// Functions for bass line
 	createBassLine() {
 		this._clearGeneratedMusic( 2 );
 		this.instruments[2].notes.push(beatGenerator( euclid(2,8), 180, 400, 'F3' ));
@@ -129,6 +123,22 @@ export default class MusicBox {
 
 	playBassLine( time, callback ) {
 		this._playMusic( 2, time, callback );
+	}
+
+	// Functions for the harmony
+	createHarmonyLine() {
+		this._clearGeneratedMusic( 1 );
+	}
+
+
+	// Functions for the melody
+	createMelodyLine() {
+		this._clearGeneratedMusic( 0 );
+		this.instruments[0].notes.push(createMelody('F5'));
+	}
+
+	playMelody( time, callback ) {
+		this._playMusic( 0, time, callback );
 	}
 
 

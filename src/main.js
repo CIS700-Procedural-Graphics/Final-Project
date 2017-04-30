@@ -229,9 +229,10 @@ function onLoad(framework) {
 	musicPlayer.setHarmonicInstrument( 'acoustic_grand_piano', ac );
 	musicPlayer.setBassInstrument( 'acoustic_bass', ac );
 
-	// Initialize bass line
+	// Initialize music
 	musicPlayer.createBassLine();
-	console.log(musicPlayer)
+	musicPlayer.createMelodyLine();
+	// console.log(musicPlayer)
 
 	allInit = true;
 
@@ -318,6 +319,10 @@ function onUpdate(framework) {
 
 	var nTime = Date.now();
 	if (allInit) {
+		musicPlayer.playMelody( nTime, function() {
+			Visual.melodyCallback(framework, visualConfig);
+		});
+
 		musicPlayer.playBassLine( nTime, function() {
 			Visual.bassCallback(framework, visualConfig);
 		});
@@ -339,22 +344,6 @@ function onUpdate(framework) {
 	// 	indices[0]++;
 	// 	time[0] = nTime;
 	// }
-
-	// deltaT = (nTime - time[1]) / 1000;
-	// if (deltaT > music[melIdx][1][indices[1]] * bpm[1] && indices[1] < music[melIdx][0].length) {
-
-	// 	melodyInstr.then((function(melIn) {
-	// 		if (music[melIdx][0][indices[1]] > 0) {
-	// 			// console.log(music[melIdx][1][indices[0]])
-	// 			melIn.start(music[melIdx][0][indices[1]], ac.currentTime, {gain: 1})
-	// 				 .stop(ac.currentTime + music[melIdx][1][indices[1]] * bpm[1]);
-	// 			 Visual.melodyCallback(framework, visualConfig);
-	// 		}
-	// 	}).bind(this))
-	// 	indices[1]++;
-	// 	time[1] = nTime;
-	// }
-
 
 	// Visual
 	var scene = framework.scene;
