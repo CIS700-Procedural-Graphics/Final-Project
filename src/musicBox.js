@@ -1,16 +1,18 @@
 import Soundfont from 'soundfont-player'
 
-import {euclid} from './utils/euclid.js'
+// Local imports
+import euclid from './utils/euclid.js'
 import {beatGenerator,
-	MorseThue,
-	melodyGenerator,
-	rhythmicMelodyGenerator,
-	EarthWorm,
-	noteBeats} from './utils/musicGenerator.js'
+		MorseThue,
+		melodyGenerator,
+		rhythmicMelodyGenerator,
+		EarthWorm,
+		noteBeats} from './music/musicGenerator.js'
 
-	import {patternedMelody,
+import {patternedMelody,
 		createMainTheme,
-		createMelody} from './utils/musicMotifs.js'
+		createMelody} from './music/musicMotifs.js'
+import generateMelody from './music/melody.js'
 
 
 export default class MusicBox {
@@ -21,7 +23,7 @@ export default class MusicBox {
 	// Private functions
 	_init() {
 		this.instruments = [null,null,null];
-		this.noise = [1, 0.5, 0.5];
+		this.noise = [0.7, 0.5, 0.5];
 	}
 
 	_setInstrument( instrumentName, ac, type ) {
@@ -60,8 +62,9 @@ export default class MusicBox {
 				instrument.instrument.then( (function(index, instr) {
 					instr.start(instrument.notes[index][instrument.noteCount[index]].note, 
 								instrument.ac.currentTime, 
-								{gain: this.noise[type]});
-					
+								{gain: this.noise[type]})
+						 .stop(instrument.notes[index][instrument.noteCount[index]].time * instrument.noteLength);
+
 					if (index == 0) { callback(); }
 					instrument.played[index] = true;
 					instrument.noteCount[index]++;
@@ -143,7 +146,7 @@ export default class MusicBox {
 	// Functions for the melody
 	createMelodyLine() {
 		this._clearGeneratedMusic( 0 );
-		this.instruments[0].notes.push(createMelody('F5'));
+		this.instruments[0].notes.push(generateMelody( 'F5', 1 ));
 	}
 
 	playMelody( time, callback ) {
