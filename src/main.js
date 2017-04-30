@@ -32,6 +32,7 @@ var meshes = {
   ground : null,
   water : null,
   sky : null, 
+  boat : null,
   num_rocks : 50,
   rocks : []
 }
@@ -120,6 +121,7 @@ function onUpdate(framework) {
         time = 0;
       }
       updateCamera(framework.camera, variables.spline, time % 10000);
+      // framework.controls.target.set(framework.camera.position);
       particleSys.update(0.1, velocity);
     }
 

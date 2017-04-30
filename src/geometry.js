@@ -1,4 +1,8 @@
 const THREE = require('three');
+const OBJLoader = require('three-obj-loader');
+const MTLLoader = require('three-mtl-loader');
+OBJLoader(THREE)
+MTLLoader(THREE)
 
 export function initSceneGeo(scene, meshes, materials, spline, radius) {
 
@@ -23,6 +27,24 @@ export function initSceneGeo(scene, meshes, materials, spline, radius) {
   sky_material.side = THREE.BackSide;
   meshes.sky = new THREE.Mesh(sky_geo, sky_material);
   scene.add(meshes.sky);
+
+  var objLoader = new THREE.MTLLoader();
+  mtlLoader.load('OldBoat.mtl', function(materials) {
+    materials.preload();
+    var objLoader = new THREE.OBJLoader();
+    objLoader.setMaterials(materials);
+    objLoader.load('OldBoat.obj', function(object) {
+      meshes.boat = object;
+      scene.add(meshes.boat);
+    });
+  });
+
+  // var obj = objLoader.load('OldBoat.obj', function(obj) {
+  //   var boat_geo = new THREE.Geometry().fromBufferGeometry(obj.children[0].geometry);
+  //   var boat_material = new THREE.ShaderMaterial(materials.sky_mat);
+  //   meshes.boat = new THREE.Mesh(boat_geo, boat_material);
+  //   scene.add(meshes.boat);
+  // });
 
   var vertices = spline.getPoints( meshes.num_rocks );
   // for (var i = 0; i < vertices.length; i ++) {

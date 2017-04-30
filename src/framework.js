@@ -57,6 +57,21 @@ function init(callback, update) {
     framework.renderer = renderer;
     framework.controls = controls;
 
+    document.addEventListener("keydown", function(e) {
+      switch (e.keyCode) {
+          case 37: 
+            console.log("left"); break;
+          case 38: 
+            console.log("up"); break;
+          case 39: 
+            console.log("right"); break;
+          case 40: 
+            console.log("down"); break;
+          case 84: 
+            console.log("toggle"); break;
+      }
+    });
+
     // begin the animation loop
     (function tick() {
       stats.begin();
