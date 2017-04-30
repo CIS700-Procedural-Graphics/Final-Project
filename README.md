@@ -72,6 +72,8 @@ I intend to achieve a beautiful looking pond scene which is also animated and in
 - [Effective Water Simulation From Physical Models by Mark Finch and Cyan Worlds](http://http.developer.nvidia.com/GPUGems/gpugems_ch01.html)
 - [IQ's Simple Procedural Color Palette](http://www.iquilezles.org/www/articles/palettes/palettes.htm)
 - [Cosine Gradient Generator](http://dev.thi.ng/gradients/)
+- [Hemisphere Light Example](https://threejs.org/examples/?q=hemis#webgl_lights_hemisphere)
+- [Convex Geometry Example](https://threejs.org/examples/?q=convex#webgl_geometry_convex)
 
 ### Timeline
 - 4/11: Codebase organization, Sketch End Goal, Work on Terrain Generation: Water Plane, and rock formation
