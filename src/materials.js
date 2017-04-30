@@ -1,32 +1,19 @@
 const THREE = require('three');
 
 export var rock_mat = {
+
   uniforms: {
     time: {value: new Date().getMilliseconds()},
-    u_albedo: {
-        type: 'v3',
-        value: new THREE.Color('#dddddd')
-    },
-    u_ambient: {
-        type: 'v3',
-        value: new THREE.Color('#111111')
-    },
-    u_lightPos: {
-        type: 'v3',
-        value: new THREE.Vector3(30, 50, 40)
-    },
-    u_lightCol: {
-        type: 'v3',
-        value: [1, 1, 1]
-    },
-    u_lightIntensity: {
-        type: 'f',
-        value: 2
-    }
-},
+    u_albedo: {type: 'v3', value: new THREE.Color('#dddddd')},
+    u_ambient: {type: 'v3', value: new THREE.Color('#111111')},
+    u_lightPos: {type: 'v3', value: new THREE.Vector3(30, 50, 40)},
+    u_lightCol: {type: 'v3', value: [1, 1, 1]},
+    u_lightIntensity: {type: 'f', value: 2}
+  },
   vertexShader: require('./shaders/rock-vert.glsl'),
   fragmentShader: require('./shaders/rock-frag.glsl')
-};
+
+  };
 
 export var canyon_mat = {
   uniforms: {

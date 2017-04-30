@@ -7,10 +7,6 @@ varying vec2 vUV;
 varying vec3 vPosition;
 varying vec3 ePosition;
 
-vec3 v_lerp(vec3 a, vec3 b, float t) {
-  return a * (1.0-t) + b * t;
-}
-
 vec3 applyFog(vec3 color, float distance, float b) {
 	float fogAmount = 1.0 - exp( -distance*b );
     vec3  fogColor  = vec3(0.5,0.6,0.7);
