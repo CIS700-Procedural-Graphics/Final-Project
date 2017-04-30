@@ -6,8 +6,8 @@ public class MetaballController : MonoBehaviour {
 
     public bool writeToFile = true; //true if we are recording
     System.IO.StreamReader readFile; //the file we will read metaball vertex data from
-    private List<Vector3>[] frameVertices;
-    private List<Vector3>[] frameNormals;
+    //private List<Vector3>[] frameVertices;
+    //private List<Vector3>[] frameNormals;
 
     private int frameCount = 0;
 
@@ -38,6 +38,19 @@ public class MetaballController : MonoBehaviour {
 
     private Mesh metaballsMesh;
 
+    //void OnEnable()
+    //{
+    //    Debug.Log("ENABLED");
+    //    //if we are reading and haven't cached the vertices
+    //    if (!writeToFile && frameVertices == null)
+    //    {
+    //        Debug.Log("CACHING");
+    //        //readFile =
+    //        //   new System.IO.StreamReader("metaballSim.txt");
+    //        Cache("metaballSim.txt");
+
+    //    }
+    //}
 
     void Awake()
     {
@@ -46,70 +59,66 @@ public class MetaballController : MonoBehaviour {
        
         this.res2 = res * res;
         this.res3 = res * res * res;
+
+
     }
 
-    void ToVertices(string filePath)
-    {
-        string[] lines = System.IO.File.ReadAllLines(filePath);
+    //void Cache(string filePath)
+    //{
+    //    string[] lines = System.IO.File.ReadAllLines(filePath);
 
-        Debug.Log(lines.Length);
-        //array of lists of vertices, 
-        //each list contains vertices for a single frame
-        frameVertices = new List<Vector3>[lines.Length];
-        frameNormals = new List<Vector3>[lines.Length];
+    //    Debug.Log(lines.Length);
+    //    //array of lists of vertices, 
+    //    //each list contains vertices for a single frame
+    //    frameVertices = new List<Vector3>[lines.Length];
+    //    frameNormals = new List<Vector3>[lines.Length];
 
 
-        for (int i = 0; i < lines.Length; i++) //for each line make a new list of vertices
-        {
-            frameVertices[i] = new List<Vector3>();
-            frameNormals[i] = new List<Vector3>();
+    //    for (int i = 0; i < lines.Length; i++) //for each line make a new list of vertices
+    //    {
+    //        frameVertices[i] = new List<Vector3>();
+    //        frameNormals[i] = new List<Vector3>();
 
-            string[] posValStrings = lines[i].Split(' ');
-            int vertexCount = 0;
+    //        string[] posValStrings = lines[i].Split(' ');
+    //        int vertexCount = 0;
 
-            for (int c = 0; c < posValStrings.Length - 3; c += 3) //parse each float
-            {
-                Vector3 meshVertex = new Vector3(
-                    float.Parse(posValStrings[c]),
-                    float.Parse(posValStrings[c + 1]),
-                    float.Parse(posValStrings[c + 2])
-                );
+    //        for (int c = 0; c < posValStrings.Length - 3; c += 3) //parse each float
+    //        {
+    //            Vector3 meshVertex = new Vector3(
+    //                float.Parse(posValStrings[c]),
+    //                float.Parse(posValStrings[c + 1]),
+    //                float.Parse(posValStrings[c + 2])
+    //            );
 
-                frameVertices[i].Add(meshVertex);
+    //            frameVertices[i].Add(meshVertex);
 
-                vertexCount++;
+    //            vertexCount++;
 
-                //normal calculation
-                if (vertexCount % 3 == 0) //for every 3 vertices (triangle) calc normals
-                {
-                    Vector3 triV2 = frameVertices[i][vertexCount - 1];
-                    Vector3 triV1 = frameVertices[i][vertexCount - 2];
-                    Vector3 triV0 = frameVertices[i][vertexCount - 3];
+    //            //normal calculation
+    //            if (vertexCount % 3 == 0) //for every 3 vertices (triangle) calc normals
+    //            {
+    //                Vector3 triV2 = frameVertices[i][vertexCount - 1];
+    //                Vector3 triV1 = frameVertices[i][vertexCount - 2];
+    //                Vector3 triV0 = frameVertices[i][vertexCount - 3];
 
-                    Vector3 e1 = triV1 - triV0;
-                    Vector3 e2 = triV2 - triV1;
+    //                Vector3 e1 = triV1 - triV0;
+    //                Vector3 e2 = triV2 - triV1;
 
-                    Vector3 normal = Vector3.Cross(e1, e2);
-                    frameNormals[i].Add(normal);
-                    frameNormals[i].Add(normal);
-                    frameNormals[i].Add(normal);
+    //                Vector3 normal = Vector3.Cross(e1, e2);
+    //                frameNormals[i].Add(normal);
+    //                frameNormals[i].Add(normal);
+    //                frameNormals[i].Add(normal);
 
-                }
-            }
-        }
+    //            }
+    //        }
+    //    }
 
-    }
+    //}
 
 	// Use this for initialization
 	void Start () {
-        if (!writeToFile)
-        {
-            //readFile =
-            //   new System.IO.StreamReader("metaballSim.txt");
-            ToVertices("metaballSim.txt");
-
-        }
-        else
+   
+        if(writeToFile)
         {
             setupCells();
             setupWalls();
@@ -253,6 +262,7 @@ public class MetaballController : MonoBehaviour {
     void makeMesh()
     {
        metaballsMesh = GetComponent<MeshFilter>().mesh;
+       GetComponent<MeshCollider>().sharedMesh=metaballsMesh;
 
     }
 
@@ -295,66 +305,19 @@ public class MetaballController : MonoBehaviour {
             }
         }else //reading from file
         {
-            if (frameCount < frameVertices.Length)
+            if (frameCount < CacheMetaballs.frameVertices.Length)
             {
-                meshVertices = frameVertices[frameCount];
-                meshNormals = frameNormals[frameCount];
+                meshVertices = CacheMetaballs.frameVertices[frameCount];
+                meshNormals = CacheMetaballs.frameNormals[frameCount];
                 frameCount++;
             }else
             {
                 frameCount = 0;
             }
 
-
-            //string line;
-            //int vertexCount = 0;
-
-            //if ((line = readFile.ReadLine()) != null)
-            //{
-            //    string[] posValStrings = line.Split(' ');
-            //    for (int i = 0; i < posValStrings.Length - 3; i += 3)
-            //    {
-            //        Vector3 meshVertex = new Vector3(
-            //            float.Parse(posValStrings[i]),
-            //            float.Parse(posValStrings[i + 1]),
-            //            float.Parse(posValStrings[i + 2])
-            //        );
-
-            //        meshVertices.Add(meshVertex);
-            //        vertexCount++;
-
-            //        //normal calculation
-            //        if (vertexCount % 3 == 0) //for every 3 vertices (triangle) calc normals
-            //        {
-            //            Vector3 triV2 = meshVertices[vertexCount - 1];
-            //            Vector3 triV1 = meshVertices[vertexCount - 2];
-            //            Vector3 triV0 = meshVertices[vertexCount - 3];
-
-            //            Vector3 e1 = triV1 - triV0;
-            //            Vector3 e2 = triV2 - triV1;
-
-            //            Vector3 normal = Vector3.Cross(e1, e2);
-            //            meshNormals.Add(normal);
-            //            meshNormals.Add(normal);
-            //            meshNormals.Add(normal);
-
-            //        }
-            //    }
-
-            //}
-            //else
-            //{
-            //    readFile.Close();
-            //    readFile =
-            //  new System.IO.StreamReader("metaballSim.txt");
-            //}
-
-
         }
 
-        
-
-  
+       
 
         //create triangle indices
         int[] meshTriangles = new int[meshVertices.Count];
@@ -370,7 +333,12 @@ public class MetaballController : MonoBehaviour {
         metaballsMesh.vertices = meshVertices.ToArray();
         metaballsMesh.normals = meshNormals.ToArray();
         metaballsMesh.triangles = meshTriangles;
-        //metaballsMesh.RecalculateBounds();
+        if (!writeToFile)
+        {
+            metaballsMesh.RecalculateBounds();
+            GetComponent<MeshCollider>().sharedMesh = null;
+            GetComponent<MeshCollider>().sharedMesh = metaballsMesh;
+        }
     }
 
     float influence(Metaball ball, Vector3 point)
