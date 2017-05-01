@@ -56,12 +56,15 @@ function init(callback, update) {
     framework.camera = camera;
     framework.renderer = renderer;
     framework.controls = controls;
-    framework.viewpoint = false;
+    framework.viewpoint = 0;
+    // 0 : person
+    // 1 : above
+    // 2 : behind
 
     document.addEventListener("keydown", function(e) {
       switch (e.keyCode) {
           case 86: 
-            framework.viewpoint = !framework.viewpoint; break;
+            framework.viewpoint = (framework.viewpoint + 1)%3; break;
       }
     });
 

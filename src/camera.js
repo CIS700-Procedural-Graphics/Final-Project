@@ -11,7 +11,7 @@ function distribution(previous, radius, smoothness)
 	// var delta = Math.random();
 	// var r += Math.min(smoothness, delta);
 	// return Math.min(r, radius);
-	return Math.min(radius, previous + (Math.random() - 0.5) * (1 - smoothness) * radius);
+	return Math.min(radius, previous + (Math.random() - 0.5) * (1.0 - smoothness) * radius * 0.4);
 }
 
 function clamp(x, min, max) {
@@ -138,13 +138,9 @@ export function makeSplineTexture(spline, radius, w, h)
 
 export function updateCamera(viewpoint, camera, spline, circle, camPosIndex, boat) 
 {
-      
-      var boatPos = spline.getPoint(camPosIndex / 10000);
-      var boatRot = spline.getTangent(camPosIndex / 10000);
-
-      if (viewpoint) {
-      	var camPos = circle.getPoint(camPosIndex / 10000);
-      	var camRot = circle.getTangent(camPosIndex / 10000);
+      if (viewpoint == 1) {
+		var camPos = circle.getPoint(camPosIndex / 10000);
+        var camRot = circle.getTangent(camPosIndex / 10000);
       	camera.position.x = camPos.x; 
       	camera.position.y = camPos.y; 
       	camera.position.z = camPos.z; 
@@ -152,27 +148,38 @@ export function updateCamera(viewpoint, camera, spline, circle, camPosIndex, boa
       	camera.rotation.x = camRot.x;
       	camera.rotation.y = camRot.y; 
       	camera.rotation.z = camRot.z; 
+      	
       } else {
+
+      	var boatPos = spline.getPoint(camPosIndex / 10000);
+        var boatRot = spline.getTangent(camPosIndex / 10000);
       	camera.position.x = boatPos.x; 
-      	camera.position.y = boatPos.y; 
+      	camera.position.y = (viewpoint == 2) ? boatPos.y + 5 : boatPos.y; 
       	camera.position.z = boatPos.z; 
 
       	camera.rotation.x = boatRot.x;
       	camera.rotation.y = boatRot.y; 
       	camera.rotation.z = boatRot.z; 
+      	
       }
 
-      
-
+		var offset = (viewpoint == 2) ? 300 : 20;
       if (boat != null) {
-      	boat.position.x = boatPos.x; boat.position.y = boatPos.y - 1; boat.position.z = boatPos.z;
-      	boat.rotation.y = Math.atan2(boatRot.x, boatRot.z);
+
+      	
+      	var boatPos1 = spline.getPoint((camPosIndex + offset) / 10000);
+      	var boatRot1 = spline.getTangent((camPosIndex + offset) / 10000);
+      	boat.position.x = boatPos1.x; boat.position.y = boatPos1.y - 1; boat.position.z = boatPos1.z;
+      	boat.rotation.y = Math.atan2(boatRot1.x, boatRot1.z);
       	// perlin rotation x, z
       	boat.geometry.verticesNeedUpdate = true;
       }
       
-
       // smooth camera movement
-      var look = spline.getPoint((camPosIndex+1) / 10000);
+      var look = spline.getPoint((camPosIndex+ offset + 1) / 10000);
+      if (viewpoint == 1) {
+      	look = circle.getPoint((camPosIndex+ offset + 1) / 10000);
+      	look.y = 0;
+      }
       camera.lookAt(look);
 }

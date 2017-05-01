@@ -25,8 +25,8 @@ export function initSceneGeo(scene, meshes, materials, spline, radius) {
   var objLoader = new THREE.OBJLoader();
   var obj = objLoader.load('./src/assets/boat.obj', function(obj) {
     var boat_geo = obj.children[1].geometry;
-    boat_geo.scale(0.13, 0.13, 0.13);
-    boat_geo.translate(0,0.3,0);
+    boat_geo.scale(0.25, 0.25, 0.25);
+    boat_geo.translate(0,-0.5,0);
     var loader = new THREE.TextureLoader();
     var boat_material = new THREE.ShaderMaterial(materials.boat_mat);
     loader.load('./src/assets/diffuse.png', function(texture) {
