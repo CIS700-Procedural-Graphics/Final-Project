@@ -2,18 +2,15 @@ var tonal = require('tonal')
 
 
 export function beatGenerator(rhythm, tempo, n, drumNote = 'G3') {
-	var unitTime = 60 / tempo;
 	var analogRhythm = getAnalogRhythm(rhythm);
 	// console.log(analogRhythm)
 
 	var notes = [];
-	var t = 0;
 	for (var i = 0; i < n; i++) {
 		var r = rhythm[i % rhythm.length];
 		var note = (r == 1) ? drumNote : -1;
 
 		notes.push( {note: tonal.note.midi(note), time: 1});
-		
 	}
 
 	return notes;

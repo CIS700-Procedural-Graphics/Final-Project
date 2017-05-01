@@ -7,6 +7,8 @@ const MeshLine = require( 'three.meshline' );
 import Framework from './framework'
 import MusicBox from './musicBox.js'
 
+import generateMelody from './music/melody.js'
+
 // Visual
 const EffectComposer = require('three-effectcomposer')(THREE);
 import Scene1 from './scene1';
@@ -350,7 +352,7 @@ function onLoad(framework) {
 	// Initialize music instruments
 	musicPlayer.setMelodicInstrument( 'acoustic_grand_piano', ac );
 	musicPlayer.setHarmonicInstrument( 'acoustic_grand_piano', ac );
-	musicPlayer.setBassInstrument( 'acoustic_bass', ac );
+	musicPlayer.setBassInstrument( './src/soundfonts/percussion.js', ac );
 
 	// Initialize music
 	musicPlayer.createBassLine();
@@ -359,6 +361,8 @@ function onLoad(framework) {
 	// console.log(musicPlayer)
 
 	allInit = true;
+
+	// console.log(generateMelody( 'C4', 1 ))
 
 	// edit params and listen to changes like this
 	// more information here: https://workshop.chromeexperiments.com/examples/gui/#1--Basic-Usage

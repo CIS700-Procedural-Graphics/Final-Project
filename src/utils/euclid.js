@@ -1,10 +1,8 @@
-export {euclid}
-
 // http://cgm.cs.mcgill.ca/~godfried/publications/banff.pdf
 // The euclid function is an implementation of the Bjorklund algorithm
 // described in the paper linked above.
 
-function euclid(m, k) {
+export default function euclid(m, k) {
 	// Create the head 1's and tail 0's
 	var head = [];
 	var tail = [];
