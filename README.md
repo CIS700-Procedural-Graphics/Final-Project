@@ -47,7 +47,7 @@ The rain in the distance can barely be differentiated due to the distance from t
 
 | b  | 0.0 | 0.035 | 0.1 |
 | -----------| ---------- | ------- | ------- |
-| | ![](./images/pre-fog.png) ![](./images/post-fog.png) ![](./images/toomuch-fog.png)
+| | <img src="/images/pre-fog.png" width="48"> | <img src="/images/post-fog.png" width="48"> |  <img src="/images/toomuch-fog.png" width="48"> |
 
 ### Rocks
 
