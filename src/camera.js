@@ -87,7 +87,7 @@ export function makeSpline(radius, num, smoothness)
   	// stratified angle sampling
   	var angle = i + Math.random() * two_pi/num;
   	r = distribution(r, radius, smoothness);
-  	var point = new THREE.Vector3(r * Math.cos(angle) + radius, 2, r * Math.sin(angle) + radius);
+  	var point = new THREE.Vector3(r * Math.cos(angle) + radius, 3, r * Math.sin(angle) + radius);
 
     randomPoints.push(point);
   }
@@ -123,14 +123,14 @@ export function makeSplineTexture(spline, radius, w, h)
 	return data4;
 }
 
-export function updateCamera(camera, spline, camPosIndex, boat) 
+export function updateCamera(viewpoint, camera, spline, camPosIndex, boat) 
 {
       
       var camPos = spline.getPoint(camPosIndex / 10000);
       var camRot = spline.getTangent(camPosIndex / 10000);
 
       camera.position.x = camPos.x; 
-      camera.position.y = camPos.y; 
+      camera.position.y = (viewpoint) ? camPos.y + 20 : camPos.y; 
       camera.position.z = camPos.z; 
 
       camera.rotation.x = camRot.x;

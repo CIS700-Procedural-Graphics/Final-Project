@@ -74,7 +74,7 @@ function onLoad(framework) {
    materials.water_mat.uniforms.spline_tex.value = texture;
    materials.rain_mat.uniforms.spline_tex.value = texture;
 
-  updateCamera(camera, variables.spline, 0, meshes.boat);
+  updateCamera(framework.viewpoint, camera, variables.spline, 0, meshes.boat);
 
   // objects and geometry
   materials.water_mat.uniforms.density.value = 5 * rain.density;
@@ -100,7 +100,7 @@ function onLoad(framework) {
   variables.audioAnalyser = new THREE.AudioAnalyser( variables.music, 64 );
 
   // rain
-  particleSys = new ParticleSystem(rain, scene, data, variables.res, variables.res);
+  particleSys = new ParticleSystem(rain, scene, data, variables.res, variables.res, materials.rain_mat);
 
   // gui
   gui.add(variables, 'enableSound').onChange(function(value) {
@@ -121,7 +121,7 @@ function onUpdate(framework) {
       if (time == 10000) {
         time = 0;
       }
-      updateCamera(framework.camera, variables.spline, time % 10000, meshes.boat);
+      updateCamera(framework.viewpoint, framework.camera, variables.spline, time % 10000, meshes.boat);
       // framework.controls.target.set(framework.camera.position);
       particleSys.update(0.1);
     }

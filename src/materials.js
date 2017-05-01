@@ -4,6 +4,7 @@ export var boat_mat = {
 
   uniforms: {
     texture: { type: "t", value: null},
+    boat_color: {value: [0.545, 0.27, 0.0745]},
     u_lightPos: {type: 'v3', value: new THREE.Vector3(0, 50, 0)}
   },
   vertexShader: require('./shaders/boat-vert.glsl'),
@@ -44,6 +45,7 @@ export var water_mat = {
     frequency: {value: 2.0},
     num_octaves: {value: 5},
     buckets: {value: 10},
+    spline_tex: {type: "t", value: null},
     density : {value: 5.0},
     color1: {value: [0, 139/255, 139/255]},
     color2: {value: [0, 128/255, 128/255]},
@@ -64,8 +66,13 @@ export var rain_mat = {
     frequency: {value: water_mat.uniforms.frequency.value},
     dim: {value: null},
     buckets: {value: water_mat.uniforms.buckets.value},
-    spline_tex: {type: "t", value: null}
-  },
+    drop_color: {value: [0.5, 0.6, 0.7]},
+    splash_color: {value: [148/255, 0, 211/255]},
+    spline_tex: {type: "t", value: null},
+    grads: {type: 'vec3', value: [new THREE.Vector3(1,1,0), new THREE.Vector3(-1,1,0), new THREE.Vector3(1,-1,0),        new THREE.Vector3(-1,-1,0), new THREE.Vector3(1,0,1), new THREE.Vector3(-1,0,1), new THREE.Vector3(1,0,-1), 
+      new THREE.Vector3(-1,0,-1), new THREE.Vector3(0,1,1), new THREE.Vector3(0,-1,1), new THREE.Vector3(0,1,-1), 
+      new THREE.Vector3(0,-1,-1)]}
+    },
   vertexShader: require('./shaders/rain-vert.glsl'),
   fragmentShader: require('./shaders/rain-frag.glsl'),
   side: THREE.DoubleSide,

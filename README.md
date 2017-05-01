@@ -21,7 +21,7 @@ spherical map
 
 The camera and canyon are closely tied together because the camera can only move through empty space in the canyon (aka not move through rocks), so the implementations had to be connected. I decided to first define a camera animation along a closed spline. I could have first started with defining the canyon gorge layout and then add the camera movement inside, but this seemed more difficult to me because if I laid spline knots in the gorge, I could not be guaranteed that all interpolated spline points would remain in the gorge. I chose a spline because I wanted to have a continuous animation, which I could achieved with a closed loop, but I also wanted the path to twist and turn so as not to be an obvious circle. By offsetting the knot points pseudo-randomly, I am able to perturb the path just enough to appear random but not too jerky, since it is still controlled by a smooth curve. Below are some examples of the generated splines. 
 
-<img src="/images/map1.png" width="250"> <img src="/images/map2.png" width="250"> <img src="/images/map3.png" width="250"> 
+<img src="/images/map1.png" width="250"> 		<img src="/images/map2.png" width="250"> 		<img src="/images/map3.png" width="250"> 
 
 While the paths appear relatively circular, the terrain is large enough that the circular nature is not noticed. The spline is controlled by a smoothness factor along with a maximum radius which insures that the spline fits within the terrain plane and that the spline never gets too close to the edge so that it always has a canyon wall. The smoothness parameter controls how much each subsequent spline know can change in radial distance from the previous. When smoothness = 0, the spline is a circle and when smoothness = 1, the spline can flucuate as much as half its maximum radius between know points. Any more perturbation would cause the camera to jerk since the spline points become less smooth.
 
@@ -75,9 +75,12 @@ I did not like the effect the music frequency had in my scene. I set the frequen
 
 ## Future Work
 
-* Camera Movement: I would like to improve the interactivity beyond just the viewpoint toggle. Instead of animating the camera along a spline, the user could move anywhere within the widened spline loop area and look around the scene. When that gets boring, the camera would move back to the spline animation. 
-* Changing Weather: The simulation started as a sunny canyon environment until I added the rain particles. It would be cool for the simulation to smoothly change from sunny to rainy to stormy, etc. The problem with this now is dynamically adding particles to the system.  
-* Ambient Occlusion: Since this project achieves all effects without light, an ambient occlusion post processing effect could really improve the quality of the final render. Ambitious me thought [this][3] would be really cool, but I did not have enough time to understand and implement.
+* Camera Movement
+I would like to improve the interactivity beyond just the viewpoint toggle. Instead of animating the camera along a spline, the user could move anywhere within the widened spline loop area and look around the scene. When that gets boring, the camera would move back to the spline animation. 
+* Changing Weather
+The simulation started as a sunny canyon environment until I added the rain particles. It would be cool for the simulation to smoothly change from sunny to rainy to stormy, etc. The problem with this now is dynamically adding particles to the system.  
+* Ambient Occlusion
+Since this project achieves all effects without light, an ambient occlusion post processing effect could really improve the quality of the final render. Ambitious me thought [this][3] would be really cool, but I did not have enough time to understand and implement.
 
 
 ## Acknowledgements

@@ -1,4 +1,5 @@
 uniform float time;
+uniform vec3 grads[12];
 uniform float frequency;
 uniform float amplitude;
 uniform vec2 dim;
@@ -9,7 +10,7 @@ attribute float vert;
 varying vec2 vUV;
 varying vec3 vPosition;
 varying vec3 ePosition;
-varying int splash;
+varying float splash;
 varying float dist;
 
 #define PI 3.14159265
@@ -74,40 +75,10 @@ void main() {
     vPosition = position + offset;
 
     vec2 p = vec2(position.x, position.z);
-    noise = p_noise(p, frequency, amplitude, time);
+    float noise = p_noise(p, frequency, amplitude, time);
     float water_pos = 1.0 + noise;
 
     vec4 screen = projectionMatrix * modelViewMatrix * vec4(vPosition, 1.0);
-
-    if (water_pos < vPosition.y) {
-    	splash = 0;
-    	if (vert == 0.0) {
-
-    	} else if (vert == 1.0) {
-
-    	} else if (vert == 2.0) {
-
-    	} else if (vert == 3.0) {
-
-    	} else {
-
-    	}
-
-    } else {
-    	splash = 1;
-    	dist = water_pos - vPosition.y;
-    	if (vert == 0.0) {
-
-    	} else if (vert == 1.0) {
-
-    	} else if (vert == 2.0) {
-
-    	} else if (vert == 3.0) {
-
-    	} else {
-
-    	}
-    }
     
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(vPosition, 1.0);
+    gl_Position = screen;
 }

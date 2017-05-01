@@ -7,11 +7,11 @@ var Particle = function(pos, vel) {
 }
 
 export default class ParticleSystem {
-  constructor(App, scene, data, w, h) {
-      this.init(App, scene, data, w, h);
+  constructor(App, scene, data, w, h, rain_mat) {
+      this.init(App, scene, data, w, h, rain_mat);
     }
 
-    init(App, scene, data, w, h) {
+    init(App, scene, data, w, h, rain_mat) {
       this.scene = scene;
       this.particles = [];
       this.density = App.density;
@@ -48,7 +48,7 @@ export default class ParticleSystem {
       }
       rain_geo.addAttribute( 'offset', offsets );
 
-      var rain_material = new THREE.ShaderMaterial(materials.rain_mat);
+      var rain_material = new THREE.ShaderMaterial(rain_mat);
 
       this.rain = new THREE.Mesh( rain_geo, rain_material ); // define mesh 
       this.rain.geometry.verticesNeedUpdate = true;
@@ -69,8 +69,8 @@ export default class ParticleSystem {
         this.particles[i].pos.z = this.particles[i].index.y;
         this.particles[i].vel = this.direction.clone().multiplyScalar(Math.random());
       }  
-      this.rain.getAttribute('offset').setXYZ(i, this.particles[i].x, this.particles[i].y, this.particles[i].z)       
+      this.rain.geometry.getAttribute('offset').setXYZ(i, this.particles[i].x, this.particles[i].y, this.particles[i].z)       
     }
-    this.rain.getAttribute('offset').needsUpdate = true;
+    this.rain.geometry.getAttribute('offset').needsUpdate = true;
   }
 }

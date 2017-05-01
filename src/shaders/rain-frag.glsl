@@ -1,14 +1,20 @@
 uniform sampler2D spline_tex;
 uniform float buckets;
+uniform vec3 drop_color;
+uniform vec3 splash_color;
 
 varying vec2 vUV;
 varying vec3 vPosition;
 varying vec3 ePosition;
-varying int splash;
+varying float splash;
 varying float dist;
 
 float bias(float b, float t) {
 	return pow(t, log(b) / log(0.5));
+}
+
+float smoothstep(float x) {
+	return 3.0 * x * x - 2.0 * x * x * x;
 }
 
 vec3 applyFog(vec3 color, float distance, float b) {
@@ -29,10 +35,10 @@ void main() {
 	vec3 water_color = vec3(0.0, d, 2.0 * d);
 	water_color = applyFog(water_color, length(ePosition - vPosition), 0.01);
 
-	if (splash == 1) {
-		color = mix(purple, water_color, dist);
+	if (splash == 1.0) {
+		color = mix(splash_color, water_color, dist);
 	} else {
-		color = vec3(0.1, 0.1, 0.1);
+		color = drop_color;
 	}
 
     gl_FragColor = vec4(color, alpha);
