@@ -9,7 +9,7 @@ export default function generateBass( voiceNumber, length = 8 ) {
 	switch ( voiceNumber ) {
 		// 1. Default standard meter
 		case 1: 
-			var v = 62;
+			var v = 42;
 			for ( var i = 0; i < length; i++ ) {
 				bassLine.push( {note: v, time: 1} );
 				bassLine.push( {note: -1, time: 1} );

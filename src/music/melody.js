@@ -8,19 +8,21 @@ export default function generateMelody( scaleNote, randomVar ) {
 	var s = tonal.scale.get('major', scaleNote);
 	
 
-	// var sO = tonal.note.fromMidi( tonal.note.midi( scaleNote ) - 12 );
-	// s = tonal.scale.get( 'major pentatonic', sO ).concat( s );
+	var sO = tonal.note.fromMidi( tonal.note.midi( scaleNote ) - 12 );
+	s = tonal.scale.get( 'major', sO ).concat( s );
 
 	var melodyLine = createMelodicContour( 2, s.length );
-	console.log( melodyLine )
+	// console.log( melodyLine )
 
 	var notes = [];
 	for ( var i = 0; i < melodyLine.length; i++ ) {
-		notes.push( { note: tonal.note.midi(s[melodyLine[i]]), time: 1 } );
+		notes.push( { note: tonal.note.midi(s[melodyLine[i]]), time: 4 } );
 	}
 
-	notes = applyRhythm( notes, euclid( 3, 8 ) );
-	notes = variateMelody( notes, s );
+	
+	// notes = variateMelody( notes, s );
+
+	// console.log( euclid( 3, 8 ) )
 
 	// Remove any nulls
 	for ( var i = 0; i < notes.length; i++ ) {
@@ -31,13 +33,15 @@ export default function generateMelody( scaleNote, randomVar ) {
 
 	// Limit length of melody
 	var finalNotes = [];
-	var mLimit = 24;
+	var mLimit = 32;
 	for ( var i = 0; i < notes.length; i++ ) {
 		if ( mLimit <= 0 ) { break; }
 		if ( notes[i].note == null ) { continue; }
 		mLimit -= notes[i].time;
 		finalNotes.push( notes[i] );
 	}
+
+	// finalNotes = applyRhythm( finalNotes, euclid( 3, 8 ) );
 
 	// Print final note sequence
 	var debug = [];
@@ -56,9 +60,9 @@ function createMelodicContour( seed, range ) {
 	//
 	if (seed % 2 == 0) {
 		// Subsample a smoothed contour
-		var contour = Smooth1DNoise( range, 0.1, 200 );
+		var contour = Smooth1DNoise( Math.round( range * 0.8 ) , 0.03, 200 );
 		var subsampledContour = [];
-		for ( var i = 0; i < contour.length; i+=4 ) {
+		for ( var i = 0; i < contour.length; i+=10 ) {
 			subsampledContour.push(Math.floor( contour[i] ));
 		}
 
@@ -150,20 +154,23 @@ function rhythmicConversion( rhythm ) {
 	// 2. Convert all 1,0 into 2, unless previous value was a 2
 
 	var newRhythm = [], i = 0;
-	while ( i < rhythm.length - 1 ) {
-		// Check for 1,1,1
-		if ( rhythm[i] == 1 && rhythm[i+1] == 1 ) {
-			newRhythm.push( 1 );
-			newRhythm.push( 1 );
-			i+=2;
-		} else if ( rhythm[i] == 1 && rhythm[i+1] == 0 ) {
-			newRhythm.push( 2 );
-			i+=2;
-		} else {
-			newRhythm.push( rhythm[i] );
-			i++;
-		}
+	// while ( i < rhythm.length - 1 ) {
+	// 	// Check for 1,1,1
+	// 	if ( rhythm[i] == 1 && rhythm[i+1] == 1 ) {
+	// 		newRhythm.push( 1 );
+	// 		newRhythm.push( 1 );
+	// 		i+=2;
+	// 	} else if ( rhythm[i] == 1 && rhythm[i+1] == 0 ) {
+	// 		newRhythm.push( 2 );
+	// 		i+=2;
+	// 	} else {
+	// 		newRhythm.push( rhythm[i] );
+	// 		i++;
+	// 	}
 
+	// }
+	for ( var i = 0; i < rhythm.length; i++ ) {
+		newRhythm.push( rhythm[i] == 1 ? 1:-1 );
 	}
 
 	return newRhythm;
