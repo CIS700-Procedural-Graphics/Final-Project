@@ -5,11 +5,11 @@ import euclid from './../utils/euclid.js'
 
 
 export default function generateMelody( scaleNote, randomVar ) {
-	var s = tonal.scale.get('ionian pentatonic', scaleNote);
+	var s = tonal.scale.get('major', scaleNote);
 	
 
-	var sO = tonal.note.fromMidi( tonal.note.midi( scaleNote ) - 12 );
-	s = tonal.scale.get( 'ionian pentatonic', sO ).concat( s );
+	// var sO = tonal.note.fromMidi( tonal.note.midi( scaleNote ) - 12 );
+	// s = tonal.scale.get( 'major pentatonic', sO ).concat( s );
 
 	var melodyLine = createMelodicContour( 2, s.length );
 	console.log( melodyLine )
@@ -20,7 +20,7 @@ export default function generateMelody( scaleNote, randomVar ) {
 	}
 
 	notes = applyRhythm( notes, euclid( 3, 8 ) );
-	notes = variateMelody( notes );
+	notes = variateMelody( notes, s );
 
 	// Remove any nulls
 	for ( var i = 0; i < notes.length; i++ ) {
@@ -29,19 +29,24 @@ export default function generateMelody( scaleNote, randomVar ) {
 		}
 	}
 
+	// Limit length of melody
+	var finalNotes = [];
+	var mLimit = 24;
+	for ( var i = 0; i < notes.length; i++ ) {
+		if ( mLimit <= 0 ) { break; }
+		if ( notes[i].note == null ) { continue; }
+		mLimit -= notes[i].time;
+		finalNotes.push( notes[i] );
+	}
+
 	// Print final note sequence
 	var debug = [];
-	for ( var i = 0; i < notes.length; i++ ) {
-		debug.push( notes[i].note );
+	for ( var i = 0; i < finalNotes.length; i++ ) {
+		debug.push( finalNotes[i].note );
 	}
 	console.log( debug )
 
-	// concat for now
-	for ( var i = 1; i < 4; i++ ) {
-		notes = notes.concat(notes);
-	}
-
-	return notes;
+	return finalNotes;
 }
 
 function createMelodicContour( seed, range ) {
@@ -51,7 +56,7 @@ function createMelodicContour( seed, range ) {
 	//
 	if (seed % 2 == 0) {
 		// Subsample a smoothed contour
-		var contour = Smooth1DNoise( range, 0.08, 200 );
+		var contour = Smooth1DNoise( range, 0.1, 200 );
 		var subsampledContour = [];
 		for ( var i = 0; i < contour.length; i+=4 ) {
 			subsampledContour.push(Math.floor( contour[i] ));
@@ -174,7 +179,7 @@ function rhythmSum( rhythm ) {
 	return v;
 }
 
-function variateMelody( melody ) {
+function variateMelody( melody, scale ) {
 	// Let's assume we have a rhythmic melody and assume that the melody 
 	// parameter here represents 1 repeat of the theme.
 	// Then, we add some variations to the music.
@@ -211,7 +216,7 @@ function variateMelody( melody ) {
 
 		var r = Math.random();
 		if ( r > 0.3 ) {
-			var note = tonal.transpose( tonal.note.fromMidi( melody[i].note ), 'm3' );
+			var note = scale[Math.floor( Math.random() * scale.length )];
 			if ( melody[i].time == 2 ) { melody[i].time = 1; }
 			melody.splice( i, 0, {note: tonal.note.midi( note ), time: 1} );
 			numFlair++;

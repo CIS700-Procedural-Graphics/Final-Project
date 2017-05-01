@@ -2,17 +2,12 @@ import Soundfont from 'soundfont-player'
 
 // Local imports
 import euclid from './utils/euclid.js'
-import {beatGenerator,
-		MorseThue,
-		melodyGenerator,
-		rhythmicMelodyGenerator,
-		EarthWorm,
-		noteBeats} from './music/musicGenerator.js'
 
 import {patternedMelody,
 		createMainTheme,
 		createMelody} from './music/musicMotifs.js'
 import generateMelody from './music/melody.js'
+import generateBass from './music/bass.js'
 
 
 export default class MusicBox {
@@ -23,11 +18,13 @@ export default class MusicBox {
 	// Private functions
 	_init() {
 		this.instruments = [null,null,null];
-		this.noise = [0.7, 0.5, 0.3];
+		this.noise = [0.7, 0.5, 1];
 	}
 
 	_setInstrument( instrumentName, ac, type ) {
-		var instrument = Soundfont.instrument(ac, instrumentName, { soundfont: 'MusyngKite', gain: 1 });
+		var instrument = Soundfont.instrument(ac, instrumentName, { soundfont: 'MusyngKite',
+																	gain: 1,
+																	adsr: [0, 0, 0, 0] });
 		var detailedInstrument = {
 			'instrument':  instrument,
 			'ac' 		: ac,
@@ -36,7 +33,8 @@ export default class MusicBox {
 			'notes'     : [],
 			'time'		: [],
 			'played'	: [],
-			'start'		: false
+			'start'		: false,
+			'repeat'	: true
 		};
 		this.instruments[type] = detailedInstrument;
 	}
@@ -46,6 +44,11 @@ export default class MusicBox {
 
 		// Don't play if nothing has been created.
 		if ( instrument.notes.length == 0) { return; }
+
+		// Check for repeats
+		if ( instrument.repeat ) {
+
+		}
 
 		// Case where music is starting
 		if ( !instrument.start ) {
@@ -77,11 +80,16 @@ export default class MusicBox {
 
 			// Loop over each music line
 			for ( var i = 0; i < instrument.notes.length; i++) {
-				if (!instrument.played[i]) { continue; }
+				if ( !instrument.played[i] ) { continue; }
+				if ( instrument.repeat && instrument.noteCount[i] >= instrument.notes[i].length ) {
+					instrument.noteCount[i] = 0;
+				}
 
+				var prevNote = ( instrument.noteCount[i] - 1 < 0 ) ? instrument.notes[i].length - 1 : instrument.noteCount[i] - 1;
 				var delta = (time - instrument.time[i]) / 1000;
-				if (delta > instrument.notes[i][instrument.noteCount[i]-1].time * instrument.noteLength &&
+				if (delta > instrument.notes[i][prevNote].time * instrument.noteLength &&
 					instrument.noteCount[i] < instrument.notes[i].length) {
+					instrument.played[i] = false;
 					instrument.instrument.then((function(index, instr) {
 
 						if (instrument.notes[index][instrument.noteCount[index]].note > 0) {
@@ -124,9 +132,11 @@ export default class MusicBox {
 	// Functions for bass line
 	createBassLine() {
 		this._clearGeneratedMusic( 2 );
-		this.instruments[2].notes.push(beatGenerator( euclid(2,8), 180, 400, 'F3' ));
-		this.instruments[2].notes.push(beatGenerator( euclid(9,12), 120, 400, 'C4' ));
-		this.instruments[2].notes.push(beatGenerator( euclid(7,15), 180, 400, 'D2' ));
+		// this.instruments[2].notes.push(beatGenerator( euclid(2,8), 180, 400, 'F3' ));
+		// this.instruments[2].notes.push(beatGenerator( euclid(9,12), 120, 400, 'C4' ));
+		// this.instruments[2].notes.push(beatGenerator( euclid(7,15), 180, 400, 'D2' ));
+		this.instruments[2].notes.push(generateBass( 1, 4 ));
+		this.instruments[2].notes.push(generateBass( 2, 8 ));
 	}
 
 	playBassLine( time, callback ) {
@@ -146,7 +156,7 @@ export default class MusicBox {
 	// Functions for the melody
 	createMelodyLine() {
 		this._clearGeneratedMusic( 0 );
-		this.instruments[0].notes.push(generateMelody( 'F4', 1 ));
+		this.instruments[0].notes.push(generateMelody( 'C3', 1 ));
 	}
 
 	playMelody( time, callback ) {
