@@ -57,23 +57,6 @@ export var water_mat = {
   fragmentShader: require('./shaders/water-frag.glsl')
 };
 
-export var ground_mat = {
-  uniforms: {
-    time: {value: new Date().getMilliseconds()},
-    amplitude: {value: 0.8},
-    frequency: {value: 2.0},
-    num_octaves: {value: 5},
-    bcolor: {value: [0,128/255, 0]},
-    rcolor: {value: [25/255, 25/255,112/255]},
-    tcolor: {value: [205/255,133/255,63/255]},
-    grads: {type: 'vec3', value: [new THREE.Vector3(1,1,0), new THREE.Vector3(-1,1,0), new THREE.Vector3(1,-1,0),        new THREE.Vector3(-1,-1,0), new THREE.Vector3(1,0,1), new THREE.Vector3(-1,0,1), new THREE.Vector3(1,0,-1), 
-      new THREE.Vector3(-1,0,-1), new THREE.Vector3(0,1,1), new THREE.Vector3(0,-1,1), new THREE.Vector3(0,1,-1), 
-      new THREE.Vector3(0,-1,-1)]}
-    },
-  vertexShader: require('./shaders/ground-vert.glsl'),
-  fragmentShader: require('./shaders/ground-frag.glsl')
-};
-
 export var sky_mat = {
   uniforms: {
     time: {value: new Date().getMilliseconds()},

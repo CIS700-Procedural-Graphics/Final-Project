@@ -1,3 +1,5 @@
+// basic textured lambert shader
+
 uniform sampler2D texture;
 uniform vec3 u_lightPos;
 

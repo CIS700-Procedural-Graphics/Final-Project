@@ -10,7 +10,6 @@ varying vec2 f_uv;
 varying vec3 f_normal;
 varying vec3 f_position;
 
-// uv, position, projectionMatrix, modelViewMatrix, normal
 void main() {
     f_uv = uv;
     f_normal = normal;
