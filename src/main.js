@@ -212,7 +212,7 @@ function onLoad(framework) {
 	// RENDERER
 
 	// Initialize music instruments
-	musicPlayer.setMelodicInstrument( 'pad_3_polysynth', ac );
+	musicPlayer.setMelodicInstrument( 'acoustic_grand_piano', ac );
 	musicPlayer.setHarmonicInstrument( 'acoustic_grand_piano', ac );
 	musicPlayer.setBassInstrument( 'acoustic_bass', ac );
 

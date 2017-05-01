@@ -23,7 +23,7 @@ export default class MusicBox {
 	// Private functions
 	_init() {
 		this.instruments = [null,null,null];
-		this.noise = [0.7, 0.5, 0.5];
+		this.noise = [0.7, 0.5, 0.3];
 	}
 
 	_setInstrument( instrumentName, ac, type ) {
@@ -146,7 +146,7 @@ export default class MusicBox {
 	// Functions for the melody
 	createMelodyLine() {
 		this._clearGeneratedMusic( 0 );
-		this.instruments[0].notes.push(generateMelody( 'F5', 1 ));
+		this.instruments[0].notes.push(generateMelody( 'F4', 1 ));
 	}
 
 	playMelody( time, callback ) {
