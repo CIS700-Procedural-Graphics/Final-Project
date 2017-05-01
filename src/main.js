@@ -21,7 +21,7 @@ var variables = {
 
   // spline
   spline : null,
-  smoothness : 0,
+  smoothness : 0.5,
   jitter : 50, 
   path_radius : 50, 
   num_points : 25

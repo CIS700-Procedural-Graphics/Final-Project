@@ -19,11 +19,21 @@ spherical map
 
 ### Camera
 
-| <img src="/images/map1.png" width="250"> | <img src="/images/map2.png" width="250"> |  <img src="/images/map3.png" width="250"> |
+The camera and canyon are closely tied together because the camera can only move through empty space in the canyon (aka not move through rocks), so the implementations had to be connected. I decided to first define a camera animation along a closed spline. I could have first started with defining the canyon gorge layout and then add the camera movement inside, but this seemed more difficult to me because if I laid spline knots in the gorge, I could not be guaranteed that all interpolated spline points would remain in the gorge. I chose a spline because I wanted to have a continuous animation, which I could achieved with a closed loop, but I also wanted the path to twist and turn so as not to be an obvious circle. By offsetting the knot points pseudo-randomly, I am able to perturb the path just enough to appear random but not too jerky, since it is still controlled by a smooth curve. Below are some examples of the generated splines. 
+
+<img src="/images/map1.png" width="250"> <img src="/images/map2.png" width="250"> <img src="/images/map3.png" width="250"> 
+
+While the paths appear relatively circular, the terrain is large enough that the circular nature is not noticed. The spline is controlled by a smoothness factor along with a maximum radius which insures that the spline fits within the terrain plane and that the spline never gets too close to the edge so that it always has a canyon wall. The smoothness parameter controls how much each subsequent spline know can change in radial distance from the previous. When smoothness = 0, the spline is a circle and when smoothness = 1, the spline can flucuate as much as half its maximum radius between know points. Any more perturbation would cause the camera to jerk since the spline points become less smooth.
 
 ### Canyon
 
-| <img src="/images/los-res.png" width="250"> | <img src="/images/no-gaussian.png" width="250"> |  <img src="/images/no-widen.png" width="250"> | <img src="/images/no-widen.png" width="250"> |
+
+
+| Low Resolution  | High Resolution | Gaussian Blur | Widened |
+| -----------| ---------- | ------- | ------- |
+| <img src="/images/los-res.png" width="200"> | <img src="/images/no-gaussian.png" width="200"> | <img src="/images/no-widen.png" width="200"> | <img src="/images/widen.png" width="200"> |
+
+
 
 <img src="/images/terrain2.png" width="250">
 
@@ -36,7 +46,9 @@ Rain dynamics are pretty simple. Originally each rain droplet fell at a constant
 
 Particle systems can be quite costly. In order to keep the simulation at runtime, I used the same terrain map generated from the camera spline to spawn particles. Particles are only created within the confines of the gorge. Once the particles reach y = 0, their position and velocity are reset to their original - or similar - values (saved in the particle struct). The droplets were drawn with THREE.LineSegments such that the endpoints were the particle's position and small offset from this position in the velocity direction. This creates a constant number of particles in a looped cloud (Figure 1). The problem with this approach is that all the line segment in the THREE geometry have the same thickness and random length. There is not way to attentuate based on distance from the camera.
 
-| <img src="/images/raincloud.png" width="250"> | Particle systems can be quite costly. In order to keep the simulation at runtime, I used the same terrain map generated from the camera spline to spawn particles. Particles are only created within the confines of the gorge. Once the particles reach y = 0, their position and velocity are reset to their original - or similar - values (saved in the particle struct). The droplets were drawn with THREE.LineSegments such that the endpoints were the particle's position and small offset from this position in the velocity direction. This creates a constant number of particles in a looped cloud (Figure 1). The problem with this approach is that all the line segment in the THREE geometry have the same thickness and random length. There is not way to attentuate based on distance from the camera. |
+Particle systems can be quite costly. In order to keep the simulation at runtime, I used the same terrain map generated from the camera spline to spawn particles. Particles are only created within the confines of the gorge. Once the particles reach y = 0, their position and velocity are reset to their original - or similar - values (saved in the particle struct). The droplets were drawn with THREE.LineSegments such that the endpoints were the particle's position and small offset from this position in the velocity direction. This creates a constant number of particles in a looped cloud (Figure 1). The problem with this approach is that all the line segment in the THREE geometry have the same thickness and random length. There is not way to attentuate based on distance from the camera. 
+
+<img src="/images/raincloud.png" width="250">
 
 The next rain effect I implemented was the rain hitting the water. I do not handle rain hitting the canyon walls because the effect is less noticeable at the grazing angle the rain hits the walls. Going with the overall theme of "effects created with noise functions", I first created small splashes on the water with high frequency perlin noise, coloring pixels above a certain threshold in the water's fragment shader. Once again, this effect was okay, but slightly off because the spots on the water surface were not always circular and because rather than appear and fade away, the spots seemed to morph together and away (Figure 2).  
 
@@ -63,12 +75,9 @@ I did not like the effect the music frequency had in my scene. I set the frequen
 
 ## Future Work
 
-* camera movement within the scene
-* change weather from sunny to rainy and back
-* smoother camera movements  
-* ambient occlusion as post processing effect
-
-
+* Camera Movement: I would like to improve the interactivity beyond just the viewpoint toggle. Instead of animating the camera along a spline, the user could move anywhere within the widened spline loop area and look around the scene. When that gets boring, the camera would move back to the spline animation. 
+* Changing Weather: The simulation started as a sunny canyon environment until I added the rain particles. It would be cool for the simulation to smoothly change from sunny to rainy to stormy, etc. The problem with this now is dynamically adding particles to the system.  
+* Ambient Occlusion: Since this project achieves all effects without light, an ambient occlusion post processing effect could really improve the quality of the final render. Ambitious me thought [this][3] would be really cool, but I did not have enough time to understand and implement.
 
 
 ## Acknowledgements
@@ -80,3 +89,4 @@ I did not like the effect the music frequency had in my scene. I set the frequen
 
 [1]: https://vimeo.com/88946422
 [2]: http://www.iquilezles.org/www/articles/fog/fog.htm
+[3]: http://www.iquilezles.org/www/articles/multiresaocc/multiresaocc.htm

@@ -11,7 +11,7 @@ function distribution(previous, radius, smoothness)
 	// var delta = Math.random();
 	// var r += Math.min(smoothness, delta);
 	// return Math.min(r, radius);
-	return Math.min(radius, previous + (Math.random() - 0.5) * 10);
+	return Math.min(radius, previous + (Math.random() - 0.5) * (1 - smoothness) * radius);
 }
 
 function clamp(x, min, max) {
