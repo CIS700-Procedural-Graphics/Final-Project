@@ -18,12 +18,11 @@ spherical map
 <img src="/images/sky.png" width="250">
 
 ### Camera
-| ---------- | ------- | ------- |
+
 | <img src="/images/map1.png" width="250"> | <img src="/images/map2.png" width="250"> |  <img src="/images/map3.png" width="250"> |
 
 ### Canyon
 
-| ---------- | ------- | ------- | ------- |
 | <img src="/images/los-res.png" width="250"> | <img src="/images/no-gaussian.png" width="250"> |  <img src="/images/no-widen.png" width="250"> | <img src="/images/no-widen.png" width="250"> |
 
 <img src="/images/terrain2.png" width="250">
@@ -37,7 +36,7 @@ Rain dynamics are pretty simple. Originally each rain droplet fell at a constant
 
 Particle systems can be quite costly. In order to keep the simulation at runtime, I used the same terrain map generated from the camera spline to spawn particles. Particles are only created within the confines of the gorge. Once the particles reach y = 0, their position and velocity are reset to their original - or similar - values (saved in the particle struct). The droplets were drawn with THREE.LineSegments such that the endpoints were the particle's position and small offset from this position in the velocity direction. This creates a constant number of particles in a looped cloud (Figure 1). The problem with this approach is that all the line segment in the THREE geometry have the same thickness and random length. There is not way to attentuate based on distance from the camera.
 
-![Figure 1](./images/raincloud.png)
+| <img src="/images/raincloud.png" width="250"> | Particle systems can be quite costly. In order to keep the simulation at runtime, I used the same terrain map generated from the camera spline to spawn particles. Particles are only created within the confines of the gorge. Once the particles reach y = 0, their position and velocity are reset to their original - or similar - values (saved in the particle struct). The droplets were drawn with THREE.LineSegments such that the endpoints were the particle's position and small offset from this position in the velocity direction. This creates a constant number of particles in a looped cloud (Figure 1). The problem with this approach is that all the line segment in the THREE geometry have the same thickness and random length. There is not way to attentuate based on distance from the camera. |
 
 The next rain effect I implemented was the rain hitting the water. I do not handle rain hitting the canyon walls because the effect is less noticeable at the grazing angle the rain hits the walls. Going with the overall theme of "effects created with noise functions", I first created small splashes on the water with high frequency perlin noise, coloring pixels above a certain threshold in the water's fragment shader. Once again, this effect was okay, but slightly off because the spots on the water surface were not always circular and because rather than appear and fade away, the spots seemed to morph together and away (Figure 2).  
 
