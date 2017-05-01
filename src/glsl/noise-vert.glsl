@@ -1,7 +1,7 @@
-varying vec3 vNormal;
 uniform float time;
-varying vec3 perlin_color;
 
+varying vec3 vNormal;
+varying vec3 perlin_color;
 varying vec3 frag_Pos;
 
 // uniform float num_octaves;
@@ -113,30 +113,39 @@ float perlinNoise(float x, float y, float z)
     return noise_total;
 }
 
+vec3 calculateNormal(vec3 point)
+{
+  vec3 grad = vec3(0.0, 0.0, 0.0);
+  float offset = 0.01;
+
+  vec3 p1x = vec3(point.x + offset, point.y, point.z);
+  vec3 p2x = vec3(point.x - offset, point.y, point.z);
+  grad.x = perlinNoise(p1x.x, p1x.y, p1x.z) - perlinNoise(p2x.x, p2x.y, p2x.z);
+
+  vec3 p1y = vec3(point.x, point.y + offset, point.z);
+  vec3 p2y = vec3(point.x, point.y - offset, point.z);
+  grad.y = perlinNoise(p1y.x, p1y.y, p1y.z) - perlinNoise(p2y.x, p2y.y, p2y.z);
+
+  vec3 p1z = vec3(point.x, point.y, point.z + offset);
+  vec3 p2z = vec3(point.x, point.y, point.z - offset);
+  grad.y = perlinNoise(p1z.x, p1z.y, p1z.z) - perlinNoise(p2z.x, p2z.y, p2z.z);
+
+  return normalize(grad);
+}
+
 
 void main() {
-
-    //to send to frag shader
-    vNormal = normal;
-    frag_Pos = position;
-
-
 
     float height = 5.0;
     float noise_output = height * perlinNoise(position.x, position.y, position.z);
 
-    // float noise_output = perlinNoise(position.x + sin(time), position.y + sin(time), position.z + sin(time));
-
-    //other calls to perlin that produce interesting results
-    //0.5 * perlinNoise(position.x + sin(time), position.y + sin(time), position.z + sin(time)) + 0.5;  //this will make it more gaseous like
-    //perlinNoise(position.x + sin(time), position.y + sin(time), position.z + sin(time))   //taking sin of time will make it look like rewinding back
-    //perlinNoise(position.x * sin(time) * 4.0, position.y * time * 4.0, position.z + sin(time) * 4.0);
-
+    //to send to frag shader - calculate post-noise normal and position
+    vNormal = calculateNormal(normal);  //normal;
+    frag_Pos = vec3(noise_output);  //position;
     perlin_color = vec3(noise_output);
-
 
     //change position of mesh based on perlin output
     vec3 new_pos = position;
-    new_pos = new_pos + (vNormal * 0.5 * noise_output);
+    new_pos = new_pos + (normal * 0.5 * noise_output);    //(vNormal * 0.5 * noise_output);
     gl_Position = projectionMatrix * modelViewMatrix * vec4( new_pos, 1.0 );
 }

@@ -8,13 +8,10 @@ var VISUAL_DEBUG = true;
 
 // ================================================ SHADERS ================================================ //
 const LAMBERT_WHITE = new THREE.MeshLambertMaterial({ color: 0xeeeeee });
-
 const LAMBERT_GREEN = new THREE.MeshLambertMaterial({ color: 0xeeeeee, side: THREE.DoubleSide});
 //const LAMBERT_GREEN = new THREE.MeshBasicMaterial( { color: 0x00ee00, transparent: false, opacity: 0.75, side: THREE.DoubleSide });
 const WIREFRAME_MAT = new THREE.LineBasicMaterial( { color: 0xffffff, linewidth: 10 } );
-
 const LAMBERT_BLUE = new THREE.MeshBasicMaterial( { color: 0x0000ee, transparent: false, opacity: 0.75, side: THREE.DoubleSide });
-
 //const TOON = toonShader(2.5);
 
 var options = {
@@ -37,6 +34,36 @@ const IRIDESCENCE = new THREE.ShaderMaterial({
   fragmentShader: require('./glsl/iridescent-frag.glsl')
 });
 
+// =========================================== Metaball material ===========================================
+var textureLoaded = new Promise((resolve, reject) => {
+    (new THREE.TextureLoader()).load(require('./assets/water.bmp'), function(texture) {
+        resolve(texture);
+    })
+})
+
+var metaballMaterialOptions = {
+    useTexture: true
+}
+
+const METABALLMATERIAL = new THREE.ShaderMaterial({
+  uniforms: {
+    texture: {
+        type: "t",
+        value: null
+    },
+    u_useTexture: {
+        type: 'i',
+        value: metaballMaterialOptions.useTexture
+    }
+  },
+  vertexShader : require('./glsl/metaball-vert.glsl'),
+  fragmentShader : require('./glsl/metaball-frag.glsl')
+});
+
+// once the Mario texture loads, bind it to the material
+textureLoaded.then(function(texture) {
+    METABALLMATERIAL.uniforms.texture.value = texture;
+});
 
 // ================================================ MARCHING CUBE CLASS ================================================ //
 export default class MarchingCubes {
@@ -76,7 +103,7 @@ export default class MarchingCubes {
     this.balls = [];
 
     //CREATING MESH OBJECT MEMBER VARIABLE
-    this.meshGeom = new THREE.Mesh( new THREE.Geometry(), LAMBERT_GREEN);
+    this.meshGeom = new THREE.Mesh( new THREE.Geometry(), METABALLMATERIAL);//LAMBERT_GREEN);
 
 
     //max number of metaballs
@@ -452,7 +479,7 @@ export default class MarchingCubes {
   makeMesh() {
     // @TODO
 
-    this.meshGeom = new THREE.Mesh( new THREE.Geometry(), LAMBERT_GREEN);
+    this.meshGeom = new THREE.Mesh( new THREE.Geometry(), METABALLMATERIAL);//LAMBERT_GREEN);
     this.meshGeom.dynamic = true;
     this.scene.add(this.meshGeom);
   };//end makeMesh

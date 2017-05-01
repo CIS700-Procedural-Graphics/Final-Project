@@ -20,8 +20,7 @@ var water;
 var time_update = 0.0;
 var start = Date.now();
 
-
-//create ground plane
+// =========================================== Ground Plane ===========================================
 var gridDim = 100;
 var terrainGeo = new THREE.PlaneGeometry( gridDim, gridDim, gridDim, gridDim); //width, height, widthSegments, heightSegments
 terrainGeo.rotateX(-Math.PI / 2.0);  //make the grid flat
@@ -42,6 +41,7 @@ terrainMesh.translateZ(-10);
 terrainMesh.translateY(3);
 
 
+// =========================================== Application Variables ===========================================
 const DEFAULT_VISUAL_DEBUG = false; //true;
 const DEFAULT_ISO_LEVEL = 1.0;
 const DEFAULT_GRID_RES = 15;//12;//12;//4;  //32 should make it look real nice and smooth
@@ -95,6 +95,7 @@ var App = {
   isPaused:         false
 };
 
+// =========================================== On load function ===========================================
 // called after the scene loads
 function onLoad(framework) {
 
@@ -123,6 +124,7 @@ function onLoad(framework) {
 
 }//end onload
 
+// =========================================== On update function ===========================================
 // called on frame updates
 function onUpdate(framework) {
 
@@ -142,6 +144,7 @@ function onUpdate(framework) {
 
 }//end onUpdate
 
+// =========================================== On load helper functions ===========================================
 function setupCamera(camera) {
   // set camera position
   //camera.position.set(5, 5, 30);
@@ -277,6 +280,20 @@ function setupWater(scene, renderer, camera){
 //       scene.add(mesh);
 //   });
 // }
+
+//MAY TRY THIS CODE BELOW INSTEAD?
+// export var objLoaded = new Promise((resolve, reject) => {
+//     (new THREE.OBJLoader()).load(require('./assets/wahoo.obj'), function(obj) {
+//         var geo = obj.children[0].geometry;
+//         geo.computeBoundingSphere();
+//         resolve(geo);
+//     });
+// })
+
+
+// =========================================== Perlin Noise Functions ===========================================
+
+
 
 // when the scene is done initializing, it will call onLoad, then on frame updates, call onUpdate
 Framework.init(onLoad, onUpdate);
