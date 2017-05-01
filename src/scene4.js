@@ -1,5 +1,6 @@
 const THREE = require('three'); // older modules are imported like this. You shouldn't have to worry about this much
 const Mirror = require('./Mirror')
+const MeshLine = require( 'three.meshline' );
 
 
 // Each scene uses the following API:
@@ -59,14 +60,17 @@ function initScene(framework, visualConfig) {
 
 
     var skyboxGeo = new THREE.BoxGeometry( 1000,1000,1000 );
-    var skyboxMat = new THREE.MeshBasicMaterial( { color: 0x888888, side: THREE.DoubleSide } );
+    var skyboxMat = new THREE.MeshBasicMaterial( { color: 0x333333, side: THREE.DoubleSide } );
     var skyboxMesh = new THREE.Mesh( skyboxGeo, skyboxMat );
     skyboxMesh.position.set(0,0,0);
     scene.add(skyboxMesh);
 
+    scene.fog=new THREE.FogExp2( 0x663333, 0.015 );
+
     visualConfig.sceneProps = {
       bouys: [],
-      particles: []
+      particles: [],
+      lightning: []
     };
     visualConfig.sceneReady = true;
 }
@@ -84,9 +88,17 @@ function updateScene(framework, visualConfig, delta) {
 
   if (visualConfig.sceneReady) {
 
-    groundMirror.render();
 
-    renderer.render( scene, lakeCamera, renderTarget, true );
+    // Lightning
+    for (var i = 0; i < visualConfig.sceneProps.lightning.length; i++) {
+      visualConfig.sceneProps.lightning[i].update(delta);
+      visualConfig.sceneProps.lightning[i].update(delta);
+      visualConfig.sceneProps.lightning[i].update(delta);
+      visualConfig.sceneProps.lightning[i].update(delta);
+      visualConfig.sceneProps.lightning[i].update(delta);
+      visualConfig.sceneProps.lightning[i].update(delta);
+      visualConfig.sceneProps.lightning[i].update(delta);
+    }
 
     for (var i = 0; i < visualConfig.sceneProps.bouys.length; i++) {
       var bouy = visualConfig.sceneProps.bouys[i];
@@ -108,6 +120,11 @@ function updateScene(framework, visualConfig, delta) {
       particle.update(delta);
     }
     lakeMat.uniforms.time.value += delta;
+
+    groundMirror.render();
+
+    renderer.render( scene, lakeCamera, renderTarget, true );
+
   }
 }
 
@@ -131,7 +148,7 @@ function genBouy(scene) {
     name: mesh.name,
     mass: 1000,
     pos: pos,
-    vel: new THREE.Vector3( 0,0,-10 ),
+    vel: new THREE.Vector3( 0,0,-5 ),
     t: Math.random(),
     update: function(delta) {
       this.t += delta;
@@ -141,6 +158,56 @@ function genBouy(scene) {
     }
   };
 }
+
+
+
+function genLightning(scene) {
+  var pos = new THREE.Vector3( (Math.random()-0.5) * 500, 200, Math.random() * 10 + 100);
+  var meshLine = new MeshLine.MeshLine();
+  var meshLineGeo = new THREE.Geometry();
+	for (var i = 0; i < 100; i++) {
+		meshLineGeo.vertices.push(pos);
+	}
+  meshLine.setGeometry( meshLineGeo,  function( p ) { return p; }  );
+
+  var meshLineMat = new MeshLine.MeshLineMaterial( {
+						color: new THREE.Color( "rgb(233, 255, 0)" ),
+						opacity: 1,
+						resolution: new THREE.Vector2( window.innerWidth, window.innerHeight ),
+						sizeAttenuation: 10,
+						lineWidth: 20,
+						near: 1,
+						far: 100000,
+						depthTest: true,
+						blending: THREE.AdditiveBlending,
+						transparent: false,
+						side: THREE.DoubleSide
+					});
+  var meshLineMesh = new THREE.Mesh( meshLine.geometry, meshLineMat ); // this syntax could definitely be improved!
+  meshLineMesh.frustumCulled = false;
+
+  scene.add(meshLineMesh);
+
+  return {
+    meshLine: meshLine,
+    pos: pos,
+    vel: new THREE.Vector3( (Math.random()-0.5) * 200,(Math.random()-1) * 500,(Math.random()-0.5) * 200  ),
+    acc: new THREE.Vector3( 0,0,0 ),
+    lastChange: 0,
+    update(delta) {
+
+      if (Math.random() < 0.5) {
+        this.vel = new THREE.Vector3( (Math.random()-0.5) * 200,(Math.random()-1) * 500,(Math.random()-0.5) * 200  );
+      }
+
+      this.vel = this.vel.clone().add(this.acc.clone().multiplyScalar(delta));
+      this.pos = this.pos.clone().add(this.vel.clone().multiplyScalar(delta));
+
+      this.meshLine.advance(this.pos);
+    }
+  };
+}
+
 
 
 function genParticle(scene) {
@@ -166,6 +233,7 @@ function bassCallback(framework, visualConfig) {
 
 function melodyCallback(framework, visualConfig) {
   visualConfig.sceneProps.particles.push(genParticle(framework.scene));
+  visualConfig.sceneProps.lightning.push(genLightning(framework.scene));
 }
 
 function changeTrigger(visualConfig) {
