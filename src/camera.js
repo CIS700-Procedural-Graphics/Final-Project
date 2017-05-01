@@ -96,6 +96,19 @@ export function makeSpline(radius, num, smoothness)
   return spline;
 }
 
+export function makeCircle(radius, num) {
+  var randomPoints = [];
+  var two_pi = 2 * Math.PI;
+  var r = radius / 2;
+  for ( var i = 0; i < two_pi; i += two_pi/num ) {
+  	var point = new THREE.Vector3(r * Math.cos(i) + radius, 25, r * Math.sin(i) + radius);
+    randomPoints.push(point);
+  }
+  var spline = new THREE.CatmullRomCurve3(randomPoints);
+  spline.closed = true;
+  return spline;
+}
+
 export function makeSplineTexture(spline, radius, w, h) 
 {
 	var r2 = 2 * radius;
@@ -123,23 +136,37 @@ export function makeSplineTexture(spline, radius, w, h)
 	return data4;
 }
 
-export function updateCamera(viewpoint, camera, spline, camPosIndex, boat) 
+export function updateCamera(viewpoint, camera, spline, circle, camPosIndex, boat) 
 {
       
-      var camPos = spline.getPoint(camPosIndex / 10000);
-      var camRot = spline.getTangent(camPosIndex / 10000);
+      var boatPos = spline.getPoint(camPosIndex / 10000);
+      var boatRot = spline.getTangent(camPosIndex / 10000);
 
-      camera.position.x = camPos.x; 
-      camera.position.y = (viewpoint) ? camPos.y + 20 : camPos.y; 
-      camera.position.z = camPos.z; 
+      if (viewpoint) {
+      	var camPos = circle.getPoint(camPosIndex / 10000);
+      	var camRot = circle.getTangent(camPosIndex / 10000);
+      	camera.position.x = camPos.x; 
+      	camera.position.y = camPos.y; 
+      	camera.position.z = camPos.z; 
 
-      camera.rotation.x = camRot.x;
-      camera.rotation.y = camRot.y; 
-      camera.rotation.z = camRot.z; 
+      	camera.rotation.x = camRot.x;
+      	camera.rotation.y = camRot.y; 
+      	camera.rotation.z = camRot.z; 
+      } else {
+      	camera.position.x = boatPos.x; 
+      	camera.position.y = boatPos.y; 
+      	camera.position.z = boatPos.z; 
+
+      	camera.rotation.x = boatRot.x;
+      	camera.rotation.y = boatRot.y; 
+      	camera.rotation.z = boatRot.z; 
+      }
+
+      
 
       if (boat != null) {
-      	boat.position.x = camPos.x; boat.position.y = camPos.y - 1; boat.position.z = camPos.z;
-      	boat.rotation.y = Math.atan2(camRot.x, camRot.z);
+      	boat.position.x = boatPos.x; boat.position.y = boatPos.y - 1; boat.position.z = boatPos.z;
+      	boat.rotation.y = Math.atan2(boatRot.x, boatRot.z);
       	// perlin rotation x, z
       	boat.geometry.verticesNeedUpdate = true;
       }

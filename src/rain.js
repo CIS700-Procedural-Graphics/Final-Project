@@ -28,7 +28,7 @@ export default class ParticleSystem {
         vertices.setXYZ( 2, 0, 0, 0.025 );
       rain_geo.addAttribute( 'position', vertices );
 
-      var offsets = new THREE.InstancedBufferAttribute( new Float32Array( this.width * this.height * this.depthy * 3 ), 3, 1 );
+      var offsets = new THREE.InstancedBufferAttribute( new Float32Array( this.width * this.height * this.depth * 3 ), 3, 1 );
       offsets.dynamic = true;
       var count = 0;
       for (var i = 0; i < this.width; i++) {
@@ -51,7 +51,7 @@ export default class ParticleSystem {
       var rain_material = new THREE.ShaderMaterial(rain_mat);
 
       this.rain = new THREE.Mesh( rain_geo, rain_material ); // define mesh 
-      this.rain.geometry.verticesNeedUpdate = true;
+      // this.rain.geometry.verticesNeedUpdate = true;
 
       this.scene.add( this.rain );
     }

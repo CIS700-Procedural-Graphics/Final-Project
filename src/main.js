@@ -3,7 +3,7 @@ const OrbitControls = require('three-orbit-controls')(THREE)
 require('three-obj-loader')(THREE)
 
 import Framework from './framework'
-import {updateCamera, makeSpline, makeSplineTexture} from './camera'
+import {updateCamera, makeSpline, makeCircle, makeSplineTexture} from './camera'
 import {initSceneGeo, updateRocks} from './geometry'
 import {canyon_mat, water_mat, sky_mat, rock_mat, boat_mat, rain_mat} from './materials'
 import ParticleSystem from './rain'
@@ -21,6 +21,7 @@ var variables = {
 
   // spline
   spline : null,
+  circle : null,
   smoothness : 0.5,
   jitter : 50, 
   path_radius : 50, 
@@ -65,6 +66,7 @@ function onLoad(framework) {
   // set camera position
   var splineData = makeSpline(variables.path_radius, variables.num_points, variables.smoothness);
   variables.spline = splineData;
+  variables.circle = makeCircle(variables.path_radius, variables.num_points);
   // pass spline to material
    var data = makeSplineTexture(variables.spline, variables.path_radius, variables.res, variables.res);
    var texture = new THREE.DataTexture(data, variables.res, variables.res, THREE.RGBAFormat);
@@ -74,7 +76,7 @@ function onLoad(framework) {
    materials.water_mat.uniforms.spline_tex.value = texture;
    materials.rain_mat.uniforms.spline_tex.value = texture;
 
-  updateCamera(framework.viewpoint, camera, variables.spline, 0, meshes.boat);
+  updateCamera(framework.viewpoint, camera, variables.spline, variables.circle, 0, meshes.boat);
 
   // objects and geometry
   materials.water_mat.uniforms.density.value = 5 * rain.density;
@@ -121,7 +123,7 @@ function onUpdate(framework) {
       if (time == 10000) {
         time = 0;
       }
-      updateCamera(framework.viewpoint, framework.camera, variables.spline, time % 10000, meshes.boat);
+      updateCamera(framework.viewpoint, framework.camera, variables.spline, variables.circle, time % 10000, meshes.boat);
       // framework.controls.target.set(framework.camera.position);
       particleSys.update(0.1);
     }
