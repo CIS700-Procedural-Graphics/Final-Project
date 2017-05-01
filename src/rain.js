@@ -48,17 +48,7 @@ export default class ParticleSystem {
       }
       rain_geo.addAttribute( 'offset', offsets );
 
-      var rain_material = new THREE.RawShaderMaterial( {
-
-        uniforms: {
-          time: { value: 1.0 },
-        },
-        vertexShader: require('./shaders/rock-vert.glsl'),
-        fragmentShader: require('./shaders/rock-frag.glsl'),
-        side: THREE.DoubleSide,
-        transparent: true
-
-      } );
+      var rain_material = new THREE.ShaderMaterial(materials.rain_mat);
 
       this.rain = new THREE.Mesh( rain_geo, rain_material ); // define mesh 
       this.rain.geometry.verticesNeedUpdate = true;
@@ -66,15 +56,18 @@ export default class ParticleSystem {
       this.scene.add( this.rain );
     }
 
-  update(dt, velocity) {
+  update(dt) {
+    var accel = new THREE.Vector3(0, -9.8 * dt, 0);
     for (var i = 0; i < this.particles.length; i ++) {
-      this.particles[i].vel = velocity;
+      this.particles[i].vel.add(accel); // gravity
+      this.particles[i].vel.clampLength ( 0, 20 ); // air drag
       this.particles[i].pos.add((this.particles[i].vel).clone().multiplyScalar(dt));
 
       if (this.particles[i].pos.y < 0) {
         this.particles[i].pos.y = this.height;
         this.particles[i].pos.x = this.particles[i].index.x;
         this.particles[i].pos.z = this.particles[i].index.y;
+        this.particles[i].vel = this.direction.clone().multiplyScalar(Math.random());
       }  
       this.rain.getAttribute('offset').setXYZ(i, this.particles[i].x, this.particles[i].y, this.particles[i].z)       
     }

@@ -10,7 +10,7 @@ export function initSceneGeo(scene, meshes, materials, spline, radius) {
   meshes.plane = new THREE.Mesh(plane_geo, plane_material); meshes.plane.name = "canyon";
   // scene.add(meshes.plane);
 
-  var water_geo = new THREE.PlaneBufferGeometry(s,s,s,s).rotateX(-Math.PI/2).rotateY(-Math.PI/2).translate(radius, 0.5, radius);
+  var water_geo = new THREE.PlaneBufferGeometry(s,s,s,s).rotateX(-Math.PI/2).rotateY(-Math.PI/2).translate(radius, 1.0, radius);
   var water_material = new THREE.ShaderMaterial(materials.water_mat);
   water_material.transparent = true;
   meshes.water = new THREE.Mesh(water_geo, water_material); meshes.water.name = "water";

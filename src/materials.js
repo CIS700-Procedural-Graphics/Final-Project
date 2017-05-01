@@ -9,7 +9,7 @@ export var boat_mat = {
   vertexShader: require('./shaders/boat-vert.glsl'),
   fragmentShader: require('./shaders/boat-frag.glsl')
 
-  };
+};
 
 export var rock_mat = {
 
@@ -44,7 +44,6 @@ export var water_mat = {
     frequency: {value: 2.0},
     num_octaves: {value: 5},
     buckets: {value: 10},
-    spline_tex: {type: "t", value: null},
     density : {value: 5.0},
     color1: {value: [0, 139/255, 139/255]},
     color2: {value: [0, 128/255, 128/255]},
@@ -55,6 +54,23 @@ export var water_mat = {
     },
   vertexShader: require('./shaders/water-vert.glsl'),
   fragmentShader: require('./shaders/water-frag.glsl')
+};
+
+export var rain_mat = {
+
+  uniforms: {
+    time: {value: new Date().getMilliseconds()},
+    amplitude: {value: water_mat.uniforms.amplitude.value},
+    frequency: {value: water_mat.uniforms.frequency.value},
+    dim: {value: null},
+    buckets: {value: water_mat.uniforms.buckets.value},
+    spline_tex: {type: "t", value: null}
+  },
+  vertexShader: require('./shaders/rain-vert.glsl'),
+  fragmentShader: require('./shaders/rain-frag.glsl'),
+  side: THREE.DoubleSide,
+  transparent: true
+
 };
 
 export var sky_mat = {
