@@ -1,4 +1,6 @@
 const THREE = require('three'); // older modules are imported like this. You shouldn't have to worry about this much
+const Mirror = require('./Mirror')
+
 
 // Each scene uses the following API:
 //        initScene()
@@ -7,7 +9,7 @@ const THREE = require('three'); // older modules are imported like this. You sho
 //        cleanupScene()
 
 /*********************************** VISUAL ***********************************/
-var car, lakeCamera;
+var car, lakeCamera, groundMirror;
 
 var lakeMat;
 function initScene(framework, visualConfig) {
@@ -45,13 +47,19 @@ function initScene(framework, visualConfig) {
     var plane = new THREE.Mesh( lakeGeo, lakeMat/*new THREE.MeshBasicMaterial( { map: renderTarget } )*/ );
     plane.position.set(0,0,100);
     plane.rotateX(Math.PI/2);
-    scene.add(plane);
+    // scene.add(plane);
 
+    groundMirror = new THREE.Mirror( renderer, camera, { clipBias: 0.003, textureWidth: window.width, textureHeight: window.height, color: 0x777777 } );
+    var planeGeo = new THREE.PlaneGeometry( 500,250,200,100 );
+    var mirrorMesh = new THREE.Mesh( planeGeo, groundMirror.material );
+		mirrorMesh.add( groundMirror );
+		mirrorMesh.rotateX( - Math.PI / 2 );
+		scene.add( mirrorMesh );
 
 
 
     var skyboxGeo = new THREE.BoxGeometry( 1000,1000,1000 );
-    var skyboxMat = new THREE.MeshBasicMaterial( { side: THREE.DoubleSide } );
+    var skyboxMat = new THREE.MeshBasicMaterial( { color: 0x888888, side: THREE.DoubleSide } );
     var skyboxMesh = new THREE.Mesh( skyboxGeo, skyboxMat );
     skyboxMesh.position.set(0,0,0);
     scene.add(skyboxMesh);
@@ -75,6 +83,8 @@ function updateScene(framework, visualConfig, delta) {
   // camera.lookAt(new THREE.Vector3(0,10,10));
 
   if (visualConfig.sceneReady) {
+
+    groundMirror.render();
 
     renderer.render( scene, lakeCamera, renderTarget, true );
 
@@ -103,11 +113,11 @@ function updateScene(framework, visualConfig, delta) {
 
 function genBouy(scene) {
   var pos = new THREE.Vector3( (Math.random()-0.5) * 100, 0, Math.random() * 200);
-  var geometry = new THREE.ConeGeometry( 12,9,16,5 );
+  var geometry = new THREE.ConeGeometry( 30,20,16,5 );
   var material = new THREE.ShaderMaterial( {
     uniforms: {
       "time": { value: 0 },
-      "random": { value: (Math.random() - 0.5) * 10.0 }
+      "random": { value: new THREE.Vector3((Math.random() - 0.5) * 10.0, (Math.random() - 0.5) * 10.0, (Math.random() - 0.5) * 10.0 ) }
     },
     side: THREE.DoubleSide,
     vertexShader: require('./shaders/bouy-vert.glsl'),
@@ -121,11 +131,13 @@ function genBouy(scene) {
     name: mesh.name,
     mass: 1000,
     pos: pos,
-    vel: new THREE.Vector3( 0,0,0 ),
+    vel: new THREE.Vector3( 0,0,-10 ),
     t: Math.random(),
     update: function(delta) {
       this.t += delta;
+      this.pos.x += this.vel.y * delta;
       this.pos.y = 0.2*(Math.sin(2*this.t)+ 3*Math.sin(this.t+Math.PI/4) + Math.sin(this.t) + Math.sin(this.t+Math.PI/2)) - 5;
+      this.pos.z += this.vel.z * delta;
     }
   };
 }
