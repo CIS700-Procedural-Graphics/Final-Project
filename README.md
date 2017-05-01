@@ -15,13 +15,18 @@ perlin noise
 toon shading
 spherical map
 
+<img src="/images/sky.png" width="250">
+
 ### Camera
-![](./images/map1.png) ![](./images/map2.png) ![](./images/map3.png)
+| ---------- | ------- | ------- |
+| <img src="/images/map1.png" width="250"> | <img src="/images/map2.png" width="250"> |  <img src="/images/map3.png" width="250"> |
 
 ### Canyon
-![](./images/los-res.png) ![](./images/no-gaussian.png) ![](./images/no-widen.png) ![](./images/widen.png)
 
-![](./images/terrain.png)
+| ---------- | ------- | ------- | ------- |
+| <img src="/images/los-res.png" width="250"> | <img src="/images/no-gaussian.png" width="250"> |  <img src="/images/no-widen.png" width="250"> | <img src="/images/no-widen.png" width="250"> |
+
+<img src="/images/terrain2.png" width="250">
 
 ### Water
 
@@ -47,7 +52,7 @@ The rain in the distance can barely be differentiated due to the distance from t
 
 | b  | 0.0 | 0.035 | 0.1 |
 | -----------| ---------- | ------- | ------- |
-| | <img src="/images/pre-fog.png" width="200"> | <img src="/images/post-fog.png" width="200"> |  <img src="/images/toomuch-fog.png" width="200"> |
+| | <img src="/images/pre-fog.png" width="250"> | <img src="/images/post-fog.png" width="250"> |  <img src="/images/toomuch-fog.png" width="250"> |
 
 ### Rocks
 
