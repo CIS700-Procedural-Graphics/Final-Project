@@ -1,6 +1,6 @@
 uniform float time;
 
-attribute vec3 pos;
+attribute vec3 position;
 attribute vec3 offset;
 attribute vec3 color;
 attribute vec3 scale;

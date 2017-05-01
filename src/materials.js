@@ -1,5 +1,16 @@
 const THREE = require('three');
 
+export var boat_mat = {
+
+  uniforms: {
+    texture: { type: "t", value: null},
+    u_lightPos: {type: 'v3', value: new THREE.Vector3(0, 50, 0)}
+  },
+  vertexShader: require('./shaders/boat-vert.glsl'),
+  fragmentShader: require('./shaders/boat-frag.glsl')
+
+  };
+
 export var rock_mat = {
 
   uniforms: {

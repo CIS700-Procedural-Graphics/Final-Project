@@ -5,7 +5,7 @@ require('three-obj-loader')(THREE)
 import Framework from './framework'
 import {updateCamera, makeSpline, makeSplineTexture} from './camera'
 import {initSceneGeo, updateRocks} from './geometry'
-import {canyon_mat, water_mat, sky_mat, rock_mat} from './materials'
+import {canyon_mat, water_mat, sky_mat, rock_mat, boat_mat} from './materials'
 import ParticleSystem from './rain'
 
 var time, count;
@@ -40,7 +40,8 @@ var materials = {
   canyon_mat : canyon_mat,
   water_mat : water_mat,
   sky_mat : sky_mat,  
-  rock_mat : rock_mat
+  rock_mat : rock_mat,
+  boat_mat : boat_mat
 }
 
 var rain = {
@@ -71,7 +72,7 @@ function onLoad(framework) {
    materials.canyon_mat.uniforms.spline_tex.value = texture;
    materials.water_mat.uniforms.spline_tex.value = texture;
 
-  updateCamera(camera, variables.spline, 0);
+  updateCamera(camera, variables.spline, 0, meshes.boat);
 
   // objects and geometry
   materials.water_mat.uniforms.density.value = 5 * rain.density;
@@ -118,7 +119,7 @@ function onUpdate(framework) {
       if (time == 10000) {
         time = 0;
       }
-      updateCamera(framework.camera, variables.spline, time % 10000);
+      updateCamera(framework.camera, variables.spline, time % 10000, meshes.boat);
       // framework.controls.target.set(framework.camera.position);
       particleSys.update(0.1, velocity);
     }

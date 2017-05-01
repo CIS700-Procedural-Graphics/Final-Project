@@ -88,7 +88,7 @@ void main() {
 	float noise = p_noise(vUV, 5000.0, 2.0, time);
 	if (noise > 1.1) color = color3;
 
-	color = applyFog(color, length(vPosition - ePosition), 0.035);
+	color = applyFog(color, length(vPosition - ePosition), 0.01);
 
     gl_FragColor = vec4(color, 1.0);
 }

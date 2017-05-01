@@ -123,19 +123,27 @@ export function makeSplineTexture(spline, radius, w, h)
 	return data4;
 }
 
-export function updateCamera(camera, spline, camPosIndex) 
+export function updateCamera(camera, spline, camPosIndex, boat) 
 {
       
       var camPos = spline.getPoint(camPosIndex / 10000);
       var camRot = spline.getTangent(camPosIndex / 10000);
 
-      camera.position.x = camPos.x;
-      camera.position.y = camPos.y;
-      camera.position.z = camPos.z;
+      camera.position.x = camPos.x; 
+      camera.position.y = camPos.y; 
+      camera.position.z = camPos.z; 
 
       camera.rotation.x = camRot.x;
-      camera.rotation.y = camRot.y;
-      camera.rotation.z = camRot.z;
+      camera.rotation.y = camRot.y; 
+      camera.rotation.z = camRot.z; 
+
+      if (boat != null) {
+      	boat.position.x = camPos.x; boat.position.y = camPos.y - 1; boat.position.z = camPos.z;
+      	boat.rotation.y = Math.atan2(camRot.x, camRot.z);
+      	// perlin rotation x, z
+      	boat.geometry.verticesNeedUpdate = true;
+      }
+      
 
       // smooth camera movement
       var look = spline.getPoint((camPosIndex+1) / 10000);

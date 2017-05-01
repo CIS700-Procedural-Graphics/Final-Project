@@ -19,7 +19,7 @@ void main() {
   float scale = texture2D(spline_tex, vUV).r;
   vec3 color = mix(ncolor, base_color, scale);
 
-  color = applyFog(color, length(vPosition - ePosition), 0.035);
+  color = applyFog(color, length(vPosition - ePosition), 0.01);
 
   gl_FragColor = vec4( color , 1.0 );
 
