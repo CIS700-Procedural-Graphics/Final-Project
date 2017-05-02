@@ -95,9 +95,6 @@ function insertHook(melody, scale) {
 
 
 		if (pattern[i%pattern.length]) {
-			var upOctave = Math.random() < 0.4;
-			console.log(upOctave)
-
 			if (hook.length == 0) {
 				var totalBeats = note1.time + note2.time;
 				var numBeats = note1.time + 1; // CHANGE THIS
@@ -115,16 +112,19 @@ function insertHook(melody, scale) {
 						note = tonal.note.midi( scale[Math.floor(Math.random() * scale.length)] );
 					}
 					hook.push({
-						note: upOctave ? note + 12 : note,
+						note: note,
 						time: times[j],
 						type: noteType.hook,
 					});
 				}
 			}
 
+			var upOctave = Math.random() < 0.4;
+			console.log(upOctave)
+
 			for (var j = 0; j < hook.length; j++) {
 				newMelody.push({
-					note: hook[j].note,
+					note: upOctave ? hook[j].note + 12 : hook[j].note,
 					time: hook[j].time,
 					type: noteType.hook,
 				});
