@@ -5,43 +5,43 @@ import euclid from './../utils/euclid.js'
 
 
 export default function generateMelody( scaleNote, randomVar ) {
-	var s = tonal.scale.get('major', scaleNote);
+	// var s = tonal.scale.get('major', scaleNote);
+	// var sO = tonal.note.fromMidi( tonal.note.midi( scaleNote ) - 12 );
+	// s = tonal.scale.get( 'major', sO ).concat( s );
 
+	// var melodyLine = createMelodicContour( 2, s.length );
+	// console.log( createFlairBeatAssignment( 8 ) )
 
-	var sO = tonal.note.fromMidi( tonal.note.midi( scaleNote ) - 12 );
-	s = tonal.scale.get( 'major', sO ).concat( s );
-
-	var melodyLine = createMelodicContour( 2, s.length );
-	// console.log( melodyLine )
-
-	var notes = [];
-	for ( var i = 0; i < melodyLine.length; i++ ) {
-		notes.push( { note: tonal.note.midi(s[melodyLine[i]]), time: 4 } );
-	}
+	// var notes = [];
+	// for ( var i = 0; i < melodyLine.length; i++ ) {
+	// 	notes.push( { note: tonal.note.midi(s[melodyLine[i]]), time: 4 } );
+	// }
 
 	
-	// notes = variateMelody( notes, s );
+	// // notes = variateMelody( notes, s );
 
-	// console.log( euclid( 3, 8 ) )
+	// // console.log( euclid( 3, 8 ) )
 
-	// Remove any nulls
-	for ( var i = 0; i < notes.length; i++ ) {
-		if ( notes[i].note == null ) {
-			notes.splice( i, 1 );
-		}
-	}
+	// // Remove any nulls
+	// for ( var i = 0; i < notes.length; i++ ) {
+	// 	if ( notes[i].note == null ) {
+	// 		notes.splice( i, 1 );
+	// 	}
+	// }
 
-	// Limit length of melody
-	var finalNotes = [];
-	var mLimit = 32;
-	for ( var i = 0; i < notes.length; i++ ) {
-		if ( mLimit <= 0 ) { break; }
-		if ( notes[i].note == null ) { continue; }
-		mLimit -= notes[i].time;
-		finalNotes.push( notes[i] );
-	}
+	// // Limit length of melody
+	// var finalNotes = [];
+	// var mLimit = 32;
+	// for ( var i = 0; i < notes.length; i++ ) {
+	// 	if ( mLimit <= 0 ) { break; }
+	// 	if ( notes[i].note == null ) { continue; }
+	// 	mLimit -= notes[i].time;
+	// 	finalNotes.push( notes[i] );
+	// }
 
-	// finalNotes = applyRhythm( finalNotes, euclid( 3, 8 ) );
+	var s = tonal.scale.get('major', scaleNote);
+	var finalNotes = createAnchors( scaleNote, 10 );
+	finalNotes = insertFlairs( finalNotes.melody, s, finalNotes.high, finalNotes.low );
 
 	// Print final note sequence
 	var debug = [];
@@ -71,9 +71,77 @@ function insertHook(melody) {
 
 }
 
+function insertFlairs( melody, scale, highAnchor, lowAnchor ) {
+	// Create flairs for the different anchors
+	var lowFlairs = [], highFlairs = [];
+	for ( var i = 0; i < 3; i++ ) {
+		lowFlairs.push( createFlair( lowAnchor, scale ) );
+		highFlairs.push( createFlair( highAnchor, scale ) );
+	}
+
+	// Loop over the melody and replace anchors with flairs
+	var newMelody = [];
+	for ( var i = 0; i < melody.length; i++ ) {
+		if ( melody[i].type == noteType.anchor ) {
+			var r = Math.random(), flair;
+			if ( r > 0.5 ) {
+				flair = lowFlairs[Math.floor( Math.random() * 3 )];
+			} else {
+				flair = highFlairs[Math.floor( Math.random() * 3 )];
+			}
+
+			for ( var j = 0; j < flair.length; j++ ) {
+				newMelody.push( flair[j] );
+			}
+		} else {
+			newMelody.push( melody[i] );
+		}
+	}
+
+	return newMelody;
+}
+
+function createFlair( anchor, scale ) {
+	var beats = createFlairBeatAssignment( 8 );
+	var pattern = createMelodicContour( 2, scale.length );
+
+	var flair = [{note: anchor.note, time: beats[0], type: noteType.flair}];
+	for ( var i = 1; i < beats.length; i++ ) {
+		flair.push( {note: tonal.note.midi( scale[pattern[i]] ), time: beats[i], type: noteType.flair} );
+	}
+
+	return flair;
+}
+
+function createFlairBeatAssignment( numBeats ) {
+	// Set max number of long beats
+	var usedLong = false;
+	var beats = [], sum = 0, r, b;
+	while (sum < numBeats) {
+		// Randomly select beat length
+		r = Math.random();
+		if ( r > 0.8 && !usedLong ) {
+			b = Math.random() > 0.3 ? 4 : 6;
+		} else if ( r > 0.4 ) {
+			b = 2;
+		} else {
+			b = 1;
+		}
+
+		// If beat fits, then allocate it, otherwise skip
+		if ( sum + b <= numBeats) {
+			beats.push( b );
+			sum += b;
+			if ( b > 3 ) { usedLong = true; }
+		}
+	}
+
+	return beats;
+}
+
 function createAnchors( baseNote, length ) {
 	var decider = Math.floor( Math.random() * 2 );
-	var highAnchor = (decider == 1) ? tonal.transpose( baseNote, 'P5') | tonal.transpose( baseNote, 'M7');
+	var highAnchor = (decider == 1) ? tonal.transpose( baseNote, 'P5') : tonal.transpose( baseNote, 'M7');
 
 	// Get numbers
 	baseNote = tonal.note.midi( baseNote );
@@ -86,7 +154,7 @@ function createAnchors( baseNote, length ) {
 		anchor.push( {note: baseNote, time: 8, type: noteType.anchor} );
 	}
 
-	return anchor;
+	return {melody: anchor, high: anchor[0], low: anchor[1]};
 }
 
 
