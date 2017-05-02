@@ -350,8 +350,8 @@ function onLoad(framework) {
 	// RENDERER
 
 	// Initialize music instruments
-	musicPlayer.setMelodicInstrument( 'acoustic_grand_piano', ac );
-	musicPlayer.setHarmonicInstrument( 'fx_7_echoes', ac );
+	musicPlayer.setMelodicInstrument( 'pizzicato_strings', ac );
+	musicPlayer.setHarmonicInstrument( 'acoustic_grand_piano', ac );
 	musicPlayer.setBassInstrument( 'acoustic_bass', ac );
 
 	// Initialize music
@@ -415,12 +415,12 @@ function onUpdate(framework) {
 	// Audio updates
 	var nTime = Date.now();
 	if (allInit) {
-		// musicPlayer.playHarmony( nTime, function() {
-		// });
+		musicPlayer.playHarmony( nTime, function() {
+		});
 
-		// musicPlayer.playMelody( nTime, function() {
-		// 	Visual.melodyCallback(framework, visualConfig);
-		// });
+		musicPlayer.playMelody( nTime, function() {
+			Visual.melodyCallback(framework, visualConfig);
+		});
 
 		musicPlayer.playBassLine( nTime, function() {
 			Visual.bassCallback(framework, visualConfig);

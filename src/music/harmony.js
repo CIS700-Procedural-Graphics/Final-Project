@@ -16,19 +16,18 @@ export default function generateHarmony( melody, interval ) {
 			// console.log( counter );
 		}
 
-		if ( counter % 4 == 0) {
-			var c = tonal.chord.get( 'M', tonal.note.fromMidi( melody[i].note ) );
+		if ( counter % 4 == 0 ) {
+			var c = tonal.chord.get( 'm', tonal.note.fromMidi( melody[i].note ) );
 
 			var n = tonal.note.midi( c[interval] );
-			var t = Math.max( melody[i].time, 4 );
+			var t = Math.max( melody[i].time, 8 );
 
 			switch ( interval ) {
 				case 0:
 					harmonic.push( {note: n, time: t} );
 					break;
 				case 1:
-					harmonic.push( {note: n, time: 2} );
-					harmonic.push( {note: n, time: 2} );
+					harmonic.push( {note: n, time: t} );
 					break;
 				case 2:
 					harmonic.push( {note: n, time: t} );

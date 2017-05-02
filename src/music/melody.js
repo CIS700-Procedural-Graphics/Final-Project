@@ -38,7 +38,7 @@ export default function generateMelody( scaleNote, randomVar ) {
 	// 	finalNotes.push( notes[i] );
 	// }
 
-	var s = tonal.scale.get('major', scaleNote);
+	var s = tonal.scale.get('minor', scaleNote);
 	var anchors = createAnchors( scaleNote, 10 );
 	var finalNotes = insertHook( anchors.melody, s );
 	finalNotes = insertFlairs( finalNotes, s, anchors.high, anchors.low );
@@ -81,7 +81,7 @@ function generateRhythm(numBeats) {
 
 function insertHook(melody, scale) {
 
-	var pattern = [true, true, true, true, true, false, true, true, false, true, false, true, true, false, true, true, false];
+	var pattern = [true, true, true, true, false, true, false, true, true, false, true, false];
 	var newMelody = [];
 
 	var hook = [];
