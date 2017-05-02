@@ -4,14 +4,10 @@ uniform float frequency;
 uniform float amplitude;
 uniform vec2 dim;
 
-attribute float vertex;
-attribute vec3 velocity;
-
-varying vec2 vUV;
-varying vec3 vPosition;
-varying float splash;
-varying float dist;
 varying vec3 ePosition;
+varying vec3 vPosition;
+varying float size;
+varying vec2 vUV;
 
 #define PI 3.14159265
 
@@ -70,53 +66,17 @@ float p_noise(vec2 point, float freq, float amp, float t) {
 }
 
 void main() {
-    vUV = vec2(position.x/dim.x, position.z/dim.y);
-    vPosition = position;
     ePosition = cameraPosition;
-
+    vPosition = position;
+    vUV = vec2(position.x/dim.x, position.z/dim.y);
     vec2 p = vec2(position.x, position.z);
-    float noise = p_noise(p, frequency, amplitude, time);
-    float water_pos = 1.0 + noise;
+    float water_noise = p_noise(p, frequency, amplitude, time);
+    vPosition.y = 1.0 + water_noise;
 
-    if (water_pos < position.y) { 
-    	splash = 0.0;
-    	vec3 dir = normalize(position - ePosition);
-    	float d = dot(vec3(0.0, -1.0, 0.0), dir);
-    	if (vertex == 1.0) {
-	    	vPosition += 0.05 * velocity;
-	    	vPosition.x += 0.01;
-	    } else if (vertex == 2.0) {
-	    	vPosition += 0.05 * velocity;
-	    	vPosition.x -= 0.01;
-	    } else if (vertex == 3.0) {
-	    	vPosition += 0.05 * velocity;
-	    	vPosition.z -= 0.01;
-	    } else if (vertex == 4.0) {
-	    	vPosition += 0.05 * velocity;
-	    	vPosition.z -= 0.01;
-	    }
+    float drop_noise = p_noise(vUV, 5000.0, 2.0, time/100.0);
 
-
-    } else {
-    	splash = 1.0;
-    	dist = water_pos - vPosition.y;
-    	vPosition.y = water_pos + 0.05;
-    	if (vertex == 1.0) {
-	    	vPosition.x += 0.5 * dist;
-	    	vPosition.z += 0.5 * dist;
-	    } else if (vertex == 2.0) {
-	    	vPosition.x -= 0.5 * dist;
-	    	vPosition.z -= 0.5 * dist;
-	    } else if (vertex == 3.0) {
-	    	vPosition.x -= 0.5 * dist;
-	    	vPosition.z += 0.5 * dist;
-	    } else if (vertex == 4.0) {
-	    	vPosition.x += 0.5 * dist;
-	    	vPosition.z -= 0.5 * dist;
-	    } 
-
-    }
-
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(vPosition, 1.0);
+    size = 1.5 * clamp(sin(drop_noise), 0.0, 1.0);
+	vec4 mvPosition = modelViewMatrix * vec4( vPosition, 1.0 );
+	gl_PointSize = size * ( 50.0 / -mvPosition.z );
+	gl_Position = projectionMatrix * mvPosition;
 }
-

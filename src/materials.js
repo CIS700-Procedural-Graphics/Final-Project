@@ -69,14 +69,15 @@ export var rain_mat = {
     drop_color: {value: [0.5, 0.6, 0.7]},
     splash_color: {value: [148/255, 0, 211/255]},
     spline_tex: {type: "t", value: null},
+    texture: {type: "t", value: null},
     grads: {type: 'vec3', value: [new THREE.Vector3(1,1,0), new THREE.Vector3(-1,1,0), new THREE.Vector3(1,-1,0),        new THREE.Vector3(-1,-1,0), new THREE.Vector3(1,0,1), new THREE.Vector3(-1,0,1), new THREE.Vector3(1,0,-1), 
       new THREE.Vector3(-1,0,-1), new THREE.Vector3(0,1,1), new THREE.Vector3(0,-1,1), new THREE.Vector3(0,1,-1), 
       new THREE.Vector3(0,-1,-1)]}
     },
   vertexShader: require('./shaders/rain-vert.glsl'),
   fragmentShader: require('./shaders/rain-frag.glsl'),
-  side: THREE.DoubleSide,
-  transparent: true
+  blending:       THREE.AdditiveBlending,
+  transparent:    true
 
 };
 

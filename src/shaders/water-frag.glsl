@@ -86,7 +86,6 @@ void main() {
 	float d = floor(buckets * level) / buckets / 3.0;
 	vec3 color = vec3(0.0, d, 2.0 * d);
 	float noise = p_noise(vUV, 5000.0, 2.0, time);
-	if (noise > 1.1) color = color3;
 
 	color = applyFog(color, length(vPosition - ePosition), 0.01);
 
