@@ -20,7 +20,7 @@ export default class MusicBox {
 	// Private functions
 	_init() {
 		this.instruments = [null,null,null];
-		this.noise = [2, 0.05, 0.25];
+		this.noise = [2, 0.05, 0.45];
 	}
 
 	_setInstrument( instrumentName, ac, type ) {
@@ -98,7 +98,7 @@ export default class MusicBox {
 							instr.start(instrument.notes[index][instrument.noteCount[index]].note, 
 										instrument.ac.currentTime, 
 										{gain: this.noise[type],
-										 adsr: [0.3,0.3,0.8,1]});//[0.3,0.3,0.8,1]
+										 adsr: [0,0,0,0]});//[0.3,0.3,0.8,1]
 							if (index == 0) { callback(); }
 						}
 						instrument.played[index] = true;

@@ -39,7 +39,7 @@ export default function generateMelody( scaleNote, randomVar ) {
 	// 	finalNotes.push( notes[i] );
 	// }
 
-	var s = tonal.scale.get('major pentatonic', scaleNote);
+	var s = tonal.scale.get('minor pentatonic', scaleNote);
 	// s = tonal.chord.get('Maj7', scaleNote);
 	var anchors = createAnchors( scaleNote, 10 );
 	var finalNotes = insertHook( anchors.melody, s );
