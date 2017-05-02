@@ -1,12 +1,13 @@
-uniform float time;
+//uniform float time;
 
-varying vec3 vNormal;
 //varying vec3 perlin_color;
-varying vec3 frag_Pos;
-
 // uniform float num_octaves;
 // uniform float perlin_persistence;
 
+varying vec3 vNormal;
+varying vec2 vUv;
+varying vec3 vPos;
+varying float vAmount;
 
 float cosineInterp(float x, float y, float z)
 {
@@ -96,6 +97,9 @@ float perlinNoise(float x, float y, float z)
     float amplitude = 0.0;
 
     float i = 0.0;
+    x = x / 3.0;
+    y = y / 2.0;
+    z = z / 3.0;
 
     // const int octaves = int(num_octaves); //8;
     for (int j = 0; j < 20; j+= 1)
@@ -136,16 +140,17 @@ vec3 calculateNormal(vec3 point)
 
 void main() {
 
-    //float height = 5.0;
-    //float noise_output = height * perlinNoise(position.x, position.y, position.z);
+    float height = 5.0;
+    float noise_output = height * perlinNoise(position.x, position.y, position.z);
 
     //to send to frag shader - calculate post-noise normal and position
     vNormal = normal;//calculateNormal(normal);  //normal;
-    frag_Pos = position;//vec3(noise_output);  //position;
-    //perlin_color = vec3(1.0, 1.0, 1.0);//vec3(noise_output);
+    vPos = position;//vec3(noise_output);  //position;
+    vUv = uv;
+    vAmount = noise_output;
 
     //change position of mesh based on perlin output
-    vec3 new_pos = position;
-    //new_pos = new_pos + (normal * 0.5 * noise_output);    //(vNormal * 0.5 * noise_output);
-    gl_Position = projectionMatrix * modelViewMatrix * vec4( new_pos, 1.0 );
+    vec3 new_pos = position + (normal * 0.5 * noise_output);
+
+    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 }

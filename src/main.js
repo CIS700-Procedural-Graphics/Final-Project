@@ -48,9 +48,9 @@ const DEFAULT_VISUAL_DEBUG = false; //true;
 const DEFAULT_ISO_LEVEL = 1.0;
 const DEFAULT_GRID_RES = 25;//12;//12;//4;  //32 should make it look real nice and smooth
 const DEFAULT_GRID_WIDTH = 15//15;//10;
-const DEFAULT_NUM_METABALLS = 50;//10;
-const DEFAULT_MIN_RADIUS = 0.1;//0.5;
-const DEFAULT_MAX_RADIUS = 0.6;//1;
+const DEFAULT_NUM_METABALLS = 75;//50;//10;
+const DEFAULT_MIN_RADIUS = 0.01//0.05;//0.1;//0.5;
+const DEFAULT_MAX_RADIUS = 0.6//0.6;//1;
 const DEFAULT_MAX_SPEED = 0.01;
 
 var App = {
@@ -118,10 +118,11 @@ function onLoad(framework) {
   setupWater(App.scene, App.renderer, App.camera);
 
   //set up obj mesh in scene
-  //var treeObj = 'geometry/feather.obj';  //'geometry/lowpolytree.obj';
-  //setupObj(App.scene, treeObj);
-  var obj_file = './assets/wahoo.obj';
-  setupObj(App.scene, obj_file);
+  var lion_obj = './geometry/LionLowPoly3DModel.obj';
+  setupObj(App.scene, lion_obj, 1);
+
+  var lighthouse_obj = './geometry/lighthouse2.obj';
+  setupObj(App.scene, lighthouse_obj, 2);
 
   //add terrain
   //scene.add(terrainMesh);
@@ -133,6 +134,10 @@ function onLoad(framework) {
 // called on frame updates
 function onUpdate(framework) {
 
+  //to find current camera location
+  //console.log(framework.camera.position);
+  //console.log(framework.camera.lookAt);
+
   var deltaT = clock.getDelta();
 
   time_update = (Date.now() - start) * 0.00025;
@@ -143,7 +148,7 @@ function onUpdate(framework) {
   }
 
   if (water) {
-    water.material.uniforms.time.value += 1.0 / 240.0;  //make this divisor smaller to make water move faster
+    water.material.uniforms.time.value += 1.0 / 120.0;  //make this divisor smaller to make water move faster
     water.render();
   }
 
@@ -152,9 +157,10 @@ function onUpdate(framework) {
 // =========================================== On load helper functions ===========================================
 function setupCamera(camera) {
   // set camera position
-  //camera.position.set(5, 5, 30);
-  camera.position.set(-25.26, 6.7, -20.14);
-  camera.lookAt(new THREE.Vector3(-15,4,0));    //FIDGET WITH THIS
+
+  //(-24.5, 9.59, -8.32)
+  camera.position.set(-24.5, 9.59, -8.32);//(-25.26, 6.7, -20.14);
+  camera.lookAt(new THREE.Vector3(-12, 10, 10));//(-15,4,0));    //FIDGET WITH THIS
 }
 
 function setupLights(scene) {
@@ -285,7 +291,7 @@ function setupWater(scene, renderer, camera){
 //   });
 // }
 
-function setupObj(scene, file) {
+function setupObj(scene, file, type) {
   var objLoaded = new Promise((resolve, reject) => {
       (new THREE.OBJLoader()).load(require(file), function(obj) {
           var geo = obj.children[0].geometry;
@@ -295,10 +301,38 @@ function setupObj(scene, file) {
   })
 
   var mesh;
-  var lambertWhite = new THREE.MeshLambertMaterial({ color: 0xeeeeee });
+  var material;
+
+  if(type == 1)
+  {
+    material = new THREE.MeshLambertMaterial({ color: 0xeeeeee });
+  }
+  if(type == 2)
+  {
+    material = new THREE.MeshLambertMaterial({ color: 0xeeeeee });
+    //material = setupTexture('./assets/ocean.bmp', './glsl/terrain-vert.glsl', './glsl/terrain-frag.glsl')
+  }
+
   objLoaded.then(function(geo) {
-      mesh = new THREE.Mesh(geo, lambertWhite);
-      mesh.translateY(20);
+      mesh = new THREE.Mesh(geo, material);
+
+      if(type == 1) //lion head
+      {
+        mesh.rotateY(-Math.PI / 2.0);
+        mesh.translateZ(-50);
+        mesh.translateX(5);
+        mesh.translateY(-20);
+        mesh.scale.set(0.5, 0.5, 0.5);
+      }
+
+      if(type == 2) //lighthouse
+      {
+        mesh.translateZ(400);
+        mesh.translateX(200);
+        mesh.translateY(30);
+        mesh.scale.set(0.5, 0.5, 0.5);
+      }
+
       scene.add(mesh);
   });
 
@@ -325,23 +359,85 @@ function setupTerrain(scene)
   terrainGeo.vertices = newVerticesList;
   terrainGeo.verticesNeedUpdate = true;
 
-  var terrainMaterial = new THREE.ShaderMaterial({
-    uniforms: {
-      time: {
-        type : "float",
-        value : time_update
-      }
-    },
-    vertexShader : require('./glsl/noise-vert.glsl'),
-    fragmentShader : require('./glsl/noise-frag.glsl')
-  });
+  //
+  // var terrainMaterial = new THREE.ShaderMaterial({
+  //   uniforms: {
+  //     time: {
+  //       type : "float",
+  //       value : time_update
+  //     }
+  //   },
+  //   vertexShader : require('./glsl/noise-vert.glsl'),
+  //   fragmentShader : require('./glsl/noise-frag.glsl')
+  // });
+
+
+  // var terrainTextureLoaded = new Promise((resolve, reject) => {
+  //     (new THREE.TextureLoader()).load(require('./assets/grass1.bmp'), function(texture) {
+  //         resolve(texture);
+  //     })
+  // })
+  //
+  // var terrainMaterial = new THREE.ShaderMaterial({
+  //   uniforms: {
+  //     texture: {
+  //         type: "t",
+  //         value: null
+  //     },
+  //   },
+  //   vertexShader : require('./glsl/terrain-vert.glsl'),
+  //   fragmentShader : require('./glsl/terrain-frag.glsl')
+  // });
+  //
+  // // once the texture loads, bind it to the material
+  // terrainTextureLoaded.then(function(texture) {
+  //     terrainMaterial.uniforms.texture.value = texture;
+  // });
+
+
+  //var terrainMaterial = setupTexture('./assets/grass1.bmp', './glsl/terrain-vert.glsl', './glsl/terrain-frag.glsl');
+  var terrainMaterial = setupTexture('./assets/grass1.bmp', './glsl/noise-vert.glsl', './glsl/noise-frag.glsl');
+
+
+  // var grasstexture = new THREE.TextureLoader().load('./assets/grasslight-big.jpg');
+  // var terrainMaterial = new THREE.MeshPhongMaterial({map: grasstexture});
+
+
 
   var terrainMesh = new THREE.Mesh(terrainGeo, terrainMaterial);
   terrainMesh.rotateY(-Math.PI / 2.0);
-  terrainMesh.translateZ(-3);
+  terrainMesh.translateZ(-4);
   terrainMesh.translateX(70);
   terrainMesh.translateY(6.5);
   scene.add(terrainMesh);
+}
+
+
+function setupTexture(materialfile, vertfile, fragfile)
+{
+  var textureLoaded = new Promise((resolve, reject) => {
+      (new THREE.TextureLoader()).load(require(materialfile), function(texture) {
+          resolve(texture);
+      })
+  })
+
+  var material = new THREE.ShaderMaterial({
+    uniforms: {
+      texture: {
+          type: "t",
+          value: null
+      }
+    },
+    vertexShader : require(vertfile),
+    fragmentShader : require(fragfile)
+  });
+
+  // once the texture loads, bind it to the material
+  textureLoaded.then(function(texture) {
+      material.uniforms.texture.value = texture;
+  });
+
+  return material;
 }
 
 

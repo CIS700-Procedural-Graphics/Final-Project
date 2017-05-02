@@ -60,7 +60,7 @@ const METABALLMATERIAL = new THREE.ShaderMaterial({
   fragmentShader : require('./glsl/metaball-frag.glsl')
 });
 
-// once the Mario texture loads, bind it to the material
+// once the texture loads, bind it to the material
 textureLoaded.then(function(texture) {
     METABALLMATERIAL.uniforms.texture.value = texture;
 });
