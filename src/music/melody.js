@@ -93,6 +93,7 @@ function insertHook(melody, scale) {
 			console.log("Error: Cannot insert hook into non anchor type");
 		}
 
+
 		if (pattern[i%pattern.length]) {
 			if (hook.length == 0) {
 				var totalBeats = note1.time + note2.time;
@@ -118,9 +119,12 @@ function insertHook(melody, scale) {
 				}
 			}
 
+			var upOctave = Math.random() < 0.4;
+			console.log(upOctave)
+
 			for (var j = 0; j < hook.length; j++) {
 				newMelody.push({
-					note: hook[j].note,
+					note: upOctave ? hook[j].note + 12 : hook[j].note,
 					time: hook[j].time,
 					type: noteType.hook,
 				});
