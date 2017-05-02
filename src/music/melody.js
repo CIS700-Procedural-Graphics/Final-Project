@@ -17,13 +17,7 @@ export default function generateMelody( scaleNote, randomVar ) {
 	// 	notes.push( { note: tonal.note.midi(s[melodyLine[i]]), time: 4 } );
 	// }
 
-<<<<<<< HEAD
-
 	// notes = variateMelody( notes, s );
-=======
-	
-	// // notes = variateMelody( notes, s );
->>>>>>> a31188b5543658924c29cbe0355b9b2276d413ae
 
 	// // console.log( euclid( 3, 8 ) )
 
@@ -45,8 +39,9 @@ export default function generateMelody( scaleNote, randomVar ) {
 	// }
 
 	var s = tonal.scale.get('major', scaleNote);
-	var finalNotes = createAnchors( scaleNote, 10 );
-	finalNotes = insertFlairs( finalNotes.melody, s, finalNotes.high, finalNotes.low );
+	var anchors = createAnchors( scaleNote, 10 );
+	var finalNotes = insertHook( anchors.melody, s );
+	finalNotes = insertFlairs( finalNotes, s, anchors.high, anchors.low );
 
 	// Print final note sequence
 	var debug = [];
@@ -75,7 +70,7 @@ function generateRhythm(numBeats) {
 		6: [ [3,1,2] ],
 		7: [ [3,1,1,2] ],
 		8: [ [3,2,3] ],
-		9: [ [1,1,3,1,1,2] ],
+		9: [ [3,3,3], [3,5,1], [1,1,1,5,1], [5,1,3], [3,2,1,1,2] ],
 		10: [ [6,4] ],
 		11: [ [6,1,4] ],
 		12: [ [6,2,4] ],
@@ -84,9 +79,9 @@ function generateRhythm(numBeats) {
 	return r[numBeats][Math.floor(Math.random() * r[numBeats].length)];
 }
 
-function insertHook(melody) {
+function insertHook(melody, scale) {
 
-	var pattern = [true, false, false, true, false, false, true, true, false, false];
+	var pattern = [true, true, true, true, true, false, true, true, false, true, false, true, true, false, true, true, false];
 	var newMelody = [];
 
 	var hook = [];
@@ -112,7 +107,8 @@ function insertHook(melody) {
 					} else if (j == times.length-1) {
 						note = note2.note;
 					} else {
-						note = Math.floor(Math.random() * 50);
+						// note = Math.floor(Math.random() * 50);
+						note = tonal.note.midi( scale[Math.floor(Math.random() * scale.length)] );
 					}
 					hook.push({
 						note: note,
@@ -124,7 +120,7 @@ function insertHook(melody) {
 
 			for (var j = 0; j < hook.length; j++) {
 				newMelody.push({
-					note: hook[j].note
+					note: hook[j].note,
 					time: hook[j].time,
 					type: noteType.hook,
 				});
@@ -444,6 +440,3 @@ function variateMelody( melody, scale ) {
 
 	return melody;
 }
-
-
-
