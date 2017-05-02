@@ -163,10 +163,8 @@ export function updateCamera(viewpoint, camera, spline, circle, camPosIndex, boa
       	
       }
 
-		var offset = (viewpoint == 2) ? 300 : 20;
+	  var offset = (viewpoint == 2) ? 300 : 20;
       if (boat != null) {
-
-      	
       	var boatPos1 = spline.getPoint((camPosIndex + offset) / 10000);
       	var boatRot1 = spline.getTangent((camPosIndex + offset) / 10000);
       	boat.position.x = boatPos1.x; boat.position.y = boatPos1.y - 1; boat.position.z = boatPos1.z;

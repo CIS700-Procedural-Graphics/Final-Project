@@ -133,6 +133,7 @@ function onUpdate(framework) {
     materials.sky_mat.uniforms.time.value = time;
     materials.rock_mat.uniforms.time.value = time;
     materials.rain_mat.uniforms.time.value = time;
+    materials.rain_mat.uniforms.ePosition.value = framework.camera.position;
 
     var avgFreq = variables.audioAnalyser.getAverageFrequency() / 256.0;
     var dataArray = variables.audioAnalyser.getFrequencyData();

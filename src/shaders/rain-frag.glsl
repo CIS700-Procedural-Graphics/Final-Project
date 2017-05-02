@@ -1,11 +1,13 @@
+precision highp float;
+
 uniform sampler2D spline_tex;
 uniform float buckets;
 uniform vec3 drop_color;
 uniform vec3 splash_color;
+uniform vec3 ePosition;
 
 varying vec2 vUV;
 varying vec3 vPosition;
-varying vec3 ePosition;
 varying float splash;
 varying float dist;
 

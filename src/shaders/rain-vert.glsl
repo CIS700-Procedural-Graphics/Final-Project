@@ -1,15 +1,20 @@
+precision highp float;
+
+uniform mat4 modelViewMatrix;
+uniform mat4 projectionMatrix;
+
 uniform float time;
 uniform vec3 grads[12];
 uniform float frequency;
 uniform float amplitude;
 uniform vec2 dim;
 
+attribute vec3 position;
 attribute vec3 offset;
-attribute float vert;
+//attribute float vert;
 
 varying vec2 vUV;
 varying vec3 vPosition;
-varying vec3 ePosition;
 varying float splash;
 varying float dist;
 
@@ -71,7 +76,6 @@ float p_noise(vec2 point, float freq, float amp, float t) {
 
 void main() {
     vUV = vec2(position.x/dim.x, position.z/dim.y);
-    ePosition =  cameraPosition;
     vPosition = position + offset;
 
     vec2 p = vec2(position.x, position.z);

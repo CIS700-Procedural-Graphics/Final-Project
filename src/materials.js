@@ -62,6 +62,7 @@ export var rain_mat = {
 
   uniforms: {
     time: {value: new Date().getMilliseconds()},
+    ePosition : {value: new THREE.Vector3(0)},
     amplitude: {value: water_mat.uniforms.amplitude.value},
     frequency: {value: water_mat.uniforms.frequency.value},
     dim: {value: null},
