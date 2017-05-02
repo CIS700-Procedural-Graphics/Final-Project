@@ -21,6 +21,8 @@ export default class ParticleSystem {
       this.height = App.height;
       this.depth = App.depth;
       this.location = data;
+      this.color = 0x555555;
+      this.size = 0.5;
       this.instances = this.width * this.height * this.depth * this.density;
       var rainGeometry = new THREE.Geometry();
       var drop_geo = new THREE.BufferGeometry();
@@ -56,7 +58,7 @@ export default class ParticleSystem {
     }); 
 
     this.scene.add(drops);
-      var rainMaterial = new THREE.LineBasicMaterial( { color: 0x555555, linewidth: 0.5 } )
+      var rainMaterial = new THREE.LineBasicMaterial( { this.color, linewidth: this.size } )
 
       this.rain = new THREE.LineSegments( rainGeometry, rainMaterial ); // define mesh 
       this.rain.geometry.verticesNeedUpdate = true;

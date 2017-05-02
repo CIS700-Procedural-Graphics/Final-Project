@@ -1,8 +1,8 @@
 uniform vec3 grads[12];
 
-uniform vec3 horizon;
+uniform vec3 low;
 uniform vec3 mid;
-uniform vec3 sky;
+uniform vec3 high;
 
 uniform float time;
 uniform float amplitude;
@@ -90,8 +90,8 @@ void main() {
     
     float d = floor (buckets * noise) / buckets;
     float height = (point.y + 500.0)/1000.0;
-    vec3 sunset_from = grad_map(horizon, mid, sky, height/1.33);
-    vec3 sunset_to = grad_map(horizon, mid, sky, height/1.33 + 0.25);
+    vec3 sunset_from = grad_map(low, mid, high, height/1.33);
+    vec3 sunset_to = grad_map(low, mid, high, height/1.33 + 0.25);
     
     vec3 color = color_lerp(sunset_from, sunset_to, d);
 	gl_FragColor = vec4( color.rgb, 1.0 );

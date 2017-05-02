@@ -40,7 +40,7 @@ export function initSceneGeo(scene, meshes, materials, spline, radius, data, res
     }); 
   });
 
-  var rock_instances = 32;
+  var rock_instances = meshes.num_rocks;
 
   var light = new THREE.PointLight( 0xffffff, 1, 0 )
   light.position.set( 0, 200, 0 );

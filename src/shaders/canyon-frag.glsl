@@ -1,5 +1,6 @@
 uniform sampler2D spline_tex;
 uniform vec3 tip_color;
+uniform vec3 mid_color;
 uniform vec3 base_color;
 
 varying float vNoise;

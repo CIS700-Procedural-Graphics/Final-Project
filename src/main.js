@@ -23,7 +23,6 @@ var variables = {
   spline : null,
   circle : null,
   smoothness : 0.5,
-  jitter : 50, 
   path_radius : 50, 
   num_points : 25
 }
@@ -33,7 +32,7 @@ var meshes = {
   water : null,
   sky : null, 
   boat : null,
-  num_rocks : 50,
+  num_rocks : 32,
   rocks : []
 }
 
@@ -105,12 +104,7 @@ function onLoad(framework) {
   particleSys = new ParticleSystem(rain, scene, data, variables.res, variables.res, materials.rain_mat);
 
   // gui
-  gui.add(variables, 'enableSound').onChange(function(value) {
-    if (value) variables.music.play();
-    else variables.music.pause();
-  });
-
-  gui.add(variables, 'isPaused');
+  setUpGUI(gui);
 }
 
 // called on frame updates
@@ -132,10 +126,55 @@ function onUpdate(framework) {
       updateCamera(framework.viewpoint, framework.camera, variables.spline, variables.circle, time % 10000, meshes.boat);
       // framework.controls.target.set(framework.camera.position);
       particleSys.update(0.1);
-    }
-
-    
+    } 
   }
+}
+
+function setUpGUI(gui) {
+  gui.add(variables, 'enableSound').onChange(function(value) {
+    if (value) variables.music.play();
+    else variables.music.pause();
+  });
+
+  gui.add(variables, 'isPaused');
+
+  var r = gui.addFolder('Camera Parameters');
+  r.add(variables, 'smoothness', );
+  r.add(variables, 'num_points', );
+  r.add(particleSys, 'gaussian');
+  r.add(particleSys, 'widen');
+  r.add(variables, 'res', );
+
+  var s = gui.addFolder('Sky Parameters');
+  s.addColor(materials.sky_mat.uniforms, 'low');
+  s.addColor(materials.sky_mat.uniforms, 'mid');
+  s.addColor(materials.sky_mat.uniforms, 'high');
+  s.add(materials.sky_mat.uniforms, 'buckets', 1, 10).step(1);
+  s.add(materials.sky_mat.uniforms, 'amplitude', 1, 10);
+  s.add(materials.sky_mat.uniforms, 'frequency', 0, 1);
+
+  var w = gui.addFolder('Water Parameters');
+  w.add(materials.water_mat.uniforms, 'buckets', 1, 10).step(1);
+  w.add(materials.water_mat.uniforms, 'buckets', 1, 10).step(1);
+  w.add(materials.water_mat.uniforms, 'amplitude', 1, 10);
+  w.add(materials.water_mat.uniforms, 'frequency', 0, 1);
+  w.addColor(materials.water_mat.uniforms, 'shallow_water');
+  w.addColor(materials.water_mat.uniforms, 'deep_water');
+
+  var c = gui.addFolder('Canyon Parameters');
+  c.addColor(materials.canyon_mat.uniforms, 'base_color');
+  c.addColor(materials.canyon_mat.uniforms, 'mid_color');
+  c.addColor(materials.canyon_mat.uniforms, 'tip_color');
+
+  var d = gui.addFolder('Rain Parameters');
+  d.add(particleSys, 'density', 0, 1).step(0.1);
+  d.addColor(particleSys, 'color');
+  d.add(particleSys, 'size', 0, 1).step(0.1);
+
+  var g = gui.addFolder('Geometry Parameters');
+  d.add(variables, 'displayBoat');
+  d.add(meshes, 'num_rocks', 0, 64).step(1);
+  d.addColor(materials.boat_mat.uniforms, 'boat_color');
 
 }
 
