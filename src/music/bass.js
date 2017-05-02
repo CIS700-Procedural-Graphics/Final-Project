@@ -9,7 +9,7 @@ export default function generateBass( voiceNumber, length = 8 ) {
 	switch ( voiceNumber ) {
 		// 1. Default standard meter
 		case 1: 
-			var v = 42;
+			var v = 36;
 			for ( var i = 0; i < length; i++ ) {
 				bassLine.push( {note: v, time: 1} );
 				bassLine.push( {note: -1, time: 1} );
@@ -19,7 +19,7 @@ export default function generateBass( voiceNumber, length = 8 ) {
 			break;
 		// 2. Random Euclidian meter
 		case 2:
-			var v = 70;
+			var v = 45;
 			bassLine = randomBeat( euclid( Math.floor(Math.random() * length), length ), v );
 			break;
 		default:

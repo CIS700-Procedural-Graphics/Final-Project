@@ -352,7 +352,7 @@ function onLoad(framework) {
 	// Initialize music instruments
 	musicPlayer.setMelodicInstrument( 'acoustic_grand_piano', ac );
 	musicPlayer.setHarmonicInstrument( 'fx_7_echoes', ac );
-	musicPlayer.setBassInstrument( './src/soundfonts/percussion.js', ac );
+	musicPlayer.setBassInstrument( 'acoustic_bass', ac );
 
 	// Initialize music
 	musicPlayer.createMusic();
@@ -418,9 +418,9 @@ function onUpdate(framework) {
 		// musicPlayer.playHarmony( nTime, function() {
 		// });
 
-		musicPlayer.playMelody( nTime, function() {
-			Visual.melodyCallback(framework, visualConfig);
-		});
+		// musicPlayer.playMelody( nTime, function() {
+		// 	Visual.melodyCallback(framework, visualConfig);
+		// });
 
 		musicPlayer.playBassLine( nTime, function() {
 			Visual.bassCallback(framework, visualConfig);
