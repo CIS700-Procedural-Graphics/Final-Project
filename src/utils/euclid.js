@@ -38,10 +38,10 @@ export default function euclid(m, k) {
 
 function euclidHelper(head, tail) {
 	while (tail.length > 0) {
-		if (tail.length < head.length) {
-			head[head.length-1] = head[head.length-1].concat(tail);
-			break;
-		}
+		// if (tail.length < head.length) {
+		// 	head[head.length-1] = head[head.length-1].concat(tail);
+		// 	break;
+		// }
 
 		for (var i = 0; i < head.length; i++) {
 			if (tail.length == 0)
