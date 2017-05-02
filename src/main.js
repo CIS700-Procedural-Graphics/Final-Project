@@ -6,7 +6,7 @@ import Player from './player.js'
 
 var player;
 var grid;
-var gridDimension = 10.0;
+var gridDimension = 5.0;
 var allMeshes = new Set();
 var fw;
 
@@ -65,7 +65,7 @@ function onLoad(framework) {
   //directionalLight.color.setHSL(0.1, 1, 0.95);
   directionalLight.position.set(-10, 50, 20);
   //directionalLight.position.multiplyScalar(10);
-  directionalLight.castShadow = true;
+  //directionalLight.castShadow = true;
   scene.add(directionalLight);
 
   /*
@@ -107,6 +107,11 @@ function onLoad(framework) {
 
 function restart(framework) {
 
+  //increase grid size for next level
+  //MUST TO THIS AT THE BEGINNING AND NOT END OF RESTART, 
+  //key press event uses gridDimension for checks
+  gridDimension++;
+
   //disposes all meshses in scene
   for (var mesh of allMeshes) {
       //mesh.material.dispose();
@@ -120,6 +125,8 @@ function restart(framework) {
   framework.camera.position.set(2.0*gridDimension, 1.5*gridDimension, 2.0*gridDimension);
   framework.camera.lookAt(new THREE.Vector3(gridDimension/2.0, 0.0, gridDimension/2.0));
   framework.controls.target.set(gridDimension/2.0, 0.0, gridDimension/2.0);
+  framework.camera.zoom = 500/gridDimension;
+  framework.camera.updateProjectionMatrix(); //must be called after updating camera parameters
 
   //randomly pick a color pallette
   var colorOption = Math.floor(Math.random()*3.0);
@@ -152,7 +159,7 @@ function restart(framework) {
       cell.position.x = x+0.5;
       cell.position.y = -0.5;
       cell.position.z = z+0.5;
-      cell.receiveShadow = true;
+      //cell.receiveShadow = true;
       framework.scene.add(cell);
       allMeshes.add(cell);
 
@@ -173,12 +180,9 @@ function restart(framework) {
 
   // PLAYER
   player = new Player(new THREE.Vector3(gridDimension-1, 0, gridDimension-1), colors);
-  player.cube.castShadow = true;
+  //player.cube.castShadow = true;
   framework.scene.add(player.cube);
   allMeshes.add(player.cube);
-
-  //increase grid size for next level
-  gridDimension++;
 }
 
 document.onkeydown = checkKey;
