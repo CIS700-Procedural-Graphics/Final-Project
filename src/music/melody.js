@@ -19,7 +19,7 @@ export default function generateMelody( scaleNote, randomVar ) {
 		notes.push( { note: tonal.note.midi(s[melodyLine[i]]), time: 4 } );
 	}
 
-	
+
 	// notes = variateMelody( notes, s );
 
 	// console.log( euclid( 3, 8 ) )
@@ -60,15 +60,85 @@ var noteType = {
 	flair: 3,
 };
 
-function insertHook(melody) {
-
-	for (var i = 0; i < melody.length; i++) {
-		var note = melody[i];
-		if (note.type !== noteType.anchor) {
-			
-		}
+function generateRhythm(numBeats) {
+	var r = {
+		1: [ [1] ],
+		2: [ [1,1], [2] ],
+		3: [ [2,1] ],
+		4: [ [2,1,1] ],
+		5: [ [2,1,2] ],
+		6: [ [3,1,2] ],
+		7: [ [3,1,1,2] ],
+		8: [ [3,2,3] ],
+		9: [ [1,1,3,1,1,2] ],
+		10: [ [6,4] ],
+		11: [ [6,1,4] ],
+		12: [ [6,2,4] ],
 	}
 
+	return r[numBeats][Math.floor(Math.random() * r[numBeats].length)];
+}
+
+function insertHook(melody) {
+
+	var pattern = [true, false, false, true, false, false, true, true, false, false];
+	var newMelody = [];
+
+	var hook = [];
+
+	for (var i = 0; i < melody.length-1; i+=2) {
+		var note1= melody[i];
+		var note2 = melody[i+1];
+		if (note1.type !== noteType.anchor && note2.type !== noteType.anchor) {
+			console.log("Error: Cannot insert hook into non anchor type");
+		}
+
+		if (pattern[i%pattern.length]) {
+			if (hook.length == 0) {
+				var totalBeats = note1.time + note2.time;
+				var numBeats = note1.time + 1; // CHANGE THIS
+				var leftoverBeats = totalBeats - numBeats;
+				var times = generateRhythm(numBeats);
+
+				for (var j = 0; j < times.length; j++) {
+					var note = -1;
+					if (j == 0) {
+						note = note1.note;
+					} else if (j == times.length-1) {
+						note = note2.note;
+					} else {
+						note = Math.floor(Math.random() * 50);
+					}
+					hook.push({
+						note: note,
+						time: times[j],
+						type: noteType.hook,
+					});
+				}
+			}
+
+			for (var j = 0; j < hook.length; j++) {
+				newMelody.push({
+					note: hook[j].note
+					time: hook[j].time,
+					type: noteType.hook,
+				});
+			}
+
+			if (leftoverBeats > 0) {
+				newMelody.push({
+					note: -1,
+					time: leftoverBeats,
+					type: noteType.empty,
+				});
+			}
+		} else {
+			newMelody.push(note1);
+			newMelody.push(note2);
+		}
+
+	}
+	return newMelody;
 }
 
 
