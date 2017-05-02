@@ -185,9 +185,18 @@ function insertFlairs( melody, scale, highAnchor, lowAnchor ) {
 	return newMelody;
 }
 
+var tempStuff = [
+					[1,3,1,3,1,3,1,3],
+					[1,2,3,4,1,2,3,4],
+					[4,3,2,1,4,3,2,1],
+					[1,3,2,4,1,3,2,4]
+				];
+
 function createFlair( anchor, scale, length = 8 ) {
 	var beats = createFlairBeatAssignment( length );
 	var pattern = createMelodicContour( 2, scale.length );
+
+	pattern = tempStuff[Math.floor( Math.random() * 4 )];
 
 	var flair = [{note: anchor.note, time: beats[0], type: noteType.flair}];
 	for ( var i = 1; i < beats.length; i++ ) {
@@ -200,9 +209,9 @@ function createFlair( anchor, scale, length = 8 ) {
 function createFlairBeatAssignment( numBeats ) {
 	// Set max number of long beats
 	var usedLong = false;
-	var maxShort = 2;
+	var maxShort = 4;
 	var beats = [], sum = 0, r, b;
-	var l = Math.random() > 0.3 ? 4 : 6;
+	var l = Math.random() > 0 ? 4 : 6;
 	var remainingBeats = numBeats - maxShort - l;
 
 	beats.push( l );
