@@ -43,7 +43,7 @@ THREE.OBJLoader.prototype = {
 
 		var scope = this;
 
-		var loader = new THREE.XHRLoader( scope.manager );
+		var loader = new THREE.FileLoader( scope.manager );
 		loader.setPath( this.path );
 		loader.load( url, function ( text ) {
 
@@ -720,8 +720,7 @@ THREE.OBJLoader.prototype = {
 
 				}
 
-				var multiMaterial = new THREE.MultiMaterial( createdMaterials );
-				mesh = ( ! isLine ? new THREE.Mesh( buffergeometry, multiMaterial ) : new THREE.LineSegments( buffergeometry, multiMaterial ) );
+				mesh = ( ! isLine ? new THREE.Mesh( buffergeometry, createdMaterials ) : new THREE.LineSegments( buffergeometry, createdMaterials ) );
 
 			} else {
 

@@ -115,12 +115,13 @@ function onLoad(framework) {
   setupGUI(gui);
 
   setupBackground(App.scene);
-  //setupWater(App.scene, App.renderer, App.camera);
+  setupWater(App.scene, App.renderer, App.camera);
 
   //set up obj mesh in scene
   //var treeObj = 'geometry/feather.obj';  //'geometry/lowpolytree.obj';
   //setupObj(App.scene, treeObj);
-  //setupObj(App.scene);
+  var obj_file = './assets/wahoo.obj';
+  setupObj(App.scene, obj_file);
 
   //add terrain
   //scene.add(terrainMesh);
@@ -269,9 +270,8 @@ function setupWater(scene, renderer, camera){
   mirrorMesh.rotation.x = - Math.PI * 0.5;
   scene.add(mirrorMesh);
 }
-
+//
 // function setupObj(scene, file) {
-//   //FOR WHEN I GET THE OBJ I WANT
 //
 //   // load a simple obj mesh
 //   var objLoader = new THREE.OBJLoader();
@@ -285,9 +285,9 @@ function setupWater(scene, renderer, camera){
 //   });
 // }
 
-function setupObj(scene) {  //}, file) {
+function setupObj(scene, file) {
   var objLoaded = new Promise((resolve, reject) => {
-      (new THREE.OBJLoader()).load(require('./assets/wahoo.obj'), function(obj) {
+      (new THREE.OBJLoader()).load(require(file), function(obj) {
           var geo = obj.children[0].geometry;
           geo.computeBoundingSphere();
           resolve(geo);
