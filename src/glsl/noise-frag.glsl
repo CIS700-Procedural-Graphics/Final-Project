@@ -1,5 +1,5 @@
 varying vec3 vNormal;
-varying vec3 perlin_color;
+//varying vec3 perlin_color;
 
 varying vec3 frag_Pos;
 

@@ -5,10 +5,12 @@ require('file-loader?name=[name].[ext]!../index.html');
 // http://paulbourke.net/geometry/polygonise/
 
 const THREE = require('three'); // older modules are imported like this. You shouldn't have to worry about this much
+require('three-obj-loader')(THREE)
 
 import Framework from './framework'
 import LUT from './marching_cube_LUT.js'
 import MarchingCubes from './marching_cubes.js'
+import perlinNoise from './noise.js';
 
 var clock = new THREE.Clock();
 
@@ -44,11 +46,11 @@ terrainMesh.translateY(3);
 // =========================================== Application Variables ===========================================
 const DEFAULT_VISUAL_DEBUG = false; //true;
 const DEFAULT_ISO_LEVEL = 1.0;
-const DEFAULT_GRID_RES = 15;//12;//12;//4;  //32 should make it look real nice and smooth
-const DEFAULT_GRID_WIDTH = 10;
-const DEFAULT_NUM_METABALLS = 1;//10;
-const DEFAULT_MIN_RADIUS = 0.5;
-const DEFAULT_MAX_RADIUS = 0.5;//1;
+const DEFAULT_GRID_RES = 25;//12;//12;//4;  //32 should make it look real nice and smooth
+const DEFAULT_GRID_WIDTH = 15//15;//10;
+const DEFAULT_NUM_METABALLS = 50;//10;
+const DEFAULT_MIN_RADIUS = 0.1;//0.5;
+const DEFAULT_MAX_RADIUS = 0.6;//1;
 const DEFAULT_MAX_SPEED = 0.01;
 
 var App = {
@@ -113,14 +115,16 @@ function onLoad(framework) {
   setupGUI(gui);
 
   setupBackground(App.scene);
-  setupWater(App.scene, App.renderer, App.camera);
+  //setupWater(App.scene, App.renderer, App.camera);
 
   //set up obj mesh in scene
-  var treeObj = 'geometry/feather.obj';  //'geometry/lowpolytree.obj';
+  //var treeObj = 'geometry/feather.obj';  //'geometry/lowpolytree.obj';
   //setupObj(App.scene, treeObj);
+  //setupObj(App.scene);
 
   //add terrain
-  scene.add(terrainMesh);
+  //scene.add(terrainMesh);
+  setupTerrain(App.scene);
 
 }//end onload
 
@@ -175,7 +179,7 @@ function setupGUI(gui) {
     }
   });
 
-  gui.add(App.config, 'numMetaballs', 1, 10).onChange(function(value) {
+  gui.add(App.config, 'numMetaballs', 1, 50).onChange(function(value) {
     App.config.numMetaballs = value;
     App.marchingCubes.init(App);
   });
@@ -281,18 +285,64 @@ function setupWater(scene, renderer, camera){
 //   });
 // }
 
-//MAY TRY THIS CODE BELOW INSTEAD?
-// export var objLoaded = new Promise((resolve, reject) => {
-//     (new THREE.OBJLoader()).load(require('./assets/wahoo.obj'), function(obj) {
-//         var geo = obj.children[0].geometry;
-//         geo.computeBoundingSphere();
-//         resolve(geo);
-//     });
-// })
+function setupObj(scene) {  //}, file) {
+  var objLoaded = new Promise((resolve, reject) => {
+      (new THREE.OBJLoader()).load(require('./assets/wahoo.obj'), function(obj) {
+          var geo = obj.children[0].geometry;
+          geo.computeBoundingSphere();
+          resolve(geo);
+      });
+  })
+
+  var mesh;
+  var lambertWhite = new THREE.MeshLambertMaterial({ color: 0xeeeeee });
+  objLoaded.then(function(geo) {
+      mesh = new THREE.Mesh(geo, lambertWhite);
+      mesh.translateY(20);
+      scene.add(mesh);
+  });
+
+}//end setupObj
 
 
-// =========================================== Perlin Noise Functions ===========================================
+// =========================================== Terrain setup ===========================================
+function setupTerrain(scene)
+{
+  var gridDim = 200;
+  var terrainGeo = new THREE.PlaneGeometry( gridDim, gridDim, gridDim, gridDim); //width, height, widthSegments, heightSegments
+  terrainGeo.rotateX(-Math.PI / 2.0);  //make the grid flat
 
+  var newVerticesList = [];
+  var height = 5.0;
+  var noise_output;
+  for(var i = 0; i < terrainGeo.vertices.length; i++)
+  {
+    var currPos = terrainGeo.vertices[i];
+    noise_output = height * perlinNoise(currPos.x, currPos.y, currPos.z);
+    var newPos = new THREE.Vector3(currPos.x, currPos.y + noise_output, currPos.z);
+    newVerticesList.push(newPos);
+  }
+  terrainGeo.vertices = newVerticesList;
+  terrainGeo.verticesNeedUpdate = true;
+
+  var terrainMaterial = new THREE.ShaderMaterial({
+    uniforms: {
+      time: {
+        type : "float",
+        value : time_update
+      }
+    },
+    vertexShader : require('./glsl/noise-vert.glsl'),
+    fragmentShader : require('./glsl/noise-frag.glsl')
+  });
+
+  var terrainMesh = new THREE.Mesh(terrainGeo, terrainMaterial);
+  terrainMesh.rotateY(-Math.PI / 2.0);
+  terrainMesh.translateZ(-3);
+  terrainMesh.translateX(70);
+  terrainMesh.translateY(6.5);
+  scene.add(terrainMesh);
+}
 
 
 // when the scene is done initializing, it will call onLoad, then on frame updates, call onUpdate

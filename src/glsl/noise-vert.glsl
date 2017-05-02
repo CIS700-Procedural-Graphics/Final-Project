@@ -1,7 +1,7 @@
 uniform float time;
 
 varying vec3 vNormal;
-varying vec3 perlin_color;
+//varying vec3 perlin_color;
 varying vec3 frag_Pos;
 
 // uniform float num_octaves;
@@ -136,16 +136,16 @@ vec3 calculateNormal(vec3 point)
 
 void main() {
 
-    float height = 5.0;
-    float noise_output = height * perlinNoise(position.x, position.y, position.z);
+    //float height = 5.0;
+    //float noise_output = height * perlinNoise(position.x, position.y, position.z);
 
     //to send to frag shader - calculate post-noise normal and position
-    vNormal = calculateNormal(normal);  //normal;
-    frag_Pos = vec3(noise_output);  //position;
-    perlin_color = vec3(noise_output);
+    vNormal = normal;//calculateNormal(normal);  //normal;
+    frag_Pos = position;//vec3(noise_output);  //position;
+    //perlin_color = vec3(1.0, 1.0, 1.0);//vec3(noise_output);
 
     //change position of mesh based on perlin output
     vec3 new_pos = position;
-    new_pos = new_pos + (normal * 0.5 * noise_output);    //(vNormal * 0.5 * noise_output);
+    //new_pos = new_pos + (normal * 0.5 * noise_output);    //(vNormal * 0.5 * noise_output);
     gl_Position = projectionMatrix * modelViewMatrix * vec4( new_pos, 1.0 );
 }

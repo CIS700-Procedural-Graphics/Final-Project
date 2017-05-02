@@ -175,121 +175,30 @@ export default class MarchingCubes {
   setupMetaballs() {
     this.balls = [];
     var x, y, z, vx, vy, vz, radius, pos, vel;
-    var spawn_x, spawn_y, spawn_z, spawnLoc, spawnVel, accel;
+    var spawn_x, spawn_y, spawn_z, spawnLoc, spawnVel, accel, offset, accelOffset;
+    var boundary = this.gridWidth - 2.5;  // - 2
 
-    // ---------------- METABLL ONE ----------------
-    // -------- Position --------
-    x = this.gridWidth - 2;
-    y = this.gridWidth - 2;
-    z = this.gridWidth / 2 - 3.5;
-    pos = new THREE.Vector3(x, y, z);
-    spawn_x = this.gridWidth - 2;
-    spawn_y = this.gridWidth - 2;
-    spawn_z = this.gridWidth / 2 - 3.5;
-    spawnLoc = new THREE.Vector3(spawn_x, spawn_y, spawn_z);
-    // -------- Velocity --------
-    vx = (Math.random() * 2 - 1) * this.maxSpeed;
-    vy = (Math.random() * 2 - 1) * this.maxSpeed;
-    vz = (Math.random() * 2 - 1) * this.maxSpeed;
-    vel = new THREE.Vector3(vx, vy, vz);
-    spawnVel = new THREE.Vector3(-1.0, vy, vz);
-    // -------- Other things --------
-    accel = new THREE.Vector3(0.0, -10.0, 0.0);
-    radius = Math.random() * (this.maxRadius - this.minRadius) + this.minRadius;
-    this.setupBall(pos, vel, radius, spawnLoc, spawnVel, accel);
-
-    // ---------------- METABLL TWO ----------------
-    // -------- Position --------
-    z = this.gridWidth / 2 - 2.5;
-    pos = new THREE.Vector3(x, y, z);
-    spawn_z = this.gridWidth / 2 - 2.5;
-    spawnLoc = new THREE.Vector3(spawn_x, spawn_y, spawn_z);
-    // -------- Other things --------
-    //spawnVel = new THREE.Vector3(-1.0, vy, vz);
-    accel = new THREE.Vector3(0.0, -5.0, 0.0);
-    this.setupBall(pos, vel, radius, spawnLoc, spawnVel, accel);
-
-
-    // ---------------- METABLL THREE ----------------
-    // -------- Position --------
-    z = this.gridWidth / 2 - 1.5;
-    pos = new THREE.Vector3(x, y, z);
-    spawn_z = this.gridWidth / 2 - 1.5;
-    spawnLoc = new THREE.Vector3(spawn_x, spawn_y, spawn_z);
-    // -------- Other things --------
-    //spawnVel = new THREE.Vector3(-1.0, vy, vz);
-    accel = new THREE.Vector3(0.0, -7.0, 0.0);
-    this.setupBall(pos, vel, radius, spawnLoc, spawnVel, accel);
-
-
-    // ---------------- METABLL FOUR ----------------
-    // -------- Position --------
-    z = this.gridWidth / 2 - 0.5;
-    pos = new THREE.Vector3(x, y, z);
-    spawn_z = this.gridWidth / 2 - 0.5;
-    spawnLoc = new THREE.Vector3(spawn_x, spawn_y, spawn_z);
-    // -------- Other things --------
-    //spawnVel = new THREE.Vector3(-1.0, vy, vz);
-    accel = new THREE.Vector3(0.0, -3.0, 0.0);
-    this.setupBall(pos, vel, radius, spawnLoc, spawnVel, accel);
-
-
-    // ---------------- METABLL FIVE ----------------
-    // -------- Position --------
-    z = this.gridWidth / 2 + 1;
-    pos = new THREE.Vector3(x, y, z);
-    spawn_z = this.gridWidth / 2 + 1;
-    spawnLoc = new THREE.Vector3(spawn_x, spawn_y, spawn_z);
-    // -------- Other things --------
-    //spawnVel = new THREE.Vector3(-1.0, vy, vz);
-    accel = new THREE.Vector3(0.0, -9.0, 0.0);
-    this.setupBall(pos, vel, radius, spawnLoc, spawnVel, accel);
-
-
-    // ---------------- METABLL SIX ----------------
-    // -------- Position --------
-    z = this.gridWidth / 2 + 2;
-    pos = new THREE.Vector3(x, y, z);
-    spawn_z = this.gridWidth / 2 + 2;
-    spawnLoc = new THREE.Vector3(spawn_x, spawn_y, spawn_z);
-    // -------- Other things --------
-    //spawnVel = new THREE.Vector3(-1.0, vy, vz);
-    accel = new THREE.Vector3(0.0, -4.0, 0.0);
-    this.setupBall(pos, vel, radius, spawnLoc, spawnVel, accel);
-
-
-
-
-    // // ---------------- METABLL FOUR ----------------
-    // // -------- Position --------
-    // x = this.gridWidth / 2;
-    // y = this.gridWidth - 2;
-    // z = this.gridWidth - 2;
-    // pos = new THREE.Vector3(x, y, z);
-    // // -------- Other things --------
-    // spawn_x = this.gridWidth / 2;
-    // spawn_y = this.gridWidth - 2;
-    // spawn_z = this.gridWidth - 2;
-    // spawnLoc = new THREE.Vector3(spawn_x, spawn_y, spawn_z);
-    // spawnVel = new THREE.Vector3(vx, vy, -1.0);
-    // accel = new THREE.Vector3(0.0, -15.0, 0.0);
-    // radius = Math.random() * (this.maxRadius - this.minRadius) + this.minRadius;
-    //
-    // this.setupBall(pos, vel, radius, spawnLoc, spawnVel, accel);
-
-  };//end setupMetaballs
-
-  //use this to spawn metaballs with specified locations, velocities, accel, etc
-  setupBall(pos, vel, radius, spawnLoc, spawnVel, accel)
-  {
     for (var i = 0; i < this.numMetaballs; i++)
     {
-        pos = pos;
-        vel = vel;
-        radius = radius;
-        spawnLoc = spawnLoc;
-        spawnVel = spawnVel
-        accel = accel
+        offset = (Math.random() * boundary) - Math.floor(boundary / 2.0);
+        x = this.gridWidth - 2;
+        y = this.gridWidth - 2;
+        z = this.gridWidth / 2 + offset;
+        pos = new THREE.Vector3(x, y, z);
+        spawn_x = this.gridWidth - 2;
+        spawn_y = this.gridWidth - 2;
+        spawn_z = this.gridWidth / 2 + offset;
+        spawnLoc = new THREE.Vector3(spawn_x, spawn_y, spawn_z);
+        // -------- Velocity --------
+        vx = (Math.random() * 2 - 1) * this.maxSpeed;
+        vy = (Math.random() * 2 - 1) * this.maxSpeed;
+        vz = (Math.random() * 2 - 1) * this.maxSpeed;
+        vel = new THREE.Vector3(vx, vy, vz);
+        spawnVel = new THREE.Vector3(-1.0, vy, vz);
+        // -------- Other things --------
+        accelOffset = Math.floor(Math.random() * 9) - 15;
+        accel = new THREE.Vector3(0.0, accelOffset, 0.0);
+        radius = Math.random() * (this.maxRadius - this.minRadius) + this.minRadius;
 
         var ball = new Metaball(pos, radius, vel, this.gridWidth, VISUAL_DEBUG, spawnLoc, spawnVel, accel);
         this.balls.push(ball);
@@ -297,8 +206,10 @@ export default class MarchingCubes {
         if (VISUAL_DEBUG) {
           this.scene.add(ball.mesh);
         }//end if
-      }//end for
-  };//end setupBall
+    }//end for
+  };//end setupMetaballs
+
+
 
 
 //THE POINT YOU PASS INTO SAMPLE IS POINT ON THE GRID OR SPACE THAT YOU'RE DOING SIMULATION IN
