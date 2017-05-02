@@ -8,6 +8,8 @@ public class MetaballController : MonoBehaviour {
     System.IO.StreamReader readFile; //the file we will read metaball vertex data from
     //private List<Vector3>[] frameVertices;
     //private List<Vector3>[] frameNormals;
+    private MeshCollider meshCollider;
+
 
     private int frameCount = 0;
 
@@ -125,8 +127,11 @@ public class MetaballController : MonoBehaviour {
             setupMetaballs();
         }
 
+
+        meshCollider = GetComponent<MeshCollider>();
         makeMesh();
-	}
+
+    }
 
     // Update is called once per frame
     void Update() {
@@ -262,7 +267,7 @@ public class MetaballController : MonoBehaviour {
     void makeMesh()
     {
        metaballsMesh = GetComponent<MeshFilter>().mesh;
-       GetComponent<MeshCollider>().sharedMesh=metaballsMesh;
+       meshCollider.sharedMesh = metaballsMesh;
 
     }
 
@@ -336,8 +341,8 @@ public class MetaballController : MonoBehaviour {
         if (!writeToFile)
         {
             metaballsMesh.RecalculateBounds();
-            GetComponent<MeshCollider>().sharedMesh = null;
-            GetComponent<MeshCollider>().sharedMesh = metaballsMesh;
+            meshCollider.sharedMesh = null;
+            meshCollider.sharedMesh = metaballsMesh;
         }
     }
 
