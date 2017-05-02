@@ -264,3 +264,21 @@ function variateMelody( melody, scale ) {
 
 	return melody;
 }
+
+function createAnchors( baseNote, length ) {
+	var decider = Math.floor( Math.random() * 2 );
+	var highAnchor = (decider == 1) ? tonal.transpose( baseNote, 'P5') | tonal.transpose( baseNote, 'M7');
+
+	// Get numbers
+	baseNote = tonal.note.midi( baseNote );
+	highAnchor = tonal.note.midi( highAnchor );
+
+	// Fill in anchors
+	var anchor = [];
+	for ( var i = 0; i < length; i++ ) {
+		anchor.push( {note: highAnchor, time: 8, type: ''} );
+		anchor.push( {note: baseNote, time: 8, type: ''} );
+	}
+
+	return anchor;
+}
