@@ -427,7 +427,6 @@ function onUpdate(framework) {
 		});
 	}
 
-return;
 	// Visual
 	var scene = framework.scene;
 	var camera = framework.camera;
