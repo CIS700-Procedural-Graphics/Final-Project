@@ -27,27 +27,6 @@ export default class ParticleSystem {
 
       var positions = new Float32Array(this.instances * 3);
 
-    //   var c = 0;
-    // for (var i = 0; i < this.width; i++) {
-    //     for (var j = 0; j < this.depth; j++) {
-    //       var index = Math.floor(i * w/this.width) * h + Math.floor(j * h/this.depth);
-    //       if (data[4*index] > 0) {
-    //         for (var k = 0; k < this.height; k++) {
-    //           if (Math.random() < this.density) {
-    //             var p = new THREE.Vector3(i + Math.random(), k + Math.random(), j + Math.random());
-    //             var particle = new Particle(p, this.direction.clone().multiplyScalar(Math.random()));
-    //             this.particles.push(particle);
-    //             rainGeometry.vertices.push( particle.pos1 );
-    //             rainGeometry.vertices.push( particle.pos2 );
-    //             positions[c++] = particle.pos1.x;
-    //             positions[c++] = 1;
-    //             positions[c++] = particle.pos1.z;
-    //           }
-    //         }
-    //       }
-    //     }
-    //   }
-
       var count = 0; var c = 0;
       while (count < this.instances) {
         var i = Math.random() * this.width;

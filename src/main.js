@@ -4,7 +4,7 @@ require('three-obj-loader')(THREE)
 
 import Framework from './framework'
 import {updateCamera, makeSpline, makeCircle, makeSplineTexture} from './camera'
-import {initSceneGeo, updateRocks} from './geometry'
+import {initSceneGeo} from './geometry'
 import {canyon_mat, water_mat, sky_mat, rock_mat, boat_mat, rain_mat} from './materials'
 import ParticleSystem from './rain'
 
@@ -14,9 +14,9 @@ var particleSys;
 var variables = {
   music : null,
   audioAnalyser : null,
-  enableSound : false,
+  enableSound : true,
   initialized : false,
-  isPaused : true, 
+  isPaused : false, 
   res: 128,
 
   // spline
@@ -81,7 +81,7 @@ function onLoad(framework) {
   // objects and geometry
   materials.water_mat.uniforms.density.value = 5 * rain.density;
   materials.rain_mat.uniforms.dim.value = new THREE.Vector2(rain.width, rain.depth);
-  initSceneGeo(scene, meshes, materials, variables.spline, variables.path_radius);
+  initSceneGeo(scene, meshes, materials, variables.spline, variables.path_radius, data, variables.res);
 
   // audio
   var listener = new THREE.AudioListener();
@@ -118,6 +118,12 @@ function onLoad(framework) {
 function onUpdate(framework) {
   if (variables.initialized) {
 
+    materials.water_mat.uniforms.time.value = time;
+    materials.canyon_mat.uniforms.time.value = time;
+    materials.sky_mat.uniforms.time.value = time;
+    materials.rock_mat.uniforms.time.value = time;
+    materials.rain_mat.uniforms.time.value = time;
+
     if (!variables.isPaused) {
       time ++;
       if (time == 10000) {
@@ -128,15 +134,7 @@ function onUpdate(framework) {
       particleSys.update(0.1);
     }
 
-    materials.water_mat.uniforms.time.value = time;
-    materials.canyon_mat.uniforms.time.value = time;
-    materials.sky_mat.uniforms.time.value = time;
-    materials.rock_mat.uniforms.time.value = time;
-    materials.rain_mat.uniforms.time.value = time;
-
-    var avgFreq = variables.audioAnalyser.getAverageFrequency() / 256.0;
-    var dataArray = variables.audioAnalyser.getFrequencyData();
-    materials.sky_mat.uniforms.audioFreq.value = avgFreq;
+    
   }
 
 }

@@ -2,7 +2,11 @@ const THREE = require('three');
 const OBJLoader = require('three-obj-loader');
 OBJLoader(THREE);
 
-export function initSceneGeo(scene, meshes, materials, spline, radius) {
+function size_distribution(min, max) {
+  return (max - min) * Math.random() + min;
+}
+
+export function initSceneGeo(scene, meshes, materials, spline, radius, data, res) {
 
   var s = 2 * radius;
   var plane_geo = new THREE.PlaneBufferGeometry(s,s,s,s).rotateX(-Math.PI/2).rotateY(-Math.PI/2).translate(radius, -4, radius);
@@ -36,8 +40,38 @@ export function initSceneGeo(scene, meshes, materials, spline, radius) {
     }); 
   });
 
-}
+  var rock_instances = 32;
 
-export function update() {
+  var light = new THREE.PointLight( 0xffffff, 1, 0 )
+  light.position.set( 0, 200, 0 );
+  scene.add( light);
+
+  var iso_material = new THREE.MeshPhongMaterial( {color: 0x156289, shading: THREE.FlatShading} );
+  for (var i = 0; i < rock_instances; i ++) {
+    var size = size_distribution(0.5,2);
+    var iso_geo = (Math.random() > 0.5) ? new THREE.IcosahedronGeometry(size, 0) : new THREE.IcosahedronGeometry(size, 0);
+    var rock = new THREE.Mesh(iso_geo, iso_material); 
+    var pos = spline.getPoint(Math.random());
+    var index = Math.floor(pos.x * res/(2*radius)) * res + Math.floor(pos.z * res/(2*radius));
+    var inten = data[4*index];
+    var dir = Math.random();
+    while (inten > 127) {
+      if (dir < 0.25) {
+        pos.x -= 0.5;
+      } else if (dir < 0.5) {
+        pos.z -= 0.5;
+      } else if (dir < 0.75) {
+        pos.x += 0.5;
+      } else {
+        pos.z += 0.5;
+      }
+      index = Math.floor(pos.x * res/(2*radius)) * res + Math.floor(pos.z * res/(2*radius));
+      inten = data[4*index];
+    }
+    rock.position.set(pos.x, pos.y - 2, pos.z);
+    rock.name = "rock" + i;
+    meshes.rocks.push(rock);
+    scene.add(rock); 
+  }
 
 }

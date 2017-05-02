@@ -1,11 +1,5 @@
 uniform float time;
 
-attribute vec3 position;
-attribute vec3 offset;
-attribute vec3 color;
-attribute vec3 scale;
-attribute vec3 orientation;
-
 varying vec2 f_uv;
 varying vec3 f_normal;
 varying vec3 f_position;
