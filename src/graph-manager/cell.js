@@ -3,23 +3,28 @@ export default class Cell {
     this.center = {};
     this.halfedges = [];
     this.corners = [];
+    this.neighbors = [];
   }
 
-  getElevation() {
-    var elevation = 0;
+  // getElevation() {
+  //   var elevation = 0;
 
-    _.forEach(this.corners, function(corner) {
-      elevation += corner.elevation;
-    });
+  //   _.forEach(this.corners, function(corner) {
+  //     elevation += corner.elevation;
+  //   });
 
-    return elevation / this.corners.length;
-  }
+  //   return elevation / this.corners.length;
+  // }
 
   isCoastal() {
-    this.corners.forEach(function(node) {
-      // TODO
+    var adjToOcean = false;
+
+    if (this.elevation <= 0) return false;
+
+    this.neighbors.forEach(function(cell) {
+      if (cell.elevation <= 0) adjToOcean = true;
     });
 
-    return false;
+    return adjToOcean;
   }
 }

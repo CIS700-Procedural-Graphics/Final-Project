@@ -104,7 +104,7 @@ export default class ViewManager {
       var faceIndices = [];
 
       corners.forEach(function(node, i) {
-        var pos = node.pos.clone().setComponent(2, node.elevation * 10);
+        var pos = node.pos.clone().setComponent(2, node.elevation * 5);
         var posMapIndex = pos.x + ' ' + pos.y;
         var id = positionsVisited[posMapIndex];
 
@@ -138,7 +138,7 @@ export default class ViewManager {
     geometry.computeFaceNormals();
     geometry.computeVertexNormals();
 
-    var material = new THREE.MeshStandardMaterial({
+    var material = new THREE.MeshLambertMaterial({
       color: 0xffffff,
       side: THREE.DoubleSide,
       vertexColors: THREE.FaceColors
@@ -178,7 +178,7 @@ export default class ViewManager {
 
           positions[(i * 3)    ] = pos.x;
           positions[(i * 3) + 1] = pos.y;
-          positions[(i * 3) + 2] = pos.z + (elevation * 10.0);
+          positions[(i * 3) + 2] = pos.z + (elevation * 5.0);
           elevations[i] = elevation;
           moistures[i] = moisture;
 

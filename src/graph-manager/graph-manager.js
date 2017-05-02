@@ -98,6 +98,7 @@ export default class GraphManager {
           halfedge.nodeB = nodeB;
           cell.halfedges.push(halfedge);
           cell.corners.push(nodeA);
+          nodeA.cells.push(cell);
         }
 
         var numHalfEdges = cell.halfedges.length;
@@ -111,10 +112,27 @@ export default class GraphManager {
 
         cell.center.x = x+0.5;
         cell.center.y = y+0.5;
+        cell.id = this.cells.length;
 
         this.cells.push(cell);
       }
     }
+
+    this.cells.forEach(function(cell) {
+      var neighbors = {};
+
+      cell.corners.forEach(function(node) {
+        node.cells.forEach(function(nodeCell) {
+          var id = nodeCell.id;
+
+          if (id !== cell.id) {
+            neighbors[id] = nodeCell;
+          }
+        });
+      });
+
+      cell.neighbors = _.values(neighbors);
+    });
 
     this.nodes = _.values(nodesMap);
     this.edges = _.values(edgesMap);
@@ -263,6 +281,7 @@ export default class GraphManager {
           halfedge.nodeB = nodeB;
           cell.halfedges.push(halfedge);
           cell.corners.push(nodeA);
+          nodeA.cells.push(cell);
         }
 
         var numHalfEdges = cell.halfedges.length;
@@ -276,10 +295,27 @@ export default class GraphManager {
 
         cell.center.x = (x*2)+1 + xOffset;
         cell.center.y = (y*2)+1 + yOffset;
+        cell.id = this.cells.length;
 
         this.cells.push(cell);
       }
     }
+
+    this.cells.forEach(function(cell) {
+      var neighbors = {};
+
+      cell.corners.forEach(function(node) {
+        node.cells.forEach(function(nodeCell) {
+          var id = nodeCell.id;
+
+          if (id !== cell.id) {
+            neighbors[id] = nodeCell;
+          }
+        });
+      });
+
+      cell.neighbors = _.values(neighbors);
+    });
 
     this.nodes = _.values(nodesMap);
     this.edges = _.values(edgesMap);
@@ -356,10 +392,29 @@ export default class GraphManager {
 
         cellNew.halfedges.push(halfedgeNew);
         cellNew.corners.push(nodeA);
+        nodeA.cells.push(cellNew);
       });
+
+      cellNew.id = this.cells.length;
 
       this.cells.push(cellNew);
     }, this);
+
+    this.cells.forEach(function(cell) {
+      var neighbors = {};
+
+      cell.corners.forEach(function(node) {
+        node.cells.forEach(function(nodeCell) {
+          var id = nodeCell.id;
+
+          if (id !== cell.id) {
+            neighbors[id] = nodeCell;
+          }
+        });
+      });
+
+      cell.neighbors = _.values(neighbors);
+    });
 
     this.nodes = _.values(nodesMap);
     this.edges = _.values(edgesMap);

@@ -7,5 +7,6 @@ export default class Node {
     this.y = y;
     this.pos = new THREE.Vector3(x, y, 0);
     this.neighbors = [];
+    this.cells = [];
   }
 }

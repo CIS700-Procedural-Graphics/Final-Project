@@ -6,6 +6,8 @@ const CHROMA = require('chroma-js');
 export default class GeographyManager {
   constructor(options, map) {
     this.map = map;
+    this.elevationNoisiness = options.elevationNoisiness;
+    this.moistureNoisiness = options.moistureNoisiness;
     this.biomes = {
       SNOW: 'SNOW',
       TUNDRA: 'TUNDRA',
@@ -30,13 +32,13 @@ export default class GeographyManager {
       SCORCHED: CHROMA(153, 153, 153),
       TAIGA: CHROMA(204, 212, 186),
       SHRUBLAND: CHROMA(196, 204, 186),
-      TEMPERATE_DESERT: CHROMA(228, 233, 201),
-      TEMPERATE_RAIN_FOREST: CHROMA(163, 197, 167),
+      TEMPERATE_DESERT: CHROMA(205, 215, 166),
+      TEMPERATE_RAIN_FOREST: CHROMA(96, 154, 111),
       TEMPERATE_DECIDUOUS_FOREST: CHROMA(179, 202, 168),
-      GRASSLAND: CHROMA(196, 213, 168),
-      TROPICAL_RAIN_FOREST: CHROMA(155, 187, 169),
-      TROPICAL_SEASONAL_FOREST: CHROMA(168, 205, 163),
-      SUBTROPICAL_DESERT: CHROMA(233, 221, 198),
+      GRASSLAND: CHROMA(152, 181, 109),
+      TROPICAL_RAIN_FOREST: CHROMA(83, 140, 111),
+      TROPICAL_SEASONAL_FOREST: CHROMA(110, 167, 95),
+      SUBTROPICAL_DESERT: CHROMA(213, 193, 153),
       BEACH: CHROMA(172, 159, 138),
       OCEAN: CHROMA(54, 53, 98)
     };
@@ -50,24 +52,19 @@ export default class GeographyManager {
   }
 
   _generateCoastline() {
-    var cells = this.map.graphManager.cells;
+    var nodes = this.map.graphManager.nodes;
 
-    cells.forEach(function(cell) {
-      var corners = cell.corners;
-      var isCoastalCell = false;
+    nodes.forEach(function(node) {
+      var adjToLand = false;
+      var adjToOcean = false;
 
-      corners.forEach(function(node) {
-        if (node.elevation <= 0) {
-          isCoastalCell = true;
-        }
+      node.cells.forEach(function(cell) {
+        if (cell.elevation <= 0) adjToOcean = true;
+        if (cell.elevation > 0) adjToLand = true;
       });
 
-      if (isCoastalCell) {
-        corners.forEach(function(node) {
-          if (node.elevation > 0) {
-            node.isCoastal = true;
-          }
-        })
+      if (adjToOcean && adjToLand) {
+        node.isCoastal = true;
       }
     });
   }
@@ -80,12 +77,13 @@ export default class GeographyManager {
     var noise = new NOISEJS.Noise(seed);
 
     nodes.forEach(function(node) {
-      var elevation = noise.simplex2(node.pos.x / numCells, node.pos.y / numCells);
+      var elevation = noise.simplex2(node.pos.x / numCells * this.elevationNoisiness,
+                                     node.pos.y / numCells * this.elevationNoisiness);
       var f = CHROMA.scale(['008ae5', 'yellow']).domain([-1, 1]);
 
       node.elevationColor = f(elevation);
       node.elevation = elevation;
-    });
+    }, this);
 
     cells.forEach(function(cell) {
       var colors = [];
@@ -109,12 +107,13 @@ export default class GeographyManager {
     var noise = new NOISEJS.Noise(seed);
 
     nodes.forEach(function(node) {
-      var moisture = noise.simplex2(node.pos.x / numCells, node.pos.y / numCells);
+      var moisture = noise.simplex2(node.pos.x / numCells * this.moistureNoisiness,
+                                    node.pos.y / numCells * this.moistureNoisiness);
       var f = CHROMA.scale(['fba271', '5070ff']).domain([-1, 1]);
 
       node.moistureColor = f(moisture);
       node.moisture = moisture;
-    });
+    }, this);
 
     cells.forEach(function(cell) {
       var colors = [];

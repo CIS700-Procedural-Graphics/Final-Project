@@ -60,47 +60,57 @@ vec3 getBiomeColor(float elevation, float moisture) {
     if (elevation <= 0.00) return vec3(0.211, 0.207, 0.384);
 
     if (elevation <= 0.25) {
-      if (moisture <= -0.66)  return vec3(0.607, 0.733, 0.662);
-      if (moisture <= -0.33)  return vec3(0.607, 0.733, 0.662);
-      if (moisture <= 0.00)      return vec3(0.658, 0.803, 0.639);
-      if (moisture <= 0.33)   return vec3(0.658, 0.803, 0.639);
-      if (moisture <= 0.66)   return vec3(0.768, 0.835, 0.658);
+      if (moisture <= -0.66)  return vec3(0.325, 0.549, 0.435);
+      if (moisture <= -0.33)  return vec3(0.325, 0.549, 0.435);
+      if (moisture <= 0.00)   return vec3(0.431, 0.654, 0.372);
+      if (moisture <= 0.33)   return vec3(0.431, 0.654, 0.372);
+      if (moisture <= 0.66)   return vec3(0.596, 0.709, 0.427);
       if (moisture <= 1.00)      return vec3(0.913, 0.866, 0.776);
     }
 
     if (elevation <= 0.50) {
-      if (moisture <= -0.66)  return vec3(0.639, 0.772, 0.654);
+      if (moisture <= -0.66)  return vec3(0.376, 0.603, 0.435);
       if (moisture <= -0.33)  return vec3(0.701, 0.792, 0.658);
-      if (moisture <= 0.00)      return vec3(0.701, 0.792, 0.658);
-      if (moisture <= 0.33)   return vec3(0.768, 0.835, 0.658);
-      if (moisture <= 0.66)   return vec3(0.768, 0.835, 0.658);
-      if (moisture <= 1.00)      return vec3(0.894, 0.913, 0.788);
+      if (moisture <= 0.00)   return vec3(0.701, 0.792, 0.658);
+      if (moisture <= 0.33)   return vec3(0.596, 0.709, 0.427);
+      if (moisture <= 0.66)   return vec3(0.596, 0.709, 0.427);
+      if (moisture <= 1.00)   return vec3(0.803, 0.835, 0.650);
     }
 
     if (elevation <= 0.75) {
       if (moisture <= -0.66)  return vec3(0.800, 0.831, 0.729);
       if (moisture <= -0.33)  return vec3(0.800, 0.831, 0.729);
-      if (moisture <= 0.00)      return vec3(0.768, 0.800, 0.729);
+      if (moisture <= 0.00)   return vec3(0.768, 0.800, 0.729);
       if (moisture <= 0.33)   return vec3(0.768, 0.800, 0.729);
-      if (moisture <= 0.66)   return vec3(0.894, 0.913, 0.788);
-      if (moisture <= 1.00)      return vec3(0.894, 0.913, 0.788);
+      if (moisture <= 0.66)   return vec3(0.803, 0.835, 0.650);
+      if (moisture <= 1.00)   return vec3(0.803, 0.835, 0.650);
     }
 
     if (elevation <= 1.00) {
       if (moisture <= -0.66)  return vec3(0.972, 0.972, 0.972);
       if (moisture <= -0.33)  return vec3(0.972, 0.972, 0.972);
-      if (moisture <= 0.00)      return vec3(0.972, 0.972, 0.972);
+      if (moisture <= 0.00)   return vec3(0.972, 0.972, 0.972);
       if (moisture <= 0.33)   return vec3(0.866, 0.870, 0.725);
       if (moisture <= 0.66)   return vec3(0.733, 0.733, 0.733);
-      if (moisture <= 1.00)      return vec3(0.600, 0.600, 0.600);
+      if (moisture <= 1.00)   return vec3(0.835, 0.756, 0.600);
     }
 }
 
+vec3 getSmoothedBiomeColor(float elevation, float moisture) {
+  float noise  = (cnoise(v_position.xy + vec2( 0.0,  0.0)) + 1.0) / 2.0;
+  float noiseT = (cnoise(v_position.xy + vec2( 1.0,  0.0)) + 1.0) / 2.0;
+  float noiseB = (cnoise(v_position.xy + vec2(-1.0,  0.0)) + 1.0) / 2.0;
+  float noiseL = (cnoise(v_position.xy + vec2( 0.0, -1.0)) + 1.0) / 2.0;
+  float noiseR = (cnoise(v_position.xy + vec2( 0.0,  1.0)) + 1.0) / 2.0;
+
+  return getBiomeColor(elevation, moisture);
+
+}
+
 void main() {
-  float noise = cnoise(v_position.xy) / 40.0;
   vec3 c = (u_color == 0) ? getElevationColor(v_elevation) :
            (u_color == 1) ? getMoistureColor(v_moisture) :
-           (u_color == 2) ? getBiomeColor(v_elevation + noise, v_moisture + noise) :
+           (u_color == 2) ? getSmoothedBiomeColor(v_elevation, v_moisture) :
                             vec3(0, 0, 0);
 
   gl_FragColor = vec4(c, 1.0);

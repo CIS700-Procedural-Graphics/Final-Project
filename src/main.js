@@ -33,13 +33,16 @@ function onLoad(framework) {
 
   var options = {
     graphManager: {
-      cellType: 'voronoi', // 'square', 'hex', 'voronoi'
-      numCells: 100
+      cellType: 'square', // 'square', 'hex', 'voronoi'
+      numCells: 50
     },
-    geographyManager: {},
+    geographyManager: {
+      elevationNoisiness: 2.0,
+      moistureNoisiness: 2.0
+    },
     viewManager: {
-      renderGraph: true,
-      renderColors: 'moisture', // 'elevation', 'moisture', 'biomes'
+      renderGraph: false,
+      renderColors: 'biomes', // 'elevation', 'moisture', 'biomes'
       render3D: 'polygon', // 'polygon', 'shader', 'none'
       renderCoastline: false,
       debugShowNodes: false,
@@ -68,6 +71,9 @@ function onLoad(framework) {
 
   guiGraphManager.add(options.graphManager, 'cellType', ['square', 'hex', 'voronoi']).name('Cell type');
   guiGraphManager.add(options.graphManager, 'numCells').name('Num cells');
+
+  guiGeographyManager.add(options.geographyManager, 'elevationNoisiness', 0, 10).name('Elevation noisiness');
+  guiGeographyManager.add(options.geographyManager, 'moistureNoisiness', 0, 10).name('Moisture noisiness');
 
   guiViewManager.add(options.viewManager, 'renderGraph').name('Show graph');
   guiViewManager.add(options.viewManager, 'renderColors', ['elevation', 'moisture', 'biomes']).name('Show map colors');
