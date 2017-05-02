@@ -22,7 +22,7 @@ export default class ParticleSystem {
       this.location = data;
 
       var rain_geo = new THREE.InstancedBufferGeometry();
-      var vertices = new THREE.BufferAttribute( new Float32Array( 3 * 3 ), 3 );
+      var vertices = new THREE.InstancedBufferAttribute( new Float32Array( 3 * 3 ), 3 );
         vertices.setXYZ( 0, 0.025, -0.025, 0 );
         vertices.setXYZ( 1, -0.025, 0.025, 0 );
         vertices.setXYZ( 2, 0, 0, 0.025 );
@@ -30,23 +30,35 @@ export default class ParticleSystem {
 
       var instances = this.width * this.height * this.depth * this.density;
       var offsets = new THREE.InstancedBufferAttribute( new Float32Array( instances * 3 ), 3, 1 );
-      offsets.dynamic = true;
+      // offsets.dynamic = true;
       var count = 0;
-      for (var i = 0; i < this.width; i++) {
-        for (var j = 0; j < this.depth; j++) {
-          var index = Math.floor(i * w/this.width) * h + Math.floor(j * h/this.depth);
-          if (data[4*index] > 0) {
-            for (var k = 0; k < this.height; k++) {
-              if (count > instances) break;
-              if (Math.random() < this.density) {
-                var p = new THREE.Vector3(i + Math.random(), k + Math.random(), j + Math.random());
-                var particle = new Particle(p, this.direction.clone().multiplyScalar(Math.random()));
-                this.particles.push(particle);
-                offsets.setXYZ(count++, p.x, p.y, p.z);
-              }
-            }
-          }
-        }   
+      // for (var i = 0; i < this.width; i++) {
+      //   for (var j = 0; j < this.depth; j++) {
+      //     var index = Math.floor(i * w/this.width) * h + Math.floor(j * h/this.depth);
+      //     if (data[4*index] > 0) {
+      //       for (var k = 0; k < this.height; k++) {
+      //         if (Math.random() < this.density) {
+      //           var p = new THREE.Vector3(i + Math.random(), k + Math.random(), j + Math.random());
+      //           var particle = new Particle(p, this.direction.clone().multiplyScalar(Math.random()));
+      //           this.particles.push(particle);
+      //           offsets.setXYZ(count++, p.x, p.y, p.z);
+      //         }
+      //       }
+      //     }
+      //   }   
+      // }
+      var count = 0;
+      while (count < instances) {
+        var i = Math.random() * this.width;
+        var j = Math.random() * this.depth;
+        var k = Math.random() * this.height;
+        var index = Math.floor(i * w/this.width) * h + Math.floor(j * h/this.depth);
+        if (data[4*index] > 0) {
+          var p = new THREE.Vector3(i, k, j);
+          var particle = new Particle(p, this.direction.clone().multiplyScalar(Math.random()));
+          this.particles.push(particle);
+          offsets.setXYZ(count++, p.x, p.y, p.z);
+        }
       }
       rain_geo.addAttribute( 'offset', offsets );
 
@@ -54,7 +66,7 @@ export default class ParticleSystem {
 
       this.rain = new THREE.Mesh( rain_geo, rain_material ); // define mesh 
       // this.rain.geometry.verticesNeedUpdate = true;
-
+      this.rain.name = "rain";
       this.scene.add( this.rain );
     }
 
@@ -71,8 +83,8 @@ export default class ParticleSystem {
         this.particles[i].pos.z = this.particles[i].index.y;
         this.particles[i].vel = this.direction.clone().multiplyScalar(Math.random());
       }  
-      this.rain.geometry.getAttribute('offset').setXYZ(i, this.particles[i].x, this.particles[i].y, this.particles[i].z)       
+      this.rain.geometry.getAttribute('offset').setXYZ(i, this.particles[i].pos.x, this.particles[i].pos.y, this.particles[i].pos.z)       
     }
-    // this.rain.geometry.getAttribute('offset').needsUpdate = true;
+    this.rain.geometry.getAttribute('offset').needsUpdate = true;
   }
 }

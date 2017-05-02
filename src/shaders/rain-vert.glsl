@@ -78,11 +78,10 @@ void main() {
     vUV = vec2(position.x/dim.x, position.z/dim.y);
     vPosition = position + offset;
 
-    vec2 p = vec2(position.x, position.z);
+    vec2 p = vec2(offset.x, offset.z);
     float noise = p_noise(p, frequency, amplitude, time);
     float water_pos = 1.0 + noise;
 
-    vec4 screen = projectionMatrix * modelViewMatrix * vec4(vPosition, 1.0);
-    
-    gl_Position = screen;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(vPosition, 1.0);
 }
+

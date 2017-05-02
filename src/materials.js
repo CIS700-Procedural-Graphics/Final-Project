@@ -62,10 +62,10 @@ export var rain_mat = {
 
   uniforms: {
     time: {value: new Date().getMilliseconds()},
-    ePosition : {value: new THREE.Vector3(0)},
+    ePosition : {value: new THREE.Vector3(1,1,1)},
     amplitude: {value: water_mat.uniforms.amplitude.value},
     frequency: {value: water_mat.uniforms.frequency.value},
-    dim: {value: null},
+    dim: {value: new THREE.Vector2(100,100)},
     buckets: {value: water_mat.uniforms.buckets.value},
     drop_color: {value: [0.5, 0.6, 0.7]},
     splash_color: {value: [148/255, 0, 211/255]},
