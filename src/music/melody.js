@@ -6,7 +6,7 @@ import euclid from './../utils/euclid.js'
 
 export default function generateMelody( scaleNote, randomVar ) {
 	var s = tonal.scale.get('major', scaleNote);
-	
+
 
 	var sO = tonal.note.fromMidi( tonal.note.midi( scaleNote ) - 12 );
 	s = tonal.scale.get( 'major', sO ).concat( s );
@@ -53,6 +53,43 @@ export default function generateMelody( scaleNote, randomVar ) {
 	return finalNotes;
 }
 
+var noteType = {
+	empty: 0,
+	anchor: 1,
+	hook: 2,
+	flair: 3,
+};
+
+function insertHook(melody) {
+
+	for (var i = 0; i < melody.length; i++) {
+		var note = melody[i];
+		if (note.type !== noteType.anchor) {
+			
+		}
+	}
+
+}
+
+function createAnchors( baseNote, length ) {
+	var decider = Math.floor( Math.random() * 2 );
+	var highAnchor = (decider == 1) ? tonal.transpose( baseNote, 'P5') | tonal.transpose( baseNote, 'M7');
+
+	// Get numbers
+	baseNote = tonal.note.midi( baseNote );
+	highAnchor = tonal.note.midi( highAnchor );
+
+	// Fill in anchors
+	var anchor = [];
+	for ( var i = 0; i < length; i++ ) {
+		anchor.push( {note: highAnchor, time: 8, type: noteType.anchor} );
+		anchor.push( {note: baseNote, time: 8, type: noteType.anchor} );
+	}
+
+	return anchor;
+}
+
+
 function createMelodicContour( seed, range ) {
 
 	// Either create a music contour from a smooth noise function
@@ -84,7 +121,7 @@ function createMelodicContour( seed, range ) {
 			}
 		}
 	} else {
-		// In this case, use a random sequence of numbers to determine the slope 
+		// In this case, use a random sequence of numbers to determine the slope
 		// of each segment of 4-8 notes
 		var subsampledContour = [];
 		var duration = ( Math.floor( Math.random() * 2 + 1 ) * 2 + 6 ) * 4;
@@ -107,7 +144,7 @@ function createMelodicContour( seed, range ) {
 			sign = Math.pow(-1, sCounter);
 		}
 	}
-	
+
 
 
 	return subsampledContour;
@@ -187,7 +224,7 @@ function rhythmSum( rhythm ) {
 }
 
 function variateMelody( melody, scale ) {
-	// Let's assume we have a rhythmic melody and assume that the melody 
+	// Let's assume we have a rhythmic melody and assume that the melody
 	// parameter here represents 1 repeat of the theme.
 	// Then, we add some variations to the music.
 
@@ -196,7 +233,7 @@ function variateMelody( melody, scale ) {
 	var start4 = Math.floor( melody.length / 3 );
 	for ( var i = start4; i < melody.length; i++ ) {
 		if ( melody[i].note < 0 ) { continue; }
-		
+
 		var r = Math.random();
 		if ( r > 0.35 - 0.5 * (start4 - i) ) {
 			melody[i].time = 4;
@@ -207,7 +244,7 @@ function variateMelody( melody, scale ) {
 	var start8 = Math.floor( melody.length / 3 * 2 );
 	for ( var i = start8; i < melody.length; i++ ) {
 		if ( melody[i].note < 0 ) { continue; }
-		
+
 		var r = Math.random();
 		if ( r > 0.5 - 0.5 * (start8 - i) ) {
 			melody[i].time = 8;
@@ -265,20 +302,5 @@ function variateMelody( melody, scale ) {
 	return melody;
 }
 
-function createAnchors( baseNote, length ) {
-	var decider = Math.floor( Math.random() * 2 );
-	var highAnchor = (decider == 1) ? tonal.transpose( baseNote, 'P5') | tonal.transpose( baseNote, 'M7');
 
-	// Get numbers
-	baseNote = tonal.note.midi( baseNote );
-	highAnchor = tonal.note.midi( highAnchor );
 
-	// Fill in anchors
-	var anchor = [];
-	for ( var i = 0; i < length; i++ ) {
-		anchor.push( {note: highAnchor, time: 8, type: ''} );
-		anchor.push( {note: baseNote, time: 8, type: ''} );
-	}
-
-	return anchor;
-}
