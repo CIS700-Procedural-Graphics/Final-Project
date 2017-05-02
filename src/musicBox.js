@@ -6,6 +6,7 @@ import euclid from './utils/euclid.js'
 import {patternedMelody,
 		createMainTheme,
 		createMelody} from './music/musicMotifs.js'
+
 import generateMelody from './music/melody.js'
 import generateBass from './music/bass.js'
 import generateHarmony from './music/harmony.js'
@@ -19,11 +20,11 @@ export default class MusicBox {
 	// Private functions
 	_init() {
 		this.instruments = [null,null,null];
-		this.noise = [2, 0.06, 0.25];
+		this.noise = [2, 0.05, 0.25];
 	}
 
 	_setInstrument( instrumentName, ac, type ) {
-		var instrument = Soundfont.instrument(ac, instrumentName, { soundfont: 'MusyngKite',
+		var instrument = Soundfont.instrument(ac, instrumentName, { soundfont: 'fuildR3',
 																	gain: 1,
 																	adsr: [0, 0, 0, 0] });
 		var detailedInstrument = {
@@ -97,7 +98,7 @@ export default class MusicBox {
 							instr.start(instrument.notes[index][instrument.noteCount[index]].note, 
 										instrument.ac.currentTime, 
 										{gain: this.noise[type],
-										 adsr: [0,0,0,0]});
+										 adsr: [0.3,0.3,0.8,1]});//[0.3,0.3,0.8,1]
 							if (index == 0) { callback(); }
 						}
 						instrument.played[index] = true;

@@ -350,7 +350,7 @@ function onLoad(framework) {
 	// RENDERER
 
 	// Initialize music instruments
-	musicPlayer.setMelodicInstrument( 'pizzicato_strings', ac );
+	musicPlayer.setMelodicInstrument( 'marimba', ac );
 	musicPlayer.setHarmonicInstrument( 'acoustic_grand_piano', ac );
 	musicPlayer.setBassInstrument( 'acoustic_bass', ac );
 

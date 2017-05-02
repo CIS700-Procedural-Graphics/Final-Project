@@ -10,6 +10,7 @@ var instruments = [
   44, // fx_5_brightness
   45, // fx_6_goblins
   46, // fx_7_echoes
+  56, // kalimba
   63, // lead_6_voice
   86, // pizzicato_strings
   91, // seashore
