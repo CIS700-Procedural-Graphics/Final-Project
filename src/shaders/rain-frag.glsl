@@ -1,15 +1,13 @@
-precision highp float;
-
 uniform sampler2D spline_tex;
 uniform float buckets;
 uniform vec3 drop_color;
 uniform vec3 splash_color;
-uniform vec3 ePosition;
 
 varying vec2 vUV;
 varying vec3 vPosition;
 varying float splash;
 varying float dist;
+varying vec3 ePosition;
 
 float bias(float b, float t) {
 	return pow(t, log(b) / log(0.5));
@@ -43,5 +41,5 @@ void main() {
 		color = drop_color;
 	}
 
-    gl_FragColor = vec4(color, alpha);
+    gl_FragColor = vec4(color, 1.0);
 }

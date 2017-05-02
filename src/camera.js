@@ -176,7 +176,7 @@ export function updateCamera(viewpoint, camera, spline, circle, camPosIndex, boa
       // smooth camera movement
       var look = spline.getPoint((camPosIndex+ offset + 1) / 10000);
       if (viewpoint == 1) {
-      	look = circle.getPoint((camPosIndex+ offset + 1) / 10000);
+      	look = circle.getPoint((camPosIndex+ 1) / 10000);
       	look.y = 0;
       }
       camera.lookAt(look);

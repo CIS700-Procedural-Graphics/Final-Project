@@ -47,7 +47,7 @@ var materials = {
 }
 
 var rain = {
-  density : 0.5,
+  density : 0.1,
   direction : new THREE.Vector3(0,-1,0),
   width : 2 * variables.path_radius,
   depth : 2 * variables.path_radius,
@@ -133,7 +133,6 @@ function onUpdate(framework) {
     materials.sky_mat.uniforms.time.value = time;
     materials.rock_mat.uniforms.time.value = time;
     materials.rain_mat.uniforms.time.value = time;
-    materials.rain_mat.uniforms.ePosition.value = framework.camera.position;
 
     var avgFreq = variables.audioAnalyser.getAverageFrequency() / 256.0;
     var dataArray = variables.audioAnalyser.getFrequencyData();
