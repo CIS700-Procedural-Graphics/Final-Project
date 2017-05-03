@@ -8,22 +8,25 @@ var Particle = function(pos, vel) {
 }
 
 export default class ParticleSystem {
-  constructor(App, scene, data, w, h, rain_mat) {
-      this.init(App, scene, data, w, h, rain_mat);
+  constructor(App, scene, variables, rain_mat) {
+      this.init(App, scene, variables, rain_mat);
     }
 
-    init(App, scene, data, w, h, rain_mat) {
-      this.scene = scene;
+    init(App, scene, variables, rain_mat) {
       this.particles = [];
       this.density = App.density;
       this.direction = App.direction;
       this.width = App.width;
       this.height = App.height;
       this.depth = App.depth;
-      this.location = data;
+      this.data = variables.texture_data;
       this.color = 0x555555;
       this.size = 0.5;
       this.instances = this.width * this.height * this.depth * this.density;
+
+      var w = variables.res;
+      var h = variables.res;
+
       var rainGeometry = new THREE.Geometry();
       var drop_geo = new THREE.BufferGeometry();
 
@@ -35,7 +38,7 @@ export default class ParticleSystem {
         var j = Math.random() * this.depth;
         var k = Math.random() * this.height;
         var index = Math.floor(i * w/this.width) * h + Math.floor(j * h/this.depth);
-        if (data[4*index] > 0) {
+        if (this.data[4*index] > 0) {
           count++;
           var p = new THREE.Vector3(i + Math.random(), k + Math.random(), j + Math.random());
           var particle = new Particle(p, this.direction.clone().multiplyScalar(Math.random()));
@@ -57,13 +60,13 @@ export default class ParticleSystem {
         
     }); 
 
-    this.scene.add(drops);
-      var rainMaterial = new THREE.LineBasicMaterial( { this.color, linewidth: this.size } )
+    scene.add(drops);
+      var rainMaterial = new THREE.LineBasicMaterial( { color: this.color, linewidth: this.size } )
 
       this.rain = new THREE.LineSegments( rainGeometry, rainMaterial ); // define mesh 
       this.rain.geometry.verticesNeedUpdate = true;
 
-      this.scene.add( this.rain );
+      scene.add( this.rain );
     }
 
   update(dt) {

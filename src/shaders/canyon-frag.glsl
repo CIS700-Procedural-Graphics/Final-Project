@@ -16,9 +16,9 @@ vec3 applyFog(vec3 color, float distance, float b) {
 
 void main() {
  
-  vec3 ncolor = mix(vec3(0.0, 0.0, 0.0), tip_color, vNoise);
+  vec3 ncolor = mix(mid_color, base_color, vNoise);
   float scale = texture2D(spline_tex, vUV).r;
-  vec3 color = mix(ncolor, base_color, scale);
+  vec3 color = mix(ncolor, tip_color, scale);
 
   color = applyFog(color, length(vPosition - ePosition), 0.01);
 

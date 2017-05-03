@@ -54,7 +54,7 @@ The next rain effect I implemented was the rain hitting the water. I do not hand
 
 To fix the raindrop thickness and the droplet splashes, I moved this code to a rain shader. Instead of creating a line segment geometry, I tired instancing a polygon at each particle position. When the particle is above the water (code for perlin noise for water copied in the rain's vertex shader), the polygon becomes a triangle with the thickness of the bottom dependent on distance from camera and the color is grey. When the particle is below the water, the polygon becomes a hexagon with a radius dependent on the distance below the water. The color of these droplets was interpolated between purple and the color of the water so that they disappear over time. Figure 3 shows an attempt at this method. 
 
-![Figure 3](./images/badrain.png)
+<img src="/images/badrain.png" width="300">
 
 While in theory it is a great idea, instancing in THREE.js is not quite perfected according to other users (and confirmed by me). The types of geometry that can be instanced and the possible shader effects are too limited. I was able to make triangular water droplets whose length was dependent on the view vector (shorter from above) using a regular buffer geometry - not instanced (purple squares above). However the GPU could not handle very many triangles because every call required multiple if statements to determine shape and location. In additon, creating a circular splash required moving specific vertices outward, so each vertex required an extra attribute for identifying. In the end it just looked bad and ran slowly, so I changed back to what I originally had with the line segments. 
 
@@ -81,9 +81,7 @@ I did not like the effect the music frequency had in my scene. I set the frequen
 ## Future Work
 
 * Camera Movement
-I would like to improve the interactivity beyond just the viewpoint toggle. Instead of animating the camera along a spline, the user could move anywhere within the widened spline loop area and look around the scene. When that gets boring, the camera would move back to the spline animation. 
-* Interactivity
-Many parameters went into this simulation, so I could make them more accessible to the user so they could change colors, camera's direction, etc. I did not focus on doing this because a lot of the parameters I choose were chosen so as not to break the simulation, and I don't trust others to do the same.  
+I would like to improve the interactivity beyond just the viewpoint toggle. Instead of animating the camera along a spline, the user could move anywhere within the widened spline loop area and look around the scene. When that gets boring, the camera would move back to the spline animation.  
 * Changing Weather
 The simulation started as a sunny canyon environment until I added the rain particles. It would be cool for the simulation to smoothly change from sunny to rainy to stormy, etc. The problem with this now is dynamically adding particles to the system.  
 * Ambient Occlusion

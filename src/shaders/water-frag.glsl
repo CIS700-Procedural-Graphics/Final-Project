@@ -20,8 +20,8 @@ void main() {
 
 
 	float level = texture2D(spline_tex, vUV).r - 0.1;
-	float d = floor(buckets * level) / buckets / 3.0;
-	vec3 color = vec3(0.0, d, 2.0 * d);
+	float d = floor(buckets * level) / buckets ;
+	vec3 color = mix(shallow_water, deep_water, d);
 
 	color = applyFog(color, length(vPosition - ePosition), 0.01);
 

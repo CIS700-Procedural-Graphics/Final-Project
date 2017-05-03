@@ -31,16 +31,16 @@ function init(callback, update) {
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(0x020202, 0);
 
-    var controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableDamping = true;
-    controls.enableZoom = true;
-    controls.target.set(0,0,-1);
-    controls.rotateSpeed = 0.3;
-    controls.zoomSpeed = 1.0;
-    controls.panSpeed = 2.0;
-    controls.addEventListener('change', function() {
-      camera.hasMoved = true;
-    });
+    // var controls = new OrbitControls(camera, renderer.domElement);
+    // controls.enableDamping = true;
+    // controls.enableZoom = true;
+    // controls.target.set(0,0,-1);
+    // controls.rotateSpeed = 0.3;
+    // controls.zoomSpeed = 1.0;
+    // controls.panSpeed = 2.0;
+    // controls.addEventListener('change', function() {
+    //   camera.hasMoved = true;
+    // });
 
     document.body.appendChild(renderer.domElement);
 
@@ -55,8 +55,9 @@ function init(callback, update) {
     framework.scene = scene;
     framework.camera = camera;
     framework.renderer = renderer;
-    framework.controls = controls;
+    // framework.controls = controls;
     framework.viewpoint = 0;
+    framework.paused = false;
     // 0 : person
     // 1 : above
     // 2 : behind
@@ -65,6 +66,8 @@ function init(callback, update) {
       switch (e.keyCode) {
           case 86: 
             framework.viewpoint = (framework.viewpoint + 1)%3; break;
+          case 80: 
+            framework.paused = !framework.paused; break;
       }
     });
 
