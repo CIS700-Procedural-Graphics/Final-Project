@@ -83,7 +83,7 @@ function generateRhythm(numBeats) {
 
 function insertHook(melody, scale) {
 
-	var pattern = [true, true, true, true, false, true, false, true, true, false, true, false];
+	var pattern = [true, true, true, true];
 	var newMelody = [];
 
 	var hook = [];
