@@ -22,6 +22,7 @@ var water;
 var time_update = 0.0;
 var start = Date.now();
 
+
 // =========================================== Ground Plane ===========================================
 var gridDim = 100;
 var terrainGeo = new THREE.PlaneGeometry( gridDim, gridDim, gridDim, gridDim); //width, height, widthSegments, heightSegments
@@ -50,7 +51,7 @@ const DEFAULT_GRID_RES = 25;//12;//12;//4;  //32 should make it look real nice a
 const DEFAULT_GRID_WIDTH = 15//15;//10;
 const DEFAULT_NUM_METABALLS = 75;//50;//10;
 const DEFAULT_MIN_RADIUS = 0.01//0.05;//0.1;//0.5;
-const DEFAULT_MAX_RADIUS = 0.6//0.6;//1;
+const DEFAULT_MAX_RADIUS = 0.55//0.6;//1;
 const DEFAULT_MAX_SPEED = 0.01;
 
 var App = {
@@ -124,11 +125,18 @@ function onLoad(framework) {
   var lighthouse_obj = './geometry/lighthouse2.obj';
   setupObj(App.scene, lighthouse_obj, 2);
 
+  var rock_obj = './geometry/Rock_6.obj';
+  setupObj(App.scene, rock_obj, 3);
+
   //add terrain
   //scene.add(terrainMesh);
   setupTerrain(App.scene);
 
+  //add music
+  document.getElementById('music').play();
+
 }//end onload
+
 
 // =========================================== On update function ===========================================
 // called on frame updates
@@ -155,6 +163,8 @@ function onUpdate(framework) {
 }//end onUpdate
 
 // =========================================== On load helper functions ===========================================
+
+// =========================================== Camera setup ===========================================
 function setupCamera(camera) {
   // set camera position
 
@@ -163,6 +173,7 @@ function setupCamera(camera) {
   camera.lookAt(new THREE.Vector3(-12, 10, 10));//(-15,4,0));    //FIDGET WITH THIS
 }
 
+// =========================================== Lights setup ===========================================
 function setupLights(scene) {
   // Directional light
   var directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
@@ -172,6 +183,7 @@ function setupLights(scene) {
   scene.add(directionalLight);
 }
 
+// =========================================== GUI setup ===========================================
 function setupGUI(gui) {
 
   // more information here: https://workshop.chromeexperiments.com/examples/gui/#1--Basic-Usage
@@ -218,6 +230,7 @@ function setupGUI(gui) {
   debugFolder.open();
 }
 
+// =========================================== Background setup ===========================================
 function setupBackground(scene) {
   // set skybox
   var loader = new THREE.CubeTextureLoader();
@@ -232,10 +245,12 @@ function setupBackground(scene) {
   scene.background = skymap;
 }
 
+// =========================================== Scene setup ===========================================
 function setupScene(scene) {
   App.marchingCubes = new MarchingCubes(App);
 }
 
+// =========================================== Water setup ===========================================
 function setupWater(scene, renderer, camera){
   //water shader
   scene.add( new THREE.AmbientLight( 0x444444 ) );
@@ -275,22 +290,9 @@ function setupWater(scene, renderer, camera){
   mirrorMesh.add(water);
   mirrorMesh.rotation.x = - Math.PI * 0.5;
   scene.add(mirrorMesh);
-}
-//
-// function setupObj(scene, file) {
-//
-//   // load a simple obj mesh
-//   var objLoader = new THREE.OBJLoader();
-//   objLoader.load(file, function(obj) {
-//
-//       // LOOK: This function runs after the obj has finished loading
-//       var geo = obj.children[0].geometry; //the actual mesh could have more than 1 part. hence the array
-//       var mesh = new THREE.Mesh(geo, lambertWhite);
-//       mesh.translateY(10);
-//       scene.add(mesh);
-//   });
-// }
+}//end setup water
 
+// =========================================== OBJ setup ===========================================
 function setupObj(scene, file, type) {
   var objLoaded = new Promise((resolve, reject) => {
       (new THREE.OBJLoader()).load(require(file), function(obj) {
@@ -302,15 +304,43 @@ function setupObj(scene, file, type) {
 
   var mesh;
   var material;
+  var texLoader = new  THREE.TextureLoader();
 
-  if(type == 1)
+  if(type == 1) //lion's head
   {
     material = new THREE.MeshLambertMaterial({ color: 0xeeeeee });
+    //material = new THREE.MeshPhongMaterial({map : THREE.ImageUtils.loadTexture('./src/assets/BrickMedievalBlock.jpg') } );
+    //material = new THREE.MeshPhongMaterial({map : THREE.ImageUtils.loadTexture('./src/assets/Rock_6_Tex/Rock_6_d.png') } );
   }
-  if(type == 2)
+  if(type == 2) //lighthouse
   {
-    material = new THREE.MeshLambertMaterial({ color: 0xeeeeee });
-    //material = setupTexture('./assets/ocean.bmp', './glsl/terrain-vert.glsl', './glsl/terrain-frag.glsl')
+    //material = setupTexture('./assets/BrickMedievalBlocks.bmp', './glsl/terrain-vert.glsl', './glsl/terrain-frag.glsl')
+
+    var texMap = texLoader.load('./src/assets/walls/Brick_S.jpg');
+    var dispMap = texLoader.load('./src/assets/walls/Brick_DISP.tga');
+    var normMap = texLoader.load('./src/assets/walls/Brick_NRM.tga');
+    var aoMap = texLoader.load('./src/assets/walls/Brick_OCC.tga');
+
+    material = new THREE.MeshPhongMaterial({
+      map : texMap, //THREE.ImageUtils.loadTexture('./src/assets/walls/Brick_S.jpg'),
+      displacementMap: dispMap, //THREE.ImageUtils.loadTexture('./src/assets/walls/Brick_DISP.tga'),
+      normalMap: normMap, //THREE.ImageUtils.loadTexture('./src/assets/walls/Brick_NRM.tga'),
+      aoMap: aoMap //THREE.ImageUtils.loadTexture('./src/assets/walls/Brick_OCC.tga')
+    });
+  }
+  if(type == 3) //rock
+  {
+    var texMap = texLoader.load('./src/assets/Rock_6_Tex/Rock_6_d.png');
+    //var dispMap = texLoader.load('./src/assets/Rock_6_Tex/Rock_6_d.png');
+    var normMap = texLoader.load('./src/assets/Rock_6_Tex/Rock_6_n.png');
+    var aoMap = texLoader.load('./src/assets/Rock_6_Tex/Rock_6_ao.png');
+
+    material = new THREE.MeshPhongMaterial({
+      map : texMap, //THREE.ImageUtils.loadTexture('./src/assets/Rock_6_Tex/Rock_6_d.png'),
+      //displacementMap: dispMap,
+      normalMap : normMap, //THREE.ImageUtils.loadTexture('./src/assets/Rock_6_Tex/Rock_6_n.png'),
+      aoMap : aoMap //THREE.ImageUtils.loadTexture('./src/assets/Rock_6_Tex/Rock_6_ao.png')
+    } );
   }
 
   objLoaded.then(function(geo) {
@@ -327,10 +357,18 @@ function setupObj(scene, file, type) {
 
       if(type == 2) //lighthouse
       {
-        mesh.translateZ(400);
-        mesh.translateX(200);
-        mesh.translateY(30);
+        mesh.translateZ(200);
+        mesh.translateX(100);
+        mesh.translateY(15);
+        mesh.rotateY(-Math.PI);
         mesh.scale.set(0.5, 0.5, 0.5);
+      }
+
+      if(type == 3) //rock
+      {
+        mesh.translateY(5);
+        mesh.translateX(-10);
+        mesh.translateZ(10);
       }
 
       scene.add(mesh);
@@ -359,50 +397,9 @@ function setupTerrain(scene)
   terrainGeo.vertices = newVerticesList;
   terrainGeo.verticesNeedUpdate = true;
 
-  //
-  // var terrainMaterial = new THREE.ShaderMaterial({
-  //   uniforms: {
-  //     time: {
-  //       type : "float",
-  //       value : time_update
-  //     }
-  //   },
-  //   vertexShader : require('./glsl/noise-vert.glsl'),
-  //   fragmentShader : require('./glsl/noise-frag.glsl')
-  // });
-
-
-  // var terrainTextureLoaded = new Promise((resolve, reject) => {
-  //     (new THREE.TextureLoader()).load(require('./assets/grass1.bmp'), function(texture) {
-  //         resolve(texture);
-  //     })
-  // })
-  //
-  // var terrainMaterial = new THREE.ShaderMaterial({
-  //   uniforms: {
-  //     texture: {
-  //         type: "t",
-  //         value: null
-  //     },
-  //   },
-  //   vertexShader : require('./glsl/terrain-vert.glsl'),
-  //   fragmentShader : require('./glsl/terrain-frag.glsl')
-  // });
-  //
-  // // once the texture loads, bind it to the material
-  // terrainTextureLoaded.then(function(texture) {
-  //     terrainMaterial.uniforms.texture.value = texture;
-  // });
-
-
-  //var terrainMaterial = setupTexture('./assets/grass1.bmp', './glsl/terrain-vert.glsl', './glsl/terrain-frag.glsl');
   var terrainMaterial = setupTexture('./assets/grass1.bmp', './glsl/noise-vert.glsl', './glsl/noise-frag.glsl');
-
-
-  // var grasstexture = new THREE.TextureLoader().load('./assets/grasslight-big.jpg');
-  // var terrainMaterial = new THREE.MeshPhongMaterial({map: grasstexture});
-
-
+  //var terrainMaterial = setupTexture('./assets/grass1.bmp', './glsl/tiling-vert.glsl', './glsl/tiling-frag.glsl');
+  //terrainMaterial.extensions.derivatives = true;
 
   var terrainMesh = new THREE.Mesh(terrainGeo, terrainMaterial);
   terrainMesh.rotateY(-Math.PI / 2.0);
@@ -412,7 +409,7 @@ function setupTerrain(scene)
   scene.add(terrainMesh);
 }
 
-
+// =========================================== Texture setup ===========================================
 function setupTexture(materialfile, vertfile, fragfile)
 {
   var textureLoaded = new Promise((resolve, reject) => {
@@ -438,8 +435,17 @@ function setupTexture(materialfile, vertfile, fragfile)
   });
 
   return material;
-}
+}//end setup texture
 
 
 // when the scene is done initializing, it will call onLoad, then on frame updates, call onUpdate
 Framework.init(onLoad, onUpdate);
+
+
+/* NOTES:
+
+  //TEXTURE MAPPING
+  // var grasstexture = new THREE.TextureLoader().load('./assets/grasslight-big.jpg');    //HAS TO BE JPG
+  // var terrainMaterial = new THREE.MeshPhongMaterial({map: grasstexture});
+
+*/
