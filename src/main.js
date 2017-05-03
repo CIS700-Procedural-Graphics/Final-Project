@@ -1,5 +1,6 @@
 const THREE = require('three'); // older modules are imported like this. You shouldn't have to worry about this much
 const SHOW = true;
+const HIDE = true;
 const MODELLING = false;
 
 require('three-lut')
@@ -226,11 +227,12 @@ function onLoad(framework) {
   });
   var smesh = new THREE.Mesh(s.geometry, sfmat);
   smesh.rotation.set(3 * Math.PI/2, 0.0, 0.0);
+  smesh.scale.set(10.0, 10.0, 10.0);
   scene.add(smesh);
 
   // Superformula Flower Generater -------------/
 
-  
+
 
 if (SHOW) {
   // WATER ------------------------/
@@ -246,12 +248,14 @@ if (SHOW) {
   scene.add(waterMesh);
 
 
-  // BOX ----------------------------/
+if (!HIDE) {
+  // GREEN BOX ----------------------------/
   var boxGeo = new THREE.BoxGeometry(10, 10, 10);
   var boxMat = new THREE.MeshLambertMaterial({color: 0x42f465});
   var boxMesh = new THREE.Mesh(boxGeo, boxMat);
   boxMesh.position.set(0, 10, 0);
   scene.add(boxMesh);
+}
 
   // STONES ------------------------/
   var radius = 150;

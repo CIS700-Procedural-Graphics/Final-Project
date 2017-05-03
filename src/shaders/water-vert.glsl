@@ -13,6 +13,10 @@ varying vec3 f_light;
 
 varying float h;
 
+varying vec3 B; // Bitangent
+varying vec3 T; // Tangent
+varying vec3 N; // Normal
+
 uniform float waterHeight;
 uniform float time; // time
 uniform vec3 light;
@@ -85,9 +89,9 @@ void main() {
 		dy += ddy(i, x, y);
 	}
 
-	vec3 B = normalize(vec3(1, 0, dx));
-	vec3 T = normalize(vec3(0, 1, dy));
-	vec3 N = normalize(vec3(-dx, -dy, 1));
+	B = normalize(vec3(1, 0, dx));
+	T = normalize(vec3(0, 1, dy));
+	N = normalize(vec3(-dx, -dy, 1));
 
     pos.z = waterHeight + h;
 
