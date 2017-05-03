@@ -323,22 +323,6 @@ function setupObj(scene, file, type) {
 
   if(type == 1) //lion's head
   {
-    //material = new THREE.MeshLambertMaterial({ color: 0xeeeeee });
-    //material = new THREE.MeshPhongMaterial({map : THREE.ImageUtils.loadTexture('./src/assets/BrickMedievalBlock.jpg') } );
-    //material = new THREE.MeshPhongMaterial({map : THREE.ImageUtils.loadTexture('./src/assets/Rock_6_Tex/Rock_6_d.png') } );
-
-    // var texMap = texLoader.load('./src/assets/sand/rock.jpg'); //'./src/assets/Lion/Lion_Albido.tga');
-    // var dispMap = texLoader.load('./src/assets/sand/rock_DISP.tga');
-    // var normMap = texLoader.load('./src/assets/sand/rock_NRM.tga');
-    // var aoMap = texLoader.load('./src/assets/sand/rock_OCC.tga');
-    //
-    // material = new THREE.MeshPhongMaterial({
-    //   map : texMap,
-    //   displacementMap: dispMap,
-    //   //normalMap: normMap,
-    //   aoMap: aoMap
-    // });
-
     material = setupTexture('./assets/grass1.bmp', './glsl/terrain2-vert.glsl', './glsl/terrain2-frag.glsl');
   }
 
