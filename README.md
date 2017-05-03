@@ -30,10 +30,26 @@ I intend to achieve a beautiful looking pond scene which is also animated and in
   - Limited camera movement through scene: i.e. double click zoom in on specific area
 
 ### Techniques
-- L-System for Vegetation
+- Superformula for Flowers
+- L-System for Vegetation (TODO)
 - Shape Grammer for alignment with everything
 - Random/Noise generation
 - Orbit Camera
+
+### Milestone 2
+![alt text][m2_rockformation]
+![alt test][m2_skybox]
+
+[m2_rockformation]: https://github.com/eldu/Final-Project/blob/master/src/common/images/M2_RockFormation.png
+[m2_skybox]:https://github.com/eldu/Final-Project/blob/master/src/common/images/M2_SkyBox.png
+- Generated random rocks
+  - Generated a point cloud
+  - Created a convex hull based on these points
+  - Subdivided the rock
+  - Randomized scaling
+  - Put on random points of a circle's circumference
+- Added a skysphere and ground
+- Referenced [Hemisphere Light Example](https://threejs.org/examples/?q=hemis#webgl_lights_hemisphere) and [Convex Geometry Example](https://threejs.org/examples/?q=convex#webgl_geometry_convex)
 
 ### Milestone 1
 ![alt text][m1_water]
@@ -43,21 +59,6 @@ I intend to achieve a beautiful looking pond scene which is also animated and in
 [m1_waterWireframe]: https://github.com/eldu/Final-Project/blob/master/src/common/images/M1_WaterWireframe.gif "Milestone 1: Water Wireframe"
 - Computed waves and moved vertices in vertex shader.
 - Referenced [Effective Water Simulation From Physical Models by Mark Finch and Cyan Worlds](http://http.developer.nvidia.com/GPUGems/gpugems_ch01.html)
-
-### Milestone 2
-![alt text][m2_rockformation]
-![alt test][m2_skybox]
-
-[m2_rockformation]: https://github.com/eldu/Final-Project/blob/master/src/common/images/M2_RockFormation.png
-[m2_skybox]:https://github.com/eldu/Final-Project/blob/master/src/common/images/M2_SkyBox.png
-- Generated random rocks
-	- Generated a point cloud
-	- Created a convex hull based on these points
-	- Subdivided the rock
-	- Randomized scaling
-	- Put on random points of a circle's circumference
-- Added a skysphere and ground
-- Referenced [Hemisphere Light Example](https://threejs.org/examples/?q=hemis#webgl_lights_hemisphere) and [Convex Geometry Example](https://threejs.org/examples/?q=convex#webgl_geometry_convex)
 
 ### TODO
 - Make the shape of the water more bloby
@@ -74,6 +75,9 @@ I intend to achieve a beautiful looking pond scene which is also animated and in
 - [Cosine Gradient Generator](http://dev.thi.ng/gradients/)
 - [Hemisphere Light Example](https://threejs.org/examples/?q=hemis#webgl_lights_hemisphere)
 - [Convex Geometry Example](https://threejs.org/examples/?q=convex#webgl_geometry_convex)
+- [Superformula Wikipedia](https://en.wikipedia.org/wiki/Superformula)
+- [Supershapes (Superformula) written by Paul Bourke, March 2002](http://paulbourke.net/geometry/supershape/): Useful to understand what the parametes of the superformula do and how they effect the shape.
+- [Importing Audio](http://stackoverflow.com/questions/21463752/javascript-audio-object-vs-html5-audio-tag)
 
 ### Timeline
 - 4/11: Codebase organization, Sketch End Goal, Work on Terrain Generation: Water Plane, and rock formation

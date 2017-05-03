@@ -305,6 +305,10 @@ if (!HIDE) {
   prevTime = startTime;
   currentTime = startTime;
 
+  // Audio
+  var myAudio = new Audio("./src/common/music/Water_Lapping_Wind.mp3");
+  myAudio.play();
+
   // edit params and listen to changes like this
   // more information here: https://workshop.chromeexperiments.com/examples/gui/#1--Basic-Usage
   var fcamera = gui.addFolder('Camera');
