@@ -161,6 +161,12 @@ export default function superformula() {
 		// this.geometry.computeVertexNormals(); 	
 	}
 
+	// TODO: Random flower generater
+	this.randomFlower  = function() {
+		// Changing m changes the number of petals
+		// Changing mm changed the number of layers of petals
+	}
+
 	// TODO: Lerp between old and new state, it will look NIICEEEE.
 	// this.update = function() {
 	// }

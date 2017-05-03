@@ -1,5 +1,6 @@
 const THREE = require('three'); // older modules are imported like this. You shouldn't have to worry about this much
-const SHOW = false;
+const SHOW = true;
+const MODELLING = false;
 
 require('three-lut')
 
@@ -195,16 +196,19 @@ function onLoad(framework) {
   scene.add( hemiLight );
   // END LIGHTS -------------------/
 
+  if (MODELLING) {
+    // Guide Box ----------------------------/
+    // Basically a box with side lengths 1, 2, 3, corresponding to directions x, y, z.
+    // Useful for modelling since I get to understand where all the directions are while I tumble the scene
+    var guideGeo = new THREE.BoxGeometry(1, 2, 3);
+    var guideMesh = new THREE.Mesh(guideGeo, redLambert);
+    scene.add(guideMesh);
+  }
 
+  // Superformula Flower ------------------/
   var s = new superformula();
   s.init(); // Initialiaze
-  var geo = new THREE.BoxGeometry(1, 2, 3);
-  var mesh = new THREE.Mesh(geo, redLambert);
-  scene.add(mesh);
-
-  // var smesh = new THREE.Mesh(s.geometry, material);
-  //var smesh = new THREE.Mesh(s.geometry, new THREE.MeshBasicMaterial( { vertexColors: THREE.FaceColors, side: THREE.DoubleSide } ));
-  var sfmat = new THREE.ShaderMaterial({
+   var sfmat = new THREE.ShaderMaterial({
     uniforms: {
       u_albedo: {
         type: 'f',
@@ -223,6 +227,10 @@ function onLoad(framework) {
   var smesh = new THREE.Mesh(s.geometry, sfmat);
   smesh.rotation.set(3 * Math.PI/2, 0.0, 0.0);
   scene.add(smesh);
+
+  // Superformula Flower Generater -------------/
+
+  
 
 if (SHOW) {
   // WATER ------------------------/
