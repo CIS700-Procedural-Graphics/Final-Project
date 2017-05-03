@@ -142,18 +142,19 @@ var rockMat = new THREE.ShaderMaterial({
     fragmentShader: require('./shaders/rock-frag.glsl')
   });
 
+// Superforumula things.
 var sf = {
   a: 1.2,
   b: 1.1,
-  m: 20,
-  n1: 10,
-  n2: 0.1,
-  n3: 10,
+  m: 14.0,
+  n1: 3.0,
+  n2: -3.82,
+  n3: 1.0,
   aa: 1.9,
-  bb: 1.8,
-  mm: 16.5,
-  nn1: 8,
-  nn2: 9.19,
+  bb: 0.1,
+  mm: 29.0,
+  nn1: 4.8,
+  nn2: -1.8,
   nn3: 1.7
 }
 
@@ -205,7 +206,14 @@ function onLoad(framework) {
   //var smesh = new THREE.Mesh(s.geometry, new THREE.MeshBasicMaterial( { vertexColors: THREE.FaceColors, side: THREE.DoubleSide } ));
   var sfmat = new THREE.ShaderMaterial({
     uniforms: {
-      u_albedo: 0xffffff
+      u_albedo: {
+        type: 'f',
+        value: 0xffffff
+      },
+      u_center: {
+        type: 'v3',
+        value: new THREE.Vector3(0.0, 0.0, 0.0)
+      }
     },
     side: THREE.DoubleSide,
     wireframe: false,
@@ -213,13 +221,8 @@ function onLoad(framework) {
     fragmentShader: require('./shaders/sf-frag.glsl')
   });
   var smesh = new THREE.Mesh(s.geometry, sfmat);
+  smesh.rotation.set(3 * Math.PI/2, 0.0, 0.0);
   scene.add(smesh);
-
-  // s.geometry.scale(10, 10, 10);
-  //  var pointMat = new THREE.PointsMaterial( { color: 0xffffff });  
-  // var points = new THREE.Points(s.geometry, pointMat);
-  // pointMat.sizeAttenuation = false;
-  // scene.add(points);
 
 if (SHOW) {
   // WATER ------------------------/

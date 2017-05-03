@@ -64,15 +64,15 @@ export default function superformula() {
 	// Current State
 	this.a = 1.2;
 	this.b = 1.1;
-	this.m = 20;
-	this.n1 = 10;
-	this.n2 = 0.1;
-	this.n3 = 10;
+	this.m = 14.0;
+	this.n1 = 3.0;
+	this.n2 = -3.82;
+	this.n3 = 1.0;
 	this.aa = 1.9;
-	this.bb = 1.8;
-	this.mm = 16.5;
-	this.nn1 = 8;
-	this.nn2 = 9.19;
+	this.bb = 0.1;
+	this.mm = 29.0;
+	this.nn1 = 4.8;
+	this.nn2 = -1.8;
 	this.nn3 = 1.7;
 
 	// // Old State
