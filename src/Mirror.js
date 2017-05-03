@@ -7,7 +7,7 @@ const THREE = require('three'); // older modules are imported like this. You sho
 THREE.ShaderLib[ 'mirror' ] = {
 
 	uniforms: {
-		"mirrorColor": { value: new THREE.Color( 0x333333 ) },
+		"mirrorColor": { value: new THREE.Color( 0xff0000 ) },
 		"mirrorSampler": { value: null },
 		"textureMatrix" : { value: new THREE.Matrix4() }
 	},

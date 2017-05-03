@@ -237,10 +237,14 @@ var composer;
 	function initInputHandler(framework) {
 	  document.onkeydown = function(e) {
 	    switch (e.keyCode) {
-	        case 83:
-	            //alert('s');
-	  					earthVel = -10;
-	            break;
+					case 87:
+							visualConfig.sceneProps.display += 0.05;
+							visualConfig.sceneProps.display = Math.min(1, visualConfig.sceneProps.display);
+							break;
+					case 83:
+							visualConfig.sceneProps.display -= 0.05;
+							visualConfig.sceneProps.display = Math.max(0, visualConfig.sceneProps.display);
+							break;
 	        case 68:
 	  					var stars = framework.scene.getObjectByName("small_star_cloud");
 	  					if (stars !== undefined) {

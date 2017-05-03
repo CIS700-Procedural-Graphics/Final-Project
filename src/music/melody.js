@@ -40,8 +40,8 @@ export default function generateMelody( scaleNote, randomVar ) {
 
 	var s = tonal.scale.get('major', scaleNote);
 	var anchors = createAnchors( scaleNote, 10 );
-	var finalNotes = insertHook( anchors.melody, s );
-	finalNotes = insertFlairs( finalNotes, s, anchors.high, anchors.low );
+	var finalNotes = insertHook1( anchors.melody, s );
+	// finalNotes = insertFlairs( finalNotes, s, anchors.high, anchors.low );
 
 	// Print final note sequence
 	var debug = [];
@@ -79,6 +79,109 @@ function generateRhythm(numBeats) {
 	return r[numBeats][Math.floor(Math.random() * r[numBeats].length)];
 }
 
+function insertHook1(melody, scale) {
+	var style1 = {
+		rhythms: [ [6,2,6], [2,6], [2,2,2,2] ],
+		intervals: [ 1, 2 ],
+		scale: [ "G3", "A3", "B3", "C3", "D3", "E3", "Gb3",
+						 "G4", "A4", "B4", "C4", "D4", "E4", "Gb4",
+	 					 "G5", "A5", "B5", "C5", "D5", "E5", "Gb5",
+					 	 "G6", "A6", "B6", "C6", "D6", "E6", "Gb6" ],
+		hookChance: 0.4
+	};
+
+	var newMelody = [];
+	var state = { root: 7, note: 7, dir: -1, interval: 1 }; // values are indicies
+
+	var h = 4;
+	var hook = [];
+
+	for (var i = 0; i < 100; i++) {
+		var r = Math.floor(Math.random() * style1.rhythms.length);
+		var rhythm = style1.rhythms[r];
+
+		var n = Math.floor(Math.random() * style1.intervals.length);
+		var interval = style1.intervals[n];
+
+		var d = Math.random();
+		var dir = d > 0.6 ? 1 :
+							d > 0.01 ? -1 :
+							0;
+
+		var insertHook = i > h && Math.random() < style1.hookChance;
+
+		// add first note
+		var root = state.note + dir * interval;
+		var note = tonal.note.midi( style1.scale[root] );
+		if (!note) {
+			root = state.root;
+		  note = tonal.note.midi( style1.scale[root] );
+		}
+
+		if (i === h) {
+			hook.push({
+				note: note,
+				time: rhythm[0],
+				type: noteType.hook,
+			});
+		}
+
+		if (insertHook) {
+			newMelody.push(hook[0]);
+		} else {
+			newMelody.push({
+				note: note,
+				time: rhythm[0],
+				type: noteType.hook,
+			});
+		}
+
+		// add rest of notes
+		var curr = root;
+		var next = root;
+
+
+		if (insertHook) {
+			for (var j = 1; j < hook.length; j++) {
+				newMelody.push(hook[j]);
+			}
+		} else {
+			for (var j = 1; j < rhythm.length; j++) {
+				n = Math.floor(Math.random() * style1.intervals.length);
+				interval = style1.intervals[n];
+				next = curr + dir * interval; // might need to vary the direction
+				note = tonal.note.midi( style1.scale[next] );
+				if (!note) {
+					next = state.root;
+				  note = tonal.note.midi( style1.scale[next] );
+				}
+
+				if (i === h) {
+					hook.push({
+						note: note,
+						time: rhythm[j],
+						type: noteType.hook,
+					});
+				}
+
+				newMelody.push({
+					note: note,
+					time: rhythm[j],
+					type: noteType.hook,
+				});
+			}
+		}
+
+
+		state = { root: 7, note: next, dir: dir, interval: interval };
+	}
+
+console.log(newMelody)
+
+	return newMelody;
+}
+
+
 function insertHook(melody, scale) {
 
 	var pattern = [true, true, true, true, true, false, true, true, false, true, false, true, true, false, true, true, false];
@@ -111,6 +214,8 @@ function insertHook(melody, scale) {
 						// note = Math.floor(Math.random() * 50);
 						note = tonal.note.midi( scale[Math.floor(Math.random() * scale.length)] );
 					}
+
+					console.log(scale)
 					hook.push({
 						note: note,
 						time: times[j],
