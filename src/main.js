@@ -413,16 +413,16 @@ function onUpdate(framework) {
 	// Audio updates
 	var nTime = Date.now();
 	if (allInit) {
-		musicPlayer.playHarmony( nTime, function() {
-		});
+		// musicPlayer.playHarmony( nTime, function() {
+		// });
 
 		musicPlayer.playMelody( nTime, function() {
 			Visual.melodyCallback(framework, visualConfig);
 		});
 
-		musicPlayer.playBassLine( nTime, function() {
-			Visual.bassCallback(framework, visualConfig);
-		});
+		// musicPlayer.playBassLine( nTime, function() {
+		// 	Visual.bassCallback(framework, visualConfig);
+		// });
 	}
 
 	// Visual
