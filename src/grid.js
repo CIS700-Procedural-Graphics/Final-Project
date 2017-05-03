@@ -19,7 +19,7 @@ class MoveOption {
 		var gridRadius = gridDimension/2.0 - 0.5;
 		//solve for variance
 		//https://en.wikipedia.org/wiki/Normal_distribution#/media/File:Empirical_Rule.PNG
-		var variance2 = (gridDimension / 2.0);
+		var variance2 = (gridDimension / 4.0) * (gridDimension / 4.0);
 		var x2 = (cPos.x - gridRadius) * (cPos.x - gridRadius);
         var z2 = (cPos.z - gridRadius) * (cPos.z - gridRadius);
         this.probability = Math.pow(2.71828, -(x2 + z2)/(2.0*variance2));
@@ -59,12 +59,11 @@ class MoveOption {
         var z2 = (cPos.z - gridRadius) * (cPos.z - gridRadius);
         this.probability = Math.pow(2.71828, -(x2 + z2)/(2.0*variance2));
 
-        /*
+        //throughput weighting
 		var moveVelocity = new THREE.Vector3(cPos.x, cPos.y, cPos.z).sub(pPos);
 		if (moveVelocity.dot(pVel) == 1) {
 			this.probability *= throughput;
 		}
-		*/
         
 	}
 }
@@ -185,28 +184,28 @@ export default class Grid {
 			var totalProbability = 0.0;
 			if (currPos.x+1 >= 0 && currPos.x+1 < gridDimension && this.gridArray[currPos.x+1][currPos.z].isMarked == false) {
 				var mv = new MoveOption(new THREE.Vector3(currPos.x+1, 0, currPos.z), fakePlayer.position, fakePlayer.velocity, gridDimension, fakePlayer.throughput);
-				console.log("(" + (currPos.x+1) + ", " + currPos.z + "): " + mv.probability);
+				//console.log("(" + (currPos.x+1) + ", " + currPos.z + "): " + mv.probability);
 				totalProbability += mv.probability;
 				options.push(mv);
 				//rotate Z clockwise
 			}
 			if (currPos.x-1 >= 0 && currPos.x-1 < gridDimension && this.gridArray[currPos.x-1][currPos.z].isMarked == false) {
 				var mv = new MoveOption(new THREE.Vector3(currPos.x-1, 0, currPos.z), fakePlayer.position, fakePlayer.velocity, gridDimension, fakePlayer.throughput);
-				console.log("(" + (currPos.x-1) + ", " + currPos.z + "): " + mv.probability);
+				//console.log("(" + (currPos.x-1) + ", " + currPos.z + "): " + mv.probability);
 				totalProbability += mv.probability;
 				options.push(mv);
 				//rotate Z counterclockwise
 			}
 			if (currPos.z+1 >= 0 && currPos.z+1 < gridDimension && this.gridArray[currPos.x][currPos.z+1].isMarked == false) {
 				var mv = new MoveOption(new THREE.Vector3(currPos.x, 0, currPos.z+1), fakePlayer.position, fakePlayer.velocity, gridDimension, fakePlayer.throughput);
-				console.log("(" + currPos.x + ", " + (currPos.z+1) + "): " + mv.probability);
+				//console.log("(" + currPos.x + ", " + (currPos.z+1) + "): " + mv.probability);
 				totalProbability += mv.probability;
 				options.push(mv);
 				//rotate X counterclockwise
 			}
 			if (currPos.z-1 >= 0 && currPos.z-1 < gridDimension && this.gridArray[currPos.x][currPos.z-1].isMarked == false) {
 				var mv = new MoveOption(new THREE.Vector3(currPos.x, 0, currPos.z-1), fakePlayer.position, fakePlayer.velocity, gridDimension, fakePlayer.throughput);
-				console.log("(" + currPos.x + ", " + (currPos.z-1) + "): " + mv.probability);
+				//console.log("(" + currPos.x + ", " + (currPos.z-1) + "): " + mv.probability);
 				totalProbability += mv.probability;
 				options.push(mv);
 				//rotate X clockwise

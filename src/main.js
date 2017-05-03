@@ -5,6 +5,7 @@ import Grid, {GridCell} from './grid.js'
 import Player from './player.js'
 
 var player;
+var playerPromise;
 var grid;
 var gridDimension = 5.0;
 var allMeshes = new Set();
@@ -105,6 +106,7 @@ function onLoad(framework) {
   */
 }
 
+
 function restart(framework) {
 
   //increase grid size for next level
@@ -162,74 +164,72 @@ function restart(framework) {
       //cell.receiveShadow = true;
       framework.scene.add(cell);
       allMeshes.add(cell);
-
-      /*
-      var planeGeometry = new THREE.PlaneGeometry( 1, 1, 1, 1);
-      var planeMaterial = new THREE.MeshLambertMaterial({color: grid.gridArray[x][z].color, 
-        transparent:true, opacity:1.0, side: THREE.DoubleSide});
-      var plane = new THREE.Mesh( planeGeometry, planeMaterial );
-      plane.position.x = x+0.5;
-      plane.position.z = z+0.5;
-      plane.rotation.x = Math.PI/2.0;
-      plane.receiveShadow = true;
-      framework.scene.add( plane );
-      allMeshes.add(plane);
-      */
     }
   }
 
   // PLAYER
-  player = new Player(new THREE.Vector3(gridDimension-1, 0, gridDimension-1), colors);
+  playerPromise = new Promise((resolve, reject) => { 
+      player = new Player(new THREE.Vector3(gridDimension-1, 0, gridDimension-1), colors);
+      if (player.position.x == gridDimension-1) {
+          resolve();
+      }
+  }); 
+  
   //player.cube.castShadow = true;
   framework.scene.add(player.cube);
   allMeshes.add(player.cube);
 }
 
+
 document.onkeydown = checkKey;
 function checkKey(e) {
+    //if player is still animating, ignore keyPress
+    if (player.isAnimating) {
+      return;
+    }
+
     e = e || window.event;
     if (e.keyCode == '38') {
       // up arrow
       if (player.position.x - 1 >= 0 && player.faceXNegative.equals(grid.gridArray[player.position.x - 1][player.position.z].color)) {
         player.rotateZCounter();
-        if (player.position.x == 0 && player.position.z == 0) {
-          restart(fw);
-        }
       }
     }
     else if (e.keyCode == '40') {
       // down arrow
       if (player.position.x + 1 < gridDimension && player.faceXPositive.equals(grid.gridArray[player.position.x + 1][player.position.z].color)) {
         player.rotateZClockwise();
-        if (player.position.x == 0 && player.position.z == 0) {
-          restart(fw);
-        }
       }
     }
     else if (e.keyCode == '37') {
       // left arrow
       if (player.position.z + 1 < gridDimension && player.faceZPositive.equals(grid.gridArray[player.position.x][player.position.z + 1].color)) {
         player.rotateXCounter();
-        if (player.position.x == 0 && player.position.z == 0) {
-          restart(fw);
-        }
       }
     }
     else if (e.keyCode == '39') {
        // right arrow
       if (player.position.z - 1 >= 0 && player.faceZNegative.equals(grid.gridArray[player.position.x][player.position.z - 1].color)) {
         player.rotateXClockwise();
-        if (player.position.x == 0 && player.position.z == 0) {
-          restart(fw);
-        }
       }
     }
-
     //console.log(player.position);
 }
 
+
 // called on frame updates
 function onUpdate(framework) {
+
+  Promise.all([playerPromise]).then(values => { 
+    if (player.isAnimating) {
+      player.animate();
+    }  
+
+    if (player.position.x == 0 && player.position.z == 0) {
+      restart(fw);
+    }
+
+  });
     
 }
 

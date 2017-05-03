@@ -1,5 +1,10 @@
 const THREE = require('three')
 
+//bias function for more realistic animation
+function bias(b, t) {
+    return Math.pow(t, Math.log(b) / Math.log(0.5));
+}
+
 // Rotate an object around an axis in object space
 function applyRotation(quaternion, axis, radians) {
     var q = new THREE.Quaternion();
@@ -35,23 +40,30 @@ export default class Player {
           new THREE.MeshBasicMaterial({color:colors[5], transparent:true, opacity:1.0}) 
         ]; 
         this.cubeMaterial = new THREE.MeshFaceMaterial(this.cubeMaterials);
-        this.cube = new THREE.Mesh( new THREE.BoxGeometry(1,1,1), this.cubeMaterial);
+        this.cube = new THREE.Mesh(new THREE.BoxGeometry(1,1,1), this.cubeMaterial);
 
         //offset so that "center" of cube is at corner (for grid)
         this.cube.position.x = pos.x+0.5;
         this.cube.position.y = 0.5;
         this.cube.position.z = pos.z+0.5;
+
+        //ANIMATION
+        this.isAnimating = false;
+        this.animateType = 0;
+        this.t = 0;
     }
 
     rotateZClockwise() {
+        /*
         this.position.x += 1;
-        //THIS METHOD CAUSES ROTATION ISSUES
-        //this.cube.position.x += 1;
-        //this.cube.rotation.z += -Math.PI/2;
-        applyRotation(this.rotation, new THREE.Vector3(0, 0, 1), -Math.PI/2);
+        applyRotation(this.rotation, new THREE.Vector3(0, 0, 1), -Math.PI/2.0);
         this.cube.rotation.set(0, 0, 0);
         this.cube.setRotationFromQuaternion(this.rotation);
         this.cube.position.set(this.cube.position.x + 1.0, this.cube.position.y, this.cube.position.z);
+        */
+        this.isAnimating = true;
+        this.animateType = 0;
+
         //faceYPositive -> faceXNegative
         //faceXNegative -> faceYNegative
         //faceYNegative -> faceXPositive
@@ -65,14 +77,16 @@ export default class Player {
     };
 
     rotateZCounter() {
+        /*
         this.position.x += -1;
-        //THIS METHOD CAUSES ROTATION ISSUES
-        //this.cube.position.x += -1;
-        //this.cube.rotation.z += Math.PI/2;
-        applyRotation(this.rotation, new THREE.Vector3(0, 0, 1), Math.PI/2);
+        applyRotation(this.rotation, new THREE.Vector3(0, 0, 1), Math.PI/2.0);
         this.cube.rotation.set(0, 0, 0);
         this.cube.setRotationFromQuaternion(this.rotation);
         this.cube.position.set(this.cube.position.x - 1.0, this.cube.position.y, this.cube.position.z);
+        */
+        this.isAnimating = true;
+        this.animateType = 1;
+
         //faceYPositive -> faceXPositive
         //faceXPositive -> faceYNegative
         //faceYNegative -> faceXNegative
@@ -85,14 +99,16 @@ export default class Player {
     };
 
     rotateXCounter() {
+        /*
         this.position.z += 1;
-        //THIS METHOD CAUSES ROTATION ISSUES
-        //this.cube.position.z += 1;
-        //this.cube.rotation.x += Math.PI/2;
-        applyRotation(this.rotation, new THREE.Vector3(1, 0, 0), Math.PI/2);
+        applyRotation(this.rotation, new THREE.Vector3(1, 0, 0), Math.PI/2.0);
         this.cube.rotation.set(0, 0, 0);
         this.cube.setRotationFromQuaternion(this.rotation);
         this.cube.position.set(this.cube.position.x, this.cube.position.y, this.cube.position.z + 1.0);
+        */
+        this.isAnimating = true;
+        this.animateType = 2;
+
         //faceYPositive -> faceZNegative
         //faceZNegative -> faceYNegative
         //faceYNegative -> faceZPositive
@@ -105,14 +121,16 @@ export default class Player {
     };
 
     rotateXClockwise() {
+        /*
         this.position.z += -1;
-        //THIS METHOD CAUSES ROTATION ISSUES
-        //this.cube.position.z += -1;
-        //this.cube.rotation.x += -Math.PI/2;
-        applyRotation(this.rotation, new THREE.Vector3(1, 0, 0), -Math.PI/2);
+        applyRotation(this.rotation, new THREE.Vector3(1, 0, 0), -Math.PI/2.0);
         this.cube.rotation.set(0, 0, 0);
         this.cube.setRotationFromQuaternion(this.rotation);
         this.cube.position.set(this.cube.position.x, this.cube.position.y, this.cube.position.z - 1.0);
+        */
+        this.isAnimating = true;
+        this.animateType = 3;
+
         //faceYPositive -> faceZPositive
         //faceZPositive -> faceYNegative
         //faceYNegative -> faceZNegative
@@ -123,5 +141,98 @@ export default class Player {
         this.faceYNegative = new THREE.Color(this.faceZNegative);
         this.faceZNegative = tempColor;
     };
+
+    animate() {
+
+        if (this.t >= 1.0) {
+            this.isAnimating = false;
+            this.t = 0.0;
+            switch(this.animateType) {
+            //ZClockwise
+            case 0:
+                this.position.x += 1;
+                applyRotation(this.rotation, new THREE.Vector3(0, 0, 1), -Math.PI/2.0);
+                this.cube.rotation.set(0, 0, 0);
+                this.cube.setRotationFromQuaternion(this.rotation);
+                this.cube.position.set(this.position.x + 0.5, 0.5, this.position.z + 0.5);
+                break;
+            //ZCounter
+            case 1:
+                this.position.x += -1;
+                applyRotation(this.rotation, new THREE.Vector3(0, 0, 1), Math.PI/2.0);
+                this.cube.rotation.set(0, 0, 0);
+                this.cube.setRotationFromQuaternion(this.rotation);
+                this.cube.position.set(this.position.x + 0.5, 0.5, this.position.z + 0.5);
+                break;
+            //XCounter
+            case 2:
+                this.position.z += 1;
+                applyRotation(this.rotation, new THREE.Vector3(1, 0, 0), Math.PI/2.0);
+                this.cube.rotation.set(0, 0, 0);
+                this.cube.setRotationFromQuaternion(this.rotation);
+                this.cube.position.set(this.position.x + 0.5, 0.5, this.position.z + 0.5);
+                break;
+            //XClockwise
+            case 3:
+                this.position.z += -1;
+                applyRotation(this.rotation, new THREE.Vector3(1, 0, 0), -Math.PI/2.0);
+                this.cube.rotation.set(0, 0, 0);
+                this.cube.setRotationFromQuaternion(this.rotation);
+                this.cube.position.set(this.position.x + 0.5, 0.5, this.position.z + 0.5);
+                break;
+            }
+            return;
+        }
+
+        //this.cube.position.set(0, 0, 0);
+        //this.cube.rotation.set(0, 0, 0);
+        this.cube.matrix = new THREE.Matrix4().makeTranslation(0, 0, 0);
+        //this.cube.updateMatrix();
+
+        //original rotation
+        var originalRot = new THREE.Matrix4().makeRotationFromQuaternion(this.rotation);
+
+        //animation tweening
+        var animateMat = new THREE.Matrix4();
+        switch(this.animateType) {
+            //ZClockwise
+            case 0:
+                animateMat.premultiply(new THREE.Matrix4().makeTranslation(-0.5, 0.5, 0));
+                var angle = bias(0.1, this.t) * (-Math.PI/2.0);
+                var quat = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), angle);
+                animateMat.premultiply(new THREE.Matrix4().makeRotationFromQuaternion(quat));
+                animateMat.premultiply(new THREE.Matrix4().makeTranslation(0.5, -0.5, 0));
+                break;
+            //ZCounter
+            case 1:
+                animateMat.premultiply(new THREE.Matrix4().makeTranslation(0.5, 0.5, 0));
+                var angle = bias(0.1, this.t) * (Math.PI/2.0);
+                var quat = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 0, 1), angle);
+                animateMat.premultiply(new THREE.Matrix4().makeRotationFromQuaternion(quat));
+                animateMat.premultiply(new THREE.Matrix4().makeTranslation(-0.5, -0.5, 0));
+                break;
+            //XCounter
+            case 2:
+                animateMat.premultiply(new THREE.Matrix4().makeTranslation(0, 0.5, -0.5));
+                var angle = bias(0.1, this.t) * (Math.PI/2.0);
+                var quat = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), angle);
+                animateMat.premultiply(new THREE.Matrix4().makeRotationFromQuaternion(quat));
+                animateMat.premultiply(new THREE.Matrix4().makeTranslation(0, -0.5, 0.5));
+                break;
+            //XClockwise
+            case 3:
+                animateMat.premultiply(new THREE.Matrix4().makeTranslation(0, 0.5, 0.5));
+                var angle = bias(0.1, this.t) * (-Math.PI/2.0);
+                var quat = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), angle);
+                animateMat.premultiply(new THREE.Matrix4().makeRotationFromQuaternion(quat));
+                animateMat.premultiply(new THREE.Matrix4().makeTranslation(0, -0.5, -0.5));
+                break;
+        }
+        originalRot.premultiply(animateMat);
+        //apply original translation
+        originalRot.premultiply(new THREE.Matrix4().makeTranslation(this.position.x + 0.5, 0.5, this.position.z + 0.5));
+        this.cube.applyMatrix(originalRot);
+        this.t += 0.05;
+    }
 }
 
