@@ -1,7 +1,10 @@
 const THREE = require('three'); // older modules are imported like this. You shouldn't have to worry about this much
+const SHOW = false;
+
 require('three-lut')
 
 import Framework from './framework'
+import superformula from './superformula'
 
 // TODO: Haha, no really is this how I'm supposed to do this?
 import ConvexGeometry from '../node_modules/three/examples/js/geometries/ConvexGeometry.js'
@@ -13,6 +16,10 @@ import SubdivisionModifier from '../node_modules/three/examples/js/modifiers/Sub
 // Constants
 const INFINITY = 1.7976931348623157E+10308;
 const PI = 3.14159265358979323;
+
+// Basic Material
+var material = new THREE.MeshLambertMaterial({color: 0xffffff});
+var redLambert = new THREE.MeshLambertMaterial({color: 0xff0000});
 
 // Clock
 var startTime = 0.0;
@@ -173,6 +180,14 @@ function onLoad(framework) {
   scene.add( hemiLight );
   // END LIGHTS -------------------/
 
+
+  var s = new superformula();
+  s.init();
+  var geo = new THREE.BoxGeometry(1, 1, 1);
+  var mesh = new THREE.Mesh(geo, material);
+  scene.add(mesh);
+
+if (SHOW) {
   // WATER ------------------------/
   waterMaterial.uniforms.light.value = directionalLight.position;
   var waterGeo = new THREE.PlaneGeometry(options.water.width, 
@@ -206,6 +221,7 @@ function onLoad(framework) {
     stones[i].scale.set(size, size, size);
     scene.add(stones[i]);
   }
+}
 
   // SKY BOX ----------------------/
   // // GROUND
