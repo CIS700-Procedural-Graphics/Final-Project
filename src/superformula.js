@@ -143,7 +143,10 @@ export default function superformula() {
 										  this.aa, this.bb, this.mm, this.nn1, this.nn2, this.nn3, v);
 				this.geometry.vertices[this.getidx(i, j)].set(pt.x, pt.y, pt.z); 
 			}
-		}		
+		}
+
+		this.geometry.verticesNeedUpdate = true;
+		this.geometry.normalsNeedUpdate = true;		
 	}
 
 	// TODO: Lerp between old and new state, it will look NIICEEEE.

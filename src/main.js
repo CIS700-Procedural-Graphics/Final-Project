@@ -19,7 +19,7 @@ const PI = 3.14159265358979323;
 
 // Basic Material
 var material = new THREE.MeshLambertMaterial({color: 0xffffff});
-var redLambert = new THREE.MeshLambertMaterial({color: 0xff0000});
+var redLambert = new THREE.MeshLambertMaterial({color: 0xff0000, wireframe: true});
 
 // Clock
 var startTime = 0.0;
@@ -184,8 +184,12 @@ function onLoad(framework) {
   var s = new superformula();
   s.init();
   var geo = new THREE.BoxGeometry(1, 1, 1);
-  var mesh = new THREE.Mesh(geo, material);
+  var mesh = new THREE.Mesh(geo, redLambert);
   scene.add(mesh);
+
+  var smesh = new THREE.Mesh(s.geometry, material);
+  smesh.scale.set(10, 10, 10);
+  scene.add(smesh);
 
 if (SHOW) {
   // WATER ------------------------/
