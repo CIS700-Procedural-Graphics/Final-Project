@@ -14,7 +14,7 @@ var particleSys;
 var options = {
   music : null,
   audioAnalyser : null,
-  enableSound : true,
+  enableSound : false,
   initialized : false,
   isPaused : false
 }
