@@ -1,4 +1,4 @@
-Hannah Bollar. hbollar.
+Hannah Bollar. PennKey: hbollar.
 ======================
 
 **University of Pennsylvania, CIS 700: Procedural Graphics, Final Project**
