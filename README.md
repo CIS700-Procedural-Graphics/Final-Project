@@ -11,37 +11,31 @@ Turn volume on and possibly wear headphones to hear the sound.
 
 ## About the Look of the Project
 
-
-
-
-
-
+This project interprets wave data for four particular songs and emits particles from six balls that each correspond to a particular set of binned bits. If the value of the bits for a bin are above a particular threshold then that bin's ball will emit a particle. The coloring of the particle then depends on how much the actual value is greater than the tested threshold value. The colors begin at white then as the difference between the two values becomes larger the colors shift to yellow, orange, red, and finally pink. As the particles are emitted, there is a bit of noise affecting their movement as they shift through space that increases the further the particles are from the center ball. A particle dies and is removed once it is too far from that same center ball. As explained in the 'The Audio' section, this visualizer works well for vibrant songs that have varying output in terms of strong tones but an constantly changing distribution regarding which tones have more importance during particular moments of the song.
 
 ## The Audio
 
 Legend of Zelda - Wind Waker's Main Theme
-###### [Click Here to View the Source Video](https://www.youtube.com/watch?v=gEoU70DXr90)
-Demonstration of a vibrant song. Its output varies between even tones [mostly whites] and strong tones [pinks and reds] while also allowing for a consistently changing number of balls from which particles are being emitted. The most interesting version of song to be used for this visualizer.
+  ###### [Click Here to View the Source Video](https://www.youtube.com/watch?v=gEoU70DXr90)
+  ######Demonstration of a vibrant song. Its output varies between even tones [mostly whites] and strong tones [pinks and reds] while also allowing for a consistently changing number of balls from which particles are being emitted. The most interesting version of song to be used for this visualizer.
 
-turkish march orchestra [rondo alla turca]
-###### [Click Here to View the Source Video](https://www.youtube.com/watch?v=se_Swf7-68M)
-Demonstration of a pretty even song on the music visualizer that doesnt become too powerful. Particles come out pretty consistently for this song; however, throughout the entirety of the piece, the particles remain mostly in the white, yellow, and orange range.
+The Turkish March an orchestra version [Rondo Alla Turca]
+  ###### [Click Here to View the Source Video](https://www.youtube.com/watch?v=se_Swf7-68M)
+  ###### Demonstration of a pretty even song on the music visualizer that doesnt become too powerful. Particles come out pretty consistently from each ball output for this song; however, throughout the entirety of the piece, the particles remain mostly in the white, yellow, and orange range.
 
 Maple Story Music - Ellinia
-###### [Click Here to View the Source Video](https://www.youtube.com/watch?v=_M-ytoRguS8)
-Demonstration of a build up song using this music visualizer. Very few particles come out at the beginning and almost all are white, and by the end the song is in full force showing most colors for the particles and outputing from all balls on the ring.
+  ###### [Click Here to View the Source Video](https://www.youtube.com/watch?v=_M-ytoRguS8)
+  ###### Demonstration of a build up song using this music visualizer. Very few particles come out at the beginning and almost all are white, and by the end the song is in full force showing most colors for the particles and outputing from all balls on the ring.
 
 Pirates of the Caribbean 
-###### [Click Here to View the Source Video](https://www.youtube.com/watch?v=27mB8verLK8)
-Demonstration of a strong and powerful song using this music visualizer. Shows strong color variation from the particles and particles almost consistently come out of each ball.
+  ###### [Click Here to View the Source Video](https://www.youtube.com/watch?v=27mB8verLK8)
+  ###### Demonstration of a strong and powerful song using this music visualizer. Shows strong color variation from the particles and particles almost consistently come out of each ball.
 
 ## The Project
 
 Project: Music Visualizer
 ------------
-
 - #### Main Techniques:
-
   * (1) Working on shader manipulations for texture and coloring
       *  the plane uses a blue based opacity
       *  the balls are rendered with an opacity and a coloring such that the green and purple remain in the same locations relative to the eye position for the object to give the ringed effect
@@ -50,7 +44,7 @@ Project: Music Visualizer
   * (3) Noise function that affects the music particles position in space with increasing amplitude the farther the particles get from their source
       * Note that the noise function is entirely position based so all points that come from each ball will follow the same noise based path [looked better this way -with the lines- than not having the lines since it more easily shows a pause in the level of power of in the music]
   * (4) using THREE.js sound manipulation tools
-      * interpretation of wav file data
+      * interpretation of wave file data
       * allow for the playing of multiple pieces of music
 
 Timeline for Workflow
@@ -64,12 +58,11 @@ Timeline for Workflow
   • make so the loaded song plays out the speakers with the right timing [ie using same timer as gl]
 
 - #### Milestone 2
-	Sections completed for this milestone per my milestone 2 plan: 
-    • Set up using of music data for particles being shot out from particular location - by indexing from 0 - 7 [later to be implemented that the frequency will convert to fill the 0-7 indexing bins once i have the proper way to interpret the wave file data]
-    • add noise to the movement of the balls
-    • particles disappear when theyre farther than a specific distance from the center of the region
-    • Set up Particles manipulation class and proper connections between framework and data held within the class so can easily create / add / manipulate all at once
-    • rebuilt skybox with proper coloring
+  • set up using of music data for particles being shot out from particular location - by indexing from 0 - 7 [later to be implemented that the frequency will convert to fill the 0-7 indexing bins once i have the proper way to interpret the wave file data]
+  • add noise to the movement of the balls
+  • particles disappear when theyre farther than a specific distance from the center of the region
+  • set up Particles manipulation class and proper connections between framework and data held within the class so can easily create / add / manipulate all at once
+  • rebuilt skybox with proper coloring
 
 - #### Milestone 3 [ready for submission]
 	* display time in secs and in proper minutes per the amount remaining in the song
@@ -81,3 +74,4 @@ Timeline for Workflow
   * noise affecting the points more by distance
   * change the music selection so done in a drop down menu and not a slider
   * set up gui element for which song is currently playing
+  * when the music ends, the particles continue moving until they are all removed from the screen [visually better than them all just stopping when the music stops]
