@@ -38,6 +38,7 @@ I intend to achieve a beautiful looking pond scene which is also animated and in
 
 ### Final Presentation
 ![alt text][Static_Flower]
+
 [Static_Flower]: https://github.com/eldu/Final-Project/blob/master/src/common/images/Static_Flower.png
 
 - Generated a superformula flower with interactive parameters.
