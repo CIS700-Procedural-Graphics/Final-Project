@@ -459,7 +459,7 @@ function genBubble(scene) {
 
 
 function bassCallback(framework, visualConfig) {
-  if (Math.random() < 0.1)
+  if (Math.random() < 0.3)
     visualConfig.sceneProps.bouys.push(genBouy(framework.scene));
 }
 

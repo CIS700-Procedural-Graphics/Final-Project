@@ -420,9 +420,9 @@ function onUpdate(framework) {
 			Visual.melodyCallback(framework, visualConfig);
 		});
 
-		// musicPlayer.playBassLine( nTime, function() {
-		// 	Visual.bassCallback(framework, visualConfig);
-		// });
+		musicPlayer.playBassLine( nTime, function() {
+			Visual.bassCallback(framework, visualConfig);
+		});
 	}
 
 	// Visual
