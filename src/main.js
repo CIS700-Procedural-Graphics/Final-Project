@@ -348,9 +348,9 @@ function onLoad(framework) {
 	// RENDERER
 
 	// Initialize music instruments
-	musicPlayer.setMelodicInstrument( 'acoustic_grand_piano', ac );
+	musicPlayer.setMelodicInstrument( 'electric_piano_2', ac );
 	musicPlayer.setHarmonicInstrument( 'electric_piano_1', ac );
-	musicPlayer.setBassInstrument( 'acoustic_bass', ac );
+	musicPlayer.setBassInstrument( './src/soundfonts/percussion.js', ac );
 
 	// Initialize music
 	musicPlayer.createMusic();

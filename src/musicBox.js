@@ -8,7 +8,7 @@ import {patternedMelody,
 		createMainTheme,
 		createMelody} from './music/musicMotifs.js'
 
-import generateMelody from './music/melodyCopy.js'
+import generateMelody from './music/melody.js'
 import generateBass from './music/bass.js'
 import generateHarmony from './music/harmony.js'
 
@@ -21,7 +21,7 @@ export default class MusicBox {
 	// Private functions
 	_init() {
 		this.instruments = [null,null,null];
-		this.noise = [0.8, 0.5, 0.75];
+		this.noise = [0.8, 0.6, 0.5];
 	}
 
 	_setInstrument( instrumentName, ac, type ) {
@@ -98,8 +98,7 @@ export default class MusicBox {
 					if (instrument.notes[index][instrument.noteCount[index]].note > 0) {
 							instr.start(instrument.notes[index][instrument.noteCount[index]].note, 
 										instrument.ac.currentTime, 
-										{gain: this.noise[type],
-										 adsr: [0,0,0,0]})//;//[0.3,0.3,0.8,1]
+										{gain: this.noise[type]})//;//[0.3,0.3,0.8,1]
 								 .stop(instrument.ac.currentTime + instrument.notes[index][instrument.noteCount[index]].time * instrument.noteLength);
 							if (index == 0) { callback(); }
 						}
@@ -170,7 +169,7 @@ export default class MusicBox {
 	}
 
 	playMelody( time, callback ) {
-		this._playMusic( 0, time, callback );
+		// this._playMusic( 0, time, callback );
 	}
 
 	// Make full music

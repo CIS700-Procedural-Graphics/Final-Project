@@ -37,8 +37,8 @@ export default function generateMelody( scaleNote, randomVar ) {
 	var s = tonal.scale.get('minor', scaleNote);
 	// s = tonal.chord.get('Maj7', scaleNote);
 	var anchors = createAnchors( scaleNote, 15 );
-	var finalNotes = insertHook( anchors.melody, s );
-	finalNotes = insertFlairs( finalNotes, s, anchors.high, anchors.low );
+	var finalNotes = insertHook1( anchors.melody, s );
+	// finalNotes = insertFlairs( finalNotes, s, anchors.high, anchors.low );
 
 	// Remove any nulls
 	for ( var i = 0; i < finalNotes.length; i++ ) {
@@ -55,7 +55,7 @@ export default function generateMelody( scaleNote, randomVar ) {
 	}
 	console.log( debug )
 
-	return finalNotes;
+	return [finalNotes];
 }
 
 var noteType = {
@@ -120,13 +120,13 @@ function insertHook1(melody, scale) {
 		var note = tonal.note.midi( style1.scale[root] );
 		if (!note) {
 			root = state.root;
-		  note = tonal.note.midi( style1.scale[root] );
+		  	note = tonal.note.midi( style1.scale[root] );
 		}
 
 		if (i === h) {
 			hook.push({
 				note: note,
-				time: rhythm[0],
+				time: rhythm[0] * 2,
 				type: noteType.hook,
 			});
 		}
@@ -136,7 +136,7 @@ function insertHook1(melody, scale) {
 		} else {
 			newMelody.push({
 				note: note,
-				time: rhythm[0],
+				time: rhythm[0] * 2,
 				type: noteType.hook,
 			});
 		}
@@ -164,14 +164,14 @@ function insertHook1(melody, scale) {
 				if (i === h) {
 					hook.push({
 						note: note,
-						time: rhythm[j],
+						time: rhythm[j] * 2,
 						type: noteType.hook,
 					});
 				}
 
 				newMelody.push({
 					note: note,
-					time: rhythm[j],
+					time: rhythm[j] * 2,
 					type: noteType.hook,
 				});
 			}
@@ -181,7 +181,7 @@ function insertHook1(melody, scale) {
 		state = { root: 7, note: next, dir: dir, interval: interval };
 	}
 
-console.log(newMelody)
+	console.log(hook)
 
 	return newMelody;
 }
