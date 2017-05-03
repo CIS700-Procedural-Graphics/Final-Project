@@ -1,6 +1,8 @@
 Hannah Bollar. PennKey: hbollar.
 ======================
 
+NOTE THE FINAL WRITE UP IS NOT COMPLETED YET FOR THIS ASSIGNMENT - WILL BE COMPLETED BY THE DEADLINE OF FRIDAY MAY 5TH AT MIDNIGHT
+
 **University of Pennsylvania, CIS 700: Procedural Graphics, Final Project**
 
 ## View the Project
