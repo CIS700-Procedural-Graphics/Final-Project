@@ -15,21 +15,21 @@ This project interprets wave data for four particular songs and emits particles 
 
 ## The Audio
 
-Legend of Zelda - Wind Waker's Main Theme
+- #### Legend of Zelda - Wind Waker's Main Theme
   ###### [Click Here to View the Source Video](https://www.youtube.com/watch?v=gEoU70DXr90)
-  ######Demonstration of a vibrant song. Its output varies between even tones [mostly whites] and strong tones [pinks and reds] while also allowing for a consistently changing number of balls from which particles are being emitted. The most interesting version of song to be used for this visualizer.
+  * Demonstration of a vibrant song. Its output varies between even tones [mostly whites] and strong tones [pinks and reds] while also allowing for a consistently changing number of balls from which particles are being emitted. The most interesting version of song to be used for this visualizer.
 
-The Turkish March an orchestra version [Rondo Alla Turca]
+- #### The Turkish March an orchestra version [Rondo Alla Turca]
   ###### [Click Here to View the Source Video](https://www.youtube.com/watch?v=se_Swf7-68M)
-  ###### Demonstration of a pretty even song on the music visualizer that doesnt become too powerful. Particles come out pretty consistently from each ball output for this song; however, throughout the entirety of the piece, the particles remain mostly in the white, yellow, and orange range.
+  * Demonstration of a pretty even song on the music visualizer that doesnt become too powerful. Particles come out pretty consistently from each ball output for this song; however, throughout the entirety of the piece, the particles remain mostly in the white, yellow, and orange range.
 
-Maple Story Music - Ellinia
+- ####Maple Story Music - Ellinia
   ###### [Click Here to View the Source Video](https://www.youtube.com/watch?v=_M-ytoRguS8)
-  ###### Demonstration of a build up song using this music visualizer. Very few particles come out at the beginning and almost all are white, and by the end the song is in full force showing most colors for the particles and outputing from all balls on the ring.
+  * Demonstration of a build up song using this music visualizer. Very few particles come out at the beginning and almost all are white, and by the end the song is in full force showing most colors for the particles and outputing from all balls on the ring.
 
-Pirates of the Caribbean 
+- ####Pirates of the Caribbean 
   ###### [Click Here to View the Source Video](https://www.youtube.com/watch?v=27mB8verLK8)
-  ###### Demonstration of a strong and powerful song using this music visualizer. Shows strong color variation from the particles and particles almost consistently come out of each ball.
+  * Demonstration of a strong and powerful song using this music visualizer. Shows strong color variation from the particles and particles almost consistently come out of each ball.
 
 ## The Project
 
