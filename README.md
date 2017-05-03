@@ -74,4 +74,4 @@ Timeline for Workflow
   * noise affecting the points more by distance
   * change the music selection so done in a drop down menu and not a slider
   * set up gui element for which song is currently playing
-  * when the music ends, the particles continue moving until they are all removed from the screen [visually better than them all just stopping when the music stops]
+  * when loading a new song - if currently paused on prev song, this song starts as paused

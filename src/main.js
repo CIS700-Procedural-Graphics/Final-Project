@@ -50,7 +50,6 @@ var mat4Locations = [
                 new THREE.Matrix4().makeTranslation(0, dim * Math.sin(7* 2*Math.PI/8.0), dim * Math.cos(7* 2*Math.PI/8.0) ) ];
 
 var music = [
-            
             './music/wav_WindWakerTheme.wav',
             './music/wav_MozartRondoAllaTurcaOrchestra.wav',
             './music/wav_MapleStory_Ellinia.wav',
@@ -79,7 +78,8 @@ var visElements = {
   playTime: 0,
   displayTime: "",
   restart: false,
-  musicIndex: 0
+  musicIndex: 0,
+  songName: 'Wind Waker'
 }
 
 /******************/
@@ -335,15 +335,38 @@ function onLoad(framework) {
   gui.add(visElements, 'playTime').listen();
   gui.add(visElements, 'displayTime').listen();
 
-  gui.add(visElements, 'musicIndex', 0, 3).step(1).onChange(function(newVal) {
+  // gui.add(visElements, 'musicIndex', 0, 3).step(1).onChange(function(newVal) {
+  //   visElements.restart = false;
+
+  //   visElements.sound.pause();
+
+  //   all.removeAllShootersFromScene(framework);
+
+  //   loadMusic(visElements.musicIndex);
+  //   visElements.playTime = songLen[visElements.musicIndex];
+  // });
+
+  gui.add(visElements, 'songName', ['Wind Waker', 'Rondo Alla Turca', 'Maple Story - Ellina', 'Pirates of the Caribbean']).onChange(function(newVal) {
+    console.log("picked: " + visElements.songName);
+
+    //gui.add(visElements, 'musicIndex', 0, 3).step(1).onChange(function(newVal) {
+    
+    if (visElements.songName == 'Wind Waker') { visElements.musicIndex = 0; }
+    else if (visElements.songName == 'Rondo Alla Turca') { visElements.musicIndex = 1; }
+    else if (visElements.songName == 'Maple Story - Ellina') { visElements.musicIndex = 2; }
+    else /*if (visElements.songName == 'Pirates of the Caribbean')*/ { visElements.musicIndex = 3; }
     visElements.restart = false;
 
     visElements.sound.pause();
 
     all.removeAllShootersFromScene(framework);
 
+    visElements.sound = null;
+
     loadMusic(visElements.musicIndex);
     visElements.playTime = songLen[visElements.musicIndex];
+
+    //if (!visElements.play) { console.log("here1"); visElements.sound.pause(); console.log("here2"); }
   });
 
   // start music
@@ -357,6 +380,8 @@ function onLoad(framework) {
 // called on frame updates
 function onUpdate(framework) {
   var count = 60.0;
+
+  if (visElements.sound != null && visElements.sound.isPlaying && !visElements.play) { visElements.sound.pause(); }
 
   stepTime += 1.0;
   if (stepTime % 2.0 == 0 && visElements.sound.isPlaying) {
