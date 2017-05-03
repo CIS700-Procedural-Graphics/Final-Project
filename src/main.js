@@ -245,17 +245,11 @@ var composer;
 							visualConfig.sceneProps.display -= 0.05;
 							visualConfig.sceneProps.display = Math.max(0, visualConfig.sceneProps.display);
 							break;
-	        case 68:
-	  					var stars = framework.scene.getObjectByName("small_star_cloud");
-	  					if (stars !== undefined) {
-	  						stars.visible = !stars.visible;
-	  					}
+	        case 69:
+							visualConfig.sceneProps.vdisplay = 1;
 	            break;
-	        case 70:
-	  					var stars = framework.scene.getObjectByName("large_star_cloud");
-	  					if (stars !== undefined) {
-	  						stars.visible = !stars.visible;
-	  					}
+	        case 68:
+							visualConfig.sceneProps.vdisplay = -1;
 	            break;
 	        case 74:
 	            alert('j');
