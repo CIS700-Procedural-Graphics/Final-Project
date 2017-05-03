@@ -15,7 +15,7 @@ var mat4Locations = [
 var thresholdFor16Array = [500, 400, 250, 240, 200, 220, 50, 20];//[250, 200, 200, 200, 100, 90, 110];//[242, 240, 335, 220, 120, 100, 105];
 
 var origin = new THREE.Vector3(0, 0, 0);
-var max_x = 25;
+var max_x = 40;
 
 var deathProb0 = 0.2;
 var deathProb1 = 0.6;
