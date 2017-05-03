@@ -1,6 +1,7 @@
 const THREE = require('three');
 const _ = require('lodash');
 const CHROMA = require('chroma-js');
+const SEEDRANDOM = require('seedrandom');
 
 export default class ViewManager {
   constructor(options, map, scene) {
@@ -8,6 +9,10 @@ export default class ViewManager {
     this.renderColors = options.renderColors;
     this.render3D = options.render3D;
     this.renderCoastline = options.renderCoastline;
+    this.renderPolygonVariation = options.renderPolygonVariation;
+    this.renderDepth = options.renderDepth;
+    this.renderOceanDepth = options.renderOceanDepth;
+    this.seedPolygonVariation = options.seedPolygonVariation;
     this.debugOcean = options.debugOcean;
     this.debugShowNodes = options.debugShowNodes;
     this.debugShowCoastalNodes = options.debugShowCoastalNodes;
@@ -15,14 +20,14 @@ export default class ViewManager {
     this.scene = scene;
 
     // Determines if the shader will use elevation, moisture, or biomes
-    var color = (this.renderColors === 'elevation') ? 0 :
-                (this.renderColors === 'moisture')  ? 1 :
-                (this.renderColors === 'biomes')    ? 2 :
-                                                      3;
+    var uColor = (this.renderColors === 'elevation') ? 0 :
+                 (this.renderColors === 'moisture')  ? 1 :
+                 (this.renderColors === 'biomes')    ? 2 :
+                                                       3;
 
     this.shaderMaterial = new THREE.ShaderMaterial({
       uniforms: {
-        u_color: { value: color }
+        u_color: { value: uColor }
       },
       vertexShader: require('../shaders/map-vert.glsl'),
       fragmentShader: require('../shaders/map-frag.glsl'),
@@ -99,12 +104,24 @@ export default class ViewManager {
     var cells = this.map.graphManager.cells;
     var positionsVisited = {};
 
+    var rng1 = SEEDRANDOM(this.seedPolygonVariation);
+    var rng2 = SEEDRANDOM(this.seedPolygonVariation + 1.0);
+
     cells.forEach(function(cell) {
       var corners = cell.corners;
       var faceIndices = [];
 
       corners.forEach(function(node, i) {
         var pos = node.pos.clone().setComponent(2, node.elevation * 5);
+
+        if (!this.renderOceanDepth && node.elevation <= 0) {
+          pos.setComponent(2, 0);
+        }
+
+        if (!this.renderDepth) {
+          pos.setComponent(2, 0);
+        }
+
         var posMapIndex = pos.x + ' ' + pos.y;
         var id = positionsVisited[posMapIndex];
 
@@ -115,7 +132,7 @@ export default class ViewManager {
         }
 
         faceIndices.push(id);
-      });
+      }, this);
 
       var color = (this.renderColors === 'elevation') ? cell.elevationColor :
                   (this.renderColors === 'moisture')  ? cell.moistureColor :
@@ -129,9 +146,15 @@ export default class ViewManager {
         var ib = faceIndices[i - 1];
         var ic = faceIndices[i];
 
-        var face = new THREE.Face3(ia, ib, ic, normal, new THREE.Color(color.hex()), materialIndex);
+        var tempColor = (rng1() > 0.5) ? color.darken(rng2() / 10) : color.brighten(rng2() / 10);
+        var finalColor = this.renderPolygonVariation ? tempColor : color;
+
+        var face = new THREE.Face3(ia, ib, ic, normal, new THREE.Color(finalColor.hex()), materialIndex);
 
         geometry.faces.push(face);
+
+        rng1 = SEEDRANDOM(rng1());
+        rng2 = SEEDRANDOM(rng2());
       }
     }, this);
 
@@ -179,6 +202,15 @@ export default class ViewManager {
           positions[(i * 3)    ] = pos.x;
           positions[(i * 3) + 1] = pos.y;
           positions[(i * 3) + 2] = pos.z + (elevation * 5.0);
+
+          if (!this.renderOceanDepth && elevation <= 0) {
+            positions[(i * 3) + 2] = 0;
+          }
+
+          if (!this.renderDepth) {
+            positions[(i * 3) + 2] = 0;
+          }
+
           elevations[i] = elevation;
           moistures[i] = moisture;
 

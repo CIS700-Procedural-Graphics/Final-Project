@@ -1,5 +1,6 @@
 const _ = require('lodash');
-const Voronoi = require('voronoi');
+const VORONOI = require('voronoi');
+const SEEDRANDOM = require('seedrandom');
 
 import Cell from './cell'
 import Edge from './edge'
@@ -8,6 +9,7 @@ import HalfEdge from './halfedge'
 
 export default class GraphManager {
   constructor(options, map) {
+    this.seedVoronoi = options.seedVoronoi;
     this.numCells = options.numCells;
     this.cellType = options.cellType;
     this.map = map;
@@ -322,18 +324,23 @@ export default class GraphManager {
   }
 
   _generateFromVoronoiGrid() {
-    var voronoi = new Voronoi();
+    var voronoi = new VORONOI();
+    var rng1 = SEEDRANDOM(this.seedVoronoi);
+    var rng2 = SEEDRANDOM(this.seedVoronoi + 1.0);
     var bbox = { xl: 0, xr: this.numCells, yt: 0, yb: this.numCells };
     var sites = [];
 
     for (var i = 0; i < this.numCells * 10; i++) {
-      var x = Math.random() * this.numCells;
-      var y = Math.random() * this.numCells;
+      var x = rng1() * this.numCells;
+      var y = rng2() * this.numCells;
 
       sites.push({
         x: x,
         y: y
       });
+
+      rng1 = SEEDRANDOM(rng1());
+      rng2 = SEEDRANDOM(rng2());
     }
 
     var diagram = voronoi.compute(sites, bbox);

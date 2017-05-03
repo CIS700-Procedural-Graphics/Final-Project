@@ -6,6 +6,8 @@ const CHROMA = require('chroma-js');
 export default class GeographyManager {
   constructor(options, map) {
     this.map = map;
+    this.seedElevation = options.seedElevation;
+    this.seedMoisture = options.seedMoisture;
     this.elevationNoisiness = options.elevationNoisiness;
     this.moistureNoisiness = options.moistureNoisiness;
     this.biomes = {
@@ -47,8 +49,8 @@ export default class GeographyManager {
   generateGeography() {
     this._generateElevationMap();
     this._generateMoistureMap();
-    this._distributeBiomes();
     this._generateCoastline();
+    this._distributeBiomes();
   }
 
   _generateCoastline() {
@@ -73,7 +75,7 @@ export default class GeographyManager {
     var nodes = this.map.graphManager.nodes;
     var cells = this.map.graphManager.cells;
     var numCells = this.map.graphManager.numCells;
-    var seed = Math.random();
+    var seed = this.seedElevation;
     var noise = new NOISEJS.Noise(seed);
 
     nodes.forEach(function(node) {
@@ -103,7 +105,7 @@ export default class GeographyManager {
     var nodes = this.map.graphManager.nodes;
     var cells = this.map.graphManager.cells;
     var numCells = this.map.graphManager.numCells;
-    var seed = Math.random();
+    var seed = this.seedMoisture;
     var noise = new NOISEJS.Noise(seed);
 
     nodes.forEach(function(node) {

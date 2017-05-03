@@ -14,7 +14,7 @@ function init(callback, update) {
   stats.domElement.style.top = '0px';
   document.body.appendChild(stats.domElement);
 
-  var gui = new DAT.GUI({ width: 320 });
+  var gui = new DAT.GUI({ width: 400 });
 
   var framework = {
     gui: gui,
