@@ -77,7 +77,8 @@ I intend to achieve a beautiful looking pond scene which is also animated and in
 - [Convex Geometry Example](https://threejs.org/examples/?q=convex#webgl_geometry_convex)
 - [Superformula Wikipedia](https://en.wikipedia.org/wiki/Superformula)
 - [Supershapes (Superformula) written by Paul Bourke, March 2002](http://paulbourke.net/geometry/supershape/): Useful to understand what the parametes of the superformula do and how they effect the shape.
-- [Importing Audio](http://stackoverflow.com/questions/21463752/javascript-audio-object-vs-html5-audio-tag)
+- [How to Import Audio](http://stackoverflow.com/questions/21463752/javascript-audio-object-vs-html5-audio-tag)
+- [Water Lapping Wind by Water on Youtube Creative Studio](https://www.youtube.com/audiolibrary/soundeffects)
 
 ### Timeline
 - 4/11: Codebase organization, Sketch End Goal, Work on Terrain Generation: Water Plane, and rock formation
