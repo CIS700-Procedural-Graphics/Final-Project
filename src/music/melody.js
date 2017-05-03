@@ -41,10 +41,10 @@ export default function generateMelody( scaleNote, randomVar ) {
 	var finalNotes = insertHook2( anchors.melody, s );
 	// finalNotes = insertFlairs( finalNotes, s, anchors.high, anchors.low );
 
-	finalNotes = [];
-	finalNotes.push( {note: tonal.note.midi( s[0] ), time: 16, type: 1} );
-	finalNotes.push( {note: tonal.note.midi( s[5] ), time: 16, type: 1} );
-	finalNotes.push( {note: tonal.note.midi( s[4] ), time: 16, type: 1} );
+	// finalNotes = [];
+	// finalNotes.push( {note: tonal.note.midi( s[0] ), time: 16, type: 1} );
+	// finalNotes.push( {note: tonal.note.midi( s[5] ), time: 16, type: 1} );
+	// finalNotes.push( {note: tonal.note.midi( s[4] ), time: 16, type: 1} );
 
 	// Remove any nulls
 	// for ( var i = 0; i < finalNotes.length; i++ ) {
@@ -193,6 +193,15 @@ function insertHook1(melody, scale) {
 }
 
 
+function genRandomIdx(start, end, max) {
+	var num = Math.floor(Math.random() * max);
+	var r = new Set();
+	for (var i = 0; i < num; i++) {
+		r.add(Math.floor(Math.random() * (end - start)) + start);
+	}
+	return r;
+}
+
 function insertHook2(melody, scale) {
 
 	var scale = [ "G2", "A2", "Bb2", "C3", "D3", "Eb3", "F3",
@@ -205,6 +214,8 @@ function insertHook2(melody, scale) {
 		{ notes: [0,-1], rhythm: [4,4] },
 		{ notes: [0,1,1], rhythm: [8/3,8/3,8/3] },
 		{ notes: [0,-2,1], rhythm: [4,2,2] },
+		{ notes: [0,1,-1,-1], rhythm: [2,2,2,2] },
+		{ notes: [0,0], rhythm: [8,16] },
 	];
 
 	var input = [];
@@ -222,22 +233,21 @@ function insertHook2(melody, scale) {
 		loop.push({
 			noteidx: idx,
 			note: tonal.note.midi( scale[idx] ),
-			time: 8,
+			time: 16,
 			type: noteType.hook,
 		});
 	}
 
 	for (var i = 0; i < 10; i++) {
 
-		var target = Math.floor(Math.random()*10);
-
+		// var target = Math.floor(Math.random()*10);
+		var target = genRandomIdx(0,10,7);
 		var phrase = [];
-
 		for (var j = 0; j < loop.length; j++) {
-			if (j === target && Math.random() < 0.8) {
+			if (target.has(j)) {
 
 				var root = loop[j].noteidx;
-				var v = Math.floor(Math.random() * variations.length);
+				var v = Math.random() < 0.5 && v ? v : Math.floor(Math.random() * variations.length);
 				var variation = variations[v];
 				for (var k = 0; k < variation.notes.length; k++) {
 					idx = root + variation.notes[k];

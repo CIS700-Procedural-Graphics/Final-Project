@@ -27,7 +27,7 @@ export default class MusicBox {
 	_setInstrument( instrumentName, ac, type ) {
 		var instrument = Soundfont.instrument(ac, instrumentName, { soundfont: 'MusyngKite',
 																	gain: 1,
-																	adsr: [0, 0.3, 0.6, 0.2] });
+																	adsr: [0, 0.3, 0.6, 1.0] }); // time_to_high, dur_of_high, time_of_sustain, time_to_die
 		var detailedInstrument = {
 			'instrument': instrument,
 			'ac' 		: ac,
@@ -133,6 +133,7 @@ export default class MusicBox {
 
 	setBassInstrument( instrumentName, ac ) {
 		this._setInstrument( instrumentName, ac, 2 );
+		this.instruments[2].noteLength = 1/2;
 	}
 
 	// Functions for bass line

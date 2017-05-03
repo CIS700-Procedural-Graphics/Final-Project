@@ -348,9 +348,9 @@ function onLoad(framework) {
 	// RENDERER
 
 	// Initialize music instruments
-	musicPlayer.setMelodicInstrument( 'fx_6_goblins', ac );
-	musicPlayer.setHarmonicInstrument( 'electric_piano_1', ac );
-	musicPlayer.setBassInstrument( './src/soundfonts/percussion.js', ac );
+	musicPlayer.setMelodicInstrument( 'oboe', ac );
+	musicPlayer.setHarmonicInstrument( 'synthstrings_1', ac );
+	musicPlayer.setBassInstrument( 'gunshot', ac );
 
 	// Initialize music
 	musicPlayer.createMusic();
@@ -413,8 +413,8 @@ function onUpdate(framework) {
 	// Audio updates
 	var nTime = Date.now();
 	if (allInit) {
-		// musicPlayer.playHarmony( nTime, function() {
-		// });
+		musicPlayer.playHarmony( nTime, function() {
+		});
 
 		musicPlayer.playMelody( nTime, function() {
 			Visual.melodyCallback(framework, visualConfig);

@@ -91,6 +91,9 @@ function genParticle(scene) {
 }
 
 
+function melodyCallback(framework, visualConfig) {
+}
+
 function bassCallback(framework, visualConfig) {
   var scene = framework.scene;
   visualConfig.sceneProps.particles.push(genParticle(scene));
@@ -113,8 +116,9 @@ export default {
   initScene: initScene,
   updateScene: updateScene,
   bassCallback: bassCallback,
+  melodyCallback: melodyCallback,
   changeTrigger: changeTrigger,
-  cleanupScene: cleanupScene,
+  cleanupScene: cleanupScene
 }
 
 export function other() {
