@@ -199,17 +199,18 @@ function onLoad(framework) {
   s.init();
   var geo = new THREE.BoxGeometry(1, 2, 3);
   var mesh = new THREE.Mesh(geo, redLambert);
-  scene.add(mesh);
+  //scene.add(mesh);
 
   var smesh = new THREE.Mesh(s.geometry, material);
-  smesh.scale.set(100, 100, 100);
+
+  //var smesh = new THREE.Mesh(s.geometry, new THREE.MeshBasicMaterial( { vertexColors: THREE.FaceColors } ));
+  //smesh.scale.set(100, 100, 100);
   scene.add(smesh);
-  // s.geometry.scale(10, 10, 10);
+  //s.geometry.scale(10, 10, 10);
   //  var pointMat = new THREE.PointsMaterial( { color: 0xffffff });  
   // var points = new THREE.Points(s.geometry, pointMat);
   // pointMat.sizeAttenuation = false;
-
-  //scene.add(points);
+  // scene.add(points);
 
 if (SHOW) {
   // WATER ------------------------/
@@ -288,11 +289,11 @@ if (SHOW) {
   });
 
   var fsuper = gui.addFolder('SuperFormula');
-  fsuper.add(sf, 'a', 1, 50).onChange(function(newVal) {
+  fsuper.add(sf, 'a', 0.1, 2.0).onChange(function(newVal) {
     s.setState(sf.a, sf.b, sf.m, sf.n1, sf.n2, sf.n3, sf.aa, sf.bb, sf.mm, sf.nn1, sf.nn2, sf.nn3);
   });
   
-  fsuper.add(sf, 'b', 1, 50).onChange(function(newVal) {
+  fsuper.add(sf, 'b', 0.1, 2.0).onChange(function(newVal) {
     s.setState(sf.a, sf.b, sf.m, sf.n1, sf.n2, sf.n3, sf.aa, sf.bb, sf.mm, sf.nn1, sf.nn2, sf.nn3);
   });
 
@@ -300,23 +301,23 @@ if (SHOW) {
     s.setState(sf.a, sf.b, sf.m, sf.n1, sf.n2, sf.n3, sf.aa, sf.bb, sf.mm, sf.nn1, sf.nn2, sf.nn3);
   });
 
-  fsuper.add(sf, 'n1', 1, 50).onChange(function(newVal) {
+  fsuper.add(sf, 'n1', 1, 20).onChange(function(newVal) {
     s.setState(sf.a, sf.b, sf.m, sf.n1, sf.n2, sf.n3, sf.aa, sf.bb, sf.mm, sf.nn1, sf.nn2, sf.nn3);
   });
 
-  fsuper.add(sf, 'n2', 1, 50).onChange(function(newVal) {
+  fsuper.add(sf, 'n2', -10, 10).onChange(function(newVal) {
     s.setState(sf.a, sf.b, sf.m, sf.n1, sf.n2, sf.n3, sf.aa, sf.bb, sf.mm, sf.nn1, sf.nn2, sf.nn3);
   });
 
-  fsuper.add(sf, 'n3', 1, 50).onChange(function(newVal) {
+  fsuper.add(sf, 'n3', -10, 10).onChange(function(newVal) {
     s.setState(sf.a, sf.b, sf.m, sf.n1, sf.n2, sf.n3, sf.aa, sf.bb, sf.mm, sf.nn1, sf.nn2, sf.nn3);
   });
 
-  fsuper.add(sf, 'aa', 1, 50).onChange(function(newVal) {
+  fsuper.add(sf, 'aa', 0.1, 2).onChange(function(newVal) {
     s.setState(sf.a, sf.b, sf.m, sf.n1, sf.n2, sf.n3, sf.aa, sf.bb, sf.mm, sf.nn1, sf.nn2, sf.nn3);
   });
   
-  fsuper.add(sf, 'bb', 1, 50).onChange(function(newVal) {
+  fsuper.add(sf, 'bb', 0.1, 2).onChange(function(newVal) {
     s.setState(sf.a, sf.b, sf.m, sf.n1, sf.n2, sf.n3, sf.aa, sf.bb, sf.mm, sf.nn1, sf.nn2, sf.nn3);
   });
 
@@ -324,15 +325,15 @@ if (SHOW) {
     s.setState(sf.a, sf.b, sf.m, sf.n1, sf.n2, sf.n3, sf.aa, sf.bb, sf.mm, sf.nn1, sf.nn2, sf.nn3);
   });
 
-  fsuper.add(sf, 'nn1', 1, 50).onChange(function(newVal) {
+  fsuper.add(sf, 'nn1', 1, 20).onChange(function(newVal) {
     s.setState(sf.a, sf.b, sf.m, sf.n1, sf.n2, sf.n3, sf.aa, sf.bb, sf.mm, sf.nn1, sf.nn2, sf.nn3);
   });
 
-  fsuper.add(sf, 'nn2', 1, 50).onChange(function(newVal) {
+  fsuper.add(sf, 'nn2', -10, 10).onChange(function(newVal) {
     s.setState(sf.a, sf.b, sf.m, sf.n1, sf.n2, sf.n3, sf.aa, sf.bb, sf.mm, sf.nn1, sf.nn2, sf.nn3);
   });
 
-  fsuper.add(sf, 'nn3', 1, 50).onChange(function(newVal) {
+  fsuper.add(sf, 'nn3', -10, 10).onChange(function(newVal) {
     s.setState(sf.a, sf.b, sf.m, sf.n1, sf.n2, sf.n3, sf.aa, sf.bb, sf.mm, sf.nn1, sf.nn2, sf.nn3);
   });
 

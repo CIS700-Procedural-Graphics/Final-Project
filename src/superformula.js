@@ -68,14 +68,14 @@ export default function superformula() {
 	this.a = 1;
 	this.b = 1;
 	this.m = 3;
-	this.n1 = 30;
+	this.n1 = 15;
 	this.n2 = 15;
 	this.n3 = 15;
 	this.aa = 1;
 	this.bb = 1;
 	this.mm = 3;
-	this.nn1 = 30;
-	this.nn2 = 30;
+	this.nn1 = 15;
+	this.nn2 = 15;
 	this.nn3 = 15;
 
 	// Old State
@@ -91,12 +91,17 @@ export default function superformula() {
 			}
 		}
 
+		var count = 0;
 		// Faces along the barrel
 		for (var i = 0; i < this.maxi - 1; i++) {
 			for (var j = 0; j < this.maxj - 1; j++) {
 				// Push triangle faces
-				this.geometry.faces.push(new THREE.Face3(this.getidx(i, j), this.getidx(i, j + 1), this.getidx(i + 1, j + 1)));
+				this.geometry.faces.push(new THREE.Face3(this.getidx(i, j), this.getidx(i + 1, j + 1), this.getidx(i, j + 1)));
+				this.geometry.faces[count].color.setHex(0xff0000);
+				count++;
 				this.geometry.faces.push(new THREE.Face3(this.getidx(i, j), this.getidx(i + 1, j), this.getidx(i + 1, j + 1)));
+				this.geometry.faces[count].color.setHex(0x00ff00);
+				count++;
 			}
 		}
 
@@ -109,7 +114,7 @@ export default function superformula() {
 		// Actually calculate the vertices
 		this.sfvert();
 
-		console.log(this.geometry);
+		//console.log(this.geometry);
 	}
 
 	this.setState = function(a, b, m, n1, n2, n3, aa, bb, mm, nn1, nn2, nn3) {
@@ -147,8 +152,11 @@ export default function superformula() {
 			}
 		}
 
+		// this.geometry.scale(10, 10, 10);
 		this.geometry.verticesNeedUpdate = true;
-		this.geometry.normalsNeedUpdate = true;		
+		this.geometry.normalsNeedUpdate = true;	
+		this.geometry.computeFaceNormals();
+		this.geometry.computeVertexNormals(); 	
 	}
 
 	// TODO: Lerp between old and new state, it will look NIICEEEE.
