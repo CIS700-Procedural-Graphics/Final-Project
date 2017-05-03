@@ -18,7 +18,7 @@ I am happy with how this project turned out, not just visually but implementatio
 ### Sky
 The sky is a sphere surrounding the scene with a perlin noise fragment shader. The noise value is bucketed to create a toon shader effect. 
 
-| ![](./images/sky.png) | 
+| <img src="/images/sky.png" width="850"> | 
 | --------------------------------------- |
 | Figure 1: Toon shaded Perlin Noise |
 
@@ -44,7 +44,7 @@ Figure 3: Filters
 
  The height is proportional to the value of the texture. To create the striation of cliff walls, the texture value is bucketed before a noise value is added. Figure 4 shows the effect of the spline texture and filters in the scene.
 
-| ![](./images/terrain2.png) |
+| <img src="/images/terrain2.png" width="850"> |
 | --------------------------------- |
 | Figure 4: Spline gorge |
 
