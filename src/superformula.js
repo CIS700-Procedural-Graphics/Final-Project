@@ -154,7 +154,6 @@ export default function superformula() {
 			}
 		}
 
-		// this.geometry.scale(10, 10, 10);
 		this.geometry.verticesNeedUpdate = true;
 		this.geometry.normalsNeedUpdate = true;	
 		// this.geometry.computeFaceNormals();
