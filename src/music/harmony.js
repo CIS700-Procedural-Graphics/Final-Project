@@ -55,7 +55,7 @@ export default function generateHarmony( melody, interval ) {
 			var r2 = r2Set[ Math.floor( Math.random() * r2Set.length) ];
 
 			var t = 1;
-			var pNote = 78;
+			var pNote = tonal.note.midi( n );
 
 			// Main repeats
 			for ( var k = 0; k < rep2; k++ ) {
@@ -66,7 +66,7 @@ export default function generateHarmony( melody, interval ) {
 				}
 				
 			}
-			harmonic.push( {note: pNote, time: t * 2, type: -1} );
+			harmonic.push( {note: tonal.note.midi( s[2] ) - 12, time: t * 2, type: -1} );
 
 			for ( var k = 0; k < rep1; k++ ) {
 				for ( var i = 0; i < pat2.length; i++ ) {
@@ -76,12 +76,12 @@ export default function generateHarmony( melody, interval ) {
 				}
 				
 			}
-			harmonic.push( {note: pNote, time: t * 2, type: -1} );
+			harmonic.push( {note: tonal.note.midi( s[3] ) - 12, time: t * 2, type: -1} );
 
 			// Variations
-			var trans1 = Math.random() > 0.2 ? true : false;
-			var trans2 = Math.random() > 0.2 ? true : false;
-			var short  = Math.random() > 0.2 ? true : false;
+			var trans1 = Math.random() > 1.2 ? true : false;
+			var trans2 = Math.random() > 1.2 ? true : false;
+			var short  = Math.random() > 1.2 ? true : false;
 			var quickDrop = Math.random() > 0 ? true : false;
 			var total = harmonic;
 			var pat3 = [];
@@ -131,16 +131,17 @@ export default function generateHarmony( melody, interval ) {
 			}
 
 			if ( quickDrop ) {
-				var dropLength = Math.floor( Math.random() * 8 ) + 4;
-				var p = [], pause = true, dur = 2;
+				var dropLength = Math.floor( Math.random() * 8 ) + 10;
+				var p = [], pause = true, dur = 1;
 				for ( var i = 0; i < dropLength; i++ ) {
 					pause = dur > 0.5 ? true : false;
-					p.push( {note: n, time: dur, type: 1} );
-					// if ( pause ) { p.push( {note: -1, time: dur / 2, type: 1} ); }
-					p.push( {note: n, time: dur, type: 1} );
-					// if ( pause ) { p.push( {note: -1, time: dur / 2, type: 1} ); }
+					p.push( {note: n - 2 * i, time: dur, type: 1} );
+					p.push( {note: n - 2 * i, time: dur, type: 1} );
+					p.push( {note: n - 2 * i, time: dur, type: 1} );
+					p.push( {note: n - 2 * i, time: dur, type: 1} );
+					// if ( i % 1 == 0 ) { p.push( {note: -1, time: 0.5, type: 1} ); }
 
-					dur /= 1.25 ;
+					dur /= 1.5 ;
 					dur = Math.max( dur, 0.25 );
 				}
 				p.push( {note: -1, time: 6, type: 1} );

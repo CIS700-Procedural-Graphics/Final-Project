@@ -4,9 +4,6 @@ var tonal = require('tonal')
 // Local imports
 import euclid from './utils/euclid.js'
 
-import {patternedMelody,
-		createMainTheme,
-		createMelody} from './music/musicMotifs.js'
 
 import generateMelody from './music/melody.js'
 import {generateBass, 
@@ -25,6 +22,14 @@ export default class MusicBox {
 		this.noise = [0.6, 0.8, 0.3];
 		this.delay = 3;
 		this.delayTimer = null;
+		this.settings = {
+			envelopes : {
+				0: [0.7, 0.5, 0.3, 1.0],
+				1: [0.1, 0.7, 0.3, 0.1],
+				3: [0.1, 0.7, 0.3, 0.1]
+			},
+			noise : [0.6, 0.8, 0.3]
+		}
 	}
 
 	_setInstrument( instrumentName, ac, type, envelope = [0, 0.5, 0, 0.2] ) {
@@ -103,7 +108,7 @@ export default class MusicBox {
 					var instr = instrument;
 					var testbool = false;
 					if ( instrument.notes[i][instrument.noteCount[i]].type == -1 ) {
-						instr = this.instruments[2];
+						instr = this.instruments[3];
 						testbool = true;
 					}
 					
@@ -139,10 +144,14 @@ export default class MusicBox {
 	setMelodicInstrument( instrumentName, ac ) {
 		this._setInstrument( instrumentName, ac, 0, [0.7, 0.5, 0.3, 1.0] );
 		this.instruments[0].noteLength = 1/4;
+		// [0.7, 0.5, 0.3, 1.0] 
 	}
 
 	setHarmonicInstrument( instrumentName, ac ) {
-		this._setInstrument( instrumentName, ac, 1, [0.1, 0.7, 0.3, 0.1] );
+		this._setInstrument( instrumentName, ac, 1, [0.1, 0.7, 0.3, 0.1] ); 
+		// [0.1, 0.7, 0.3, 0.1]
+		this._setInstrument( 'pad_3_polysynth', ac, 3, [0.1, 0.7, 0.3, 0.1] );
+		// [0.1, 0.7, 0.3, 0.1]
 		this.instruments[1].noteLength = 1/4;
 	}
 
@@ -189,7 +198,7 @@ export default class MusicBox {
 	}
 
 	// Make full music
-	createMusic() {
+	createMusic( ) {
 		this.createMelodyLine();
 		this.createHarmonyLine();
 		this.createBassLine();
