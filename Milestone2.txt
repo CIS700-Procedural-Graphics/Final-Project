@@ -1,0 +1,6 @@
+Completed for Milestone 2:
+
+From the points of the closed spline, I create a texture to be passed into the canyon vertex shader so that the noise can be applied only to the walls on either side of the canyon. Since the spline is only 1D. I most compose the texture in multiple passes. First, I map the spline to the texture, defining all points on the spline as 1. I then widen the path by taking the maximum value in a square area on the texture. Finally, I apply a gaussian blur in both the X and Y directions to get the detail on the walls of the canyon rather than a box transition.
+
+see image in README
+demo here: http://www.sarahforcier.com/Project9-FinalProject 

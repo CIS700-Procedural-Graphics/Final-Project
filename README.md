@@ -1,112 +1,127 @@
-# CIS700 Procedural Graphics: Final Project
+# Zionical
 
-Time to show off your new bag of procedural tricks by creating one polished final project. For this assignment you will have four weeks to create and document a portfolio piece that demonstrates your mastery of procedural thinking and implementation. You may work in groups of up to three (working alone is fine too). You may use any language / platform you choose for this assignment (given our approval if it’s not JavaScript/WebGL or C++/OpenGL).
+This project is inspired by [Panoramical][1], a musical landscape with highly abstracted and colorful environments. 
 
-As usual with this class, we want to encourage you to take this opportunity to explore and experiment. To get you started, however, we’ve provided a few open-ended prompts below. Interesting and complex visuals are the goal in all of these prompts, but they encourage focus on different aspects of proceduralism.
+Press "V" for viewpoint change.
 
-## Prompts:
+Press "P" to pause;
 
-- ### A classic 4k demo
-  * In the spirit of the demo scene, create an animation that fits into a 4k executable that runs in real-time. Feel free to take inspiration from the many existing demos. Focus on efficiency and elegance in your implementation.
-  * Examples: [cdak by Quite & orange](https://www.youtube.com/watch?v=RCh3Q08HMfs&list=PLA5E2FF8E143DA58C)
+## Results
+![](./images/final4.png)
+![](./images/final2.png) 
+![](./images/final1.png)
 
-- ### A forgery
-  * Taking inspiration from a particular natural phenomenon or distinctive set of visuals, implement a detailed, procedural recreation of that aesthetic. This includes modeling, texturing and object placement within your scene. Does not need to be real-time. Focus on detail and visual accuracy in your implementation.
-  * Examples:
-    - [Snail](https://www.shadertoy.com/view/ld3Gz2), [Journey](https://www.shadertoy.com/view/ldlcRf), Big Hero 6 Wormhole: [Image 1](http://2.bp.blogspot.com/-R-6AN2cWjwg/VTyIzIQSQfI/AAAAAAAABLA/GC0yzzz4wHw/s1600/big-hero-6-disneyscreencaps.com-10092.jpg) , [Image 2](https://i.stack.imgur.com/a9RGL.jpg)
+I am happy with how this project turned out, not just visually but implementation-wise. I unintentionally incorporated topics from various different lectures, not just the noise lecture as was the original intent. I used a particle system, cosine color palettes, toolbox functions, filters, and of course lots of noise and shaders. 
 
-- ### A game level
-  * Like generations of game makers before us, create a game which generates an  navigable environment (eg. a roguelike dungeon, platforms) and some sort of goal or conflict (eg. enemy agents to avoid or items to collect). Must run in real-time. Aim to create an experience that will challenge players and vary noticeably in different playthroughs, whether that means complex dungeon generation, careful resource management or a sophisticated AI model. Focus on designing a system that will generate complex challenges and goals.
-  * Examples: Spore, Dwarf Fortress, Minecraft, Rogue
+## Evaluation
 
-- ### An animated environment / music visualizer
-  * Create an environment full of interactive procedural animation. The goal of this project is to create an environment that feels responsive and alive. Whether or not animations are musically-driven, sound should be an important component. Focus on user interactions, motion design and experimental interfaces.
-  * Examples: [Panoramical](https://www.youtube.com/watch?v=gBTTMNFXHTk), [Bound](https://www.youtube.com/watch?v=aE37l6RvF-c)
-- ### Own proposal
-  * You are of course **welcome to propose your own topic**. Regardless of what you choose, you and your team must research your topic and relevant techniques and come up with a detailed plan of execution. You will meet with some subset of the procedural staff before starting implementation for approval. 
+### Sky
+The sky is a sphere surrounding the scene with a perlin noise fragment shader. The noise value is bucketed to create a toon shader effect. 
 
-**Final grading will be individual** and will be based on both the final product and how well you were able to achieve your intended effect according to your execution plan. Plans change of course, and we don’t expect you to follow your execution plan to a T, but if your final project looks pretty good, but you cut corners and only did 30% of what you outlined in your design doc, you will be penalized.
+| <img src="/images/sky.png" width="850"> | 
+| --------------------------------------- |
+| Figure 1: Toon shaded Perlin Noise |
 
-But overall, have fun! This is your opportunity to work on whatever procedural project inspires you. The best way to ensure a good result is to pick something you’re passionate about. :)
+### Camera
 
-## Timeline
+The camera and canyon are closely tied because the camera can only move through empty space in the canyon (aka not intersect the rocks), so the implementations had to be connected. I decided to first define a camera animation along a closed spline. I could have started with the canyon gorge layout and then add camera movement within, but this seemed more difficult because if I placed the spline knots in the gorge, all interpolated points were not guaranteed to remain in the gorge. I chose a spline because I wanted to have a continuous animation, which I could achieved with a closed loop, but I also wanted the path to twist and turn so as not to be an obvious circle. By offsetting the knot points pseudo-randomly, I am able to perturb the path just enough to appear random but not too jerky, since it is still controlled by a smooth curve. Figure 2 shows some examples of procedurally generated splines. 
 
-- 4/08	Design doc due / Have met with procedural staff
-- 4/18	Milestone 1 (short write-up + demo)
-- 4/25	Milestone 2 (short write-up + demo)
-- 5/3	Final presentations (3-5 pm, Siglab), final reports due
+| <img src="/images/map1.png" width="275"> 		<img src="/images/map2.png" width="275"> 		<img src="/images/map3.png" width="275"> |
+| ----------------------- |
+| Figure 2: Perturbed circular splines |
 
-## Design Doc
+While the paths appear relatively circular, the terrain is large enough that the circular nature is not noticed. The spline is controlled by a smoothness factor and a maximum radius which insures that the spline never gets too close to the edge and always has a canyon wall. The smoothness parameter controls how much each subsequent spline knot can change in radial distance from the previous. When smoothness = 0, the spline is a circle and when smoothness = 1, the spline can flucuate as much as half its maximum radius between knot points. Any more perturbation would cause the camera to jerk.
 
-Your design doc should follow the following template. Note, each section can be pretty short, but cover them all! This will serve as valuable documentation when showing this project off in the future AND doing a good job will make it much easier for you to succeed, so please take this seriously.
+In addition to the warped spline, the camera uses a unperturbed circle for the animation of the bird's eye viewpoint. This is because the turning of the camera along the spline was too noticable when looking down the y axis. For the third person viewpoint, the camera position is offset backwards and upwards from the spline position (relative to the boat).
 
-### Design Doc Template:
+### Canyon
+Once I had the camera animated, I needed to create canyon walls surrounding the spline. I first attempted to use seperate planes for the left and right sides and move the planes with the camera. This was unnecessarily complicated to orchestrate and moving the planes and updating the noise made the canyon look alive, not rock-like. I also was not sure how to make the rock faces look more sheared than bumpy. I changed the canyon to have noise in the world +y direction. Using the camera spline described above, I created an image texture to pass to the vertex shader defining where the gorge and cliffs are located on the plane. I achieved this by iterating through the spline points and creating a texture where the value was maximum on the spline and zero everywhere else. I increased the resolution of the texture and applied a gaussian blur in both the x and y directions to create tapered cliffs rather than a box cut off. This created a very shallow passage since now fewer values were maximum, so I widened the path before applying a gaussian blur by filtering the image by the maximum value in a local texel area. See Figure 3 for a pipeline of the filters used. 
 
-- #### Introduction
-  * What motivates this project?
-- #### Goal
-  * What do you intend to achieve with this project?
-- #### Inspiration/reference: 
-  * Attach some materials, visual or otherwise you intend as reference
-- #### Specification:
-  * Outline the main features of your project
-- #### Techniques:
-  * What are the main technical/algorithmic tools you’ll be using? Give an overview, citing  specific papers/articles
-- #### Design:
-  * How will your program fit together? Make a simple free-body diagram illustrating the pieces.
-- #### Timeline:
-  * Create a week-by-week set of milestones for each person in your group.
+| Low Resolution  | High Resolution | Gaussian Blur | Widened |
+| -----------| ---------- | ------- | ------- |
+| <img src="/images/los-res.png" width="200"> | <img src="/images/no-gaussian.png" width="200"> | <img src="/images/no-widen.png" width="200"> | <img src="/images/widen.png" width="200"> |
+Figure 3: Filters
 
+ The height is proportional to the value of the texture. To create the striation of cliff walls, the texture value is bucketed before a noise value is added. Figure 4 shows the effect of the spline texture and filters in the scene.
 
-Along with your final project demo, you will submit a final report, in which you will update correct your original design doc as needed and add a few post-mortem items.
+| <img src="/images/terrain2.png" width="850"> |
+| --------------------------------- |
+| Figure 4: Spline gorge |
 
-## Milestones
+### Water
+The water similarly relies on the spline texture to create a water depth map where the middle of the river is darker (deeper) than the edges. The values could be interpolated smoothly from dark to light, but I liked the pixelated effect from the low resoluation of the texture. It goes with my overall theme. The water is also animated with Simplex noise.  
 
-To keep you honest / on-track, we will be checking on your progress at weekly intervals, according to milestones you’ll define at the outset (pending our approval). For each of the two milestones prior to the final submission, you will submit a short write up explaining whether or not you individually achieved your goals (specifying the files where the work happened), along with a link to a demo / images. These don’t have to be super polished -- we just want to see that you’re getting things done.
+### Rain
+After implementing the water, canyon, and camera movement, I had achieved the basic effects I was going for, but I wanted to add more movement, so I decided to create inclement weather. Since a lot of my effects were done in shaders, I considered creating a post-processing rain shader, but decided that a particle system in THREE.js would look better and achieve depth cues better. 
 
-Example:
+Rain dynamics are pretty simple. Originally each rain droplet fell at a constant velocity in the negative y direction. The effect looked like rain, but slightly off. I realized that it would be easy to implement a more realistic dynamic system with gravity and wind drag for added realism and so the particles do not get too fast between frames. The wind drag is achieved by clamping the velocity to a max speed rather than solving a differential equation.
 
-“Milestone 1:
-	Adam:
-Made some procedural terrain code in src/terrain.js. Implemented 3D simplex noise to do it. Also applied coloring via custom shader based on this cool paper X (see src/shaders/dirt.glsl). IMAGE
+Particle systems can be quite costly. In order to keep the simulation at runtime, I used the same terrain map generated from the camera spline to spawn particles. Particles are only created within the confines of the gorge. Once the particles reach y = 0, their position and velocity are reset to their original - or similar - values (saved in the particle struct). The droplets are drawn with THREE.LineSegments such that the endpoints are the particle's position and a small offset from this position in the velocity direction. This creates a constant number of particles in a looped cloud (Figure 5). The problem with this approach is that all the line segment in the THREE geometry have the same thickness and random length. There is no way to attentuate based on distance from the camera.
 
-Austin: 
-I managed to set up my voronoi diagram shader (see src/shaders/voronoi.glsl). 
-Experimented with different scattering techniques. It’s working with the euclidean distance metric. I’m using it in src/main.js to color stones. IMAGE
+| ![](./images/raincloud.png) | 
+| ------------------------------ |
+|Figure 5: Particles confined to camera's spline region |
 
-Rachel:
-I tried really hard to make my toon shader work (src/shaders/toon.glsl), but I still have a bug! T_T BUGGY IMAGE. DEMO LINK”
+The next rain effect I implemented was the rain hitting the water. I do not handle rain hitting the canyon walls because the effect is less noticeable at the grazing angle the rain hits the walls. Going with the overall theme of "effects created with noise functions", I first created small splashes on the water with high frequency perlin noise, coloring pixels above a certain threshold in the water's fragment shader. Once again, this effect was okay, but slightly off because the spots on the water surface were not always circular and because rather than appear and fade away, the spots seemed to morph together (Figure 7A).  
 
-## Final Report
+To fix the raindrop thickness and the droplet splashes, I tried moving this code to a rain shader. Instead of creating a line segment geometry, I tried instancing a polygon at each particle position. When the particle is above the water (code for perlin noise for water copied in the rain's vertex shader), the polygon becomes a triangle with the thickness of the bottom dependent on distance and angle from camera and the color is grey. When the particle is below the water, the polygon becomes a hexagon with a radius dependent on the distance below the water. The color of these droplets would be interpolated between purple and the color of the water so that they disappear over time. Figure 6 shows an attempt at this method. 
 
-In addition to your demo, you will create a final report documenting your project overall. This document should be clear enough to explain the value and details of your project to a random computer graphics person with no knowledge of this class.
+| ![](./images/badrain.png) |
+| ---------------------------- |
+| Figure 6: Droplet implementation in vertex shader |
 
-### Final Report Template:
+While in theory it is a great idea, instancing in THREE.js is not perfected according to other users (and confirmed by me). The types of geometry that can be instanced and the possible shader effects are too limited. I was able to make triangular water droplets whose lengths were dependent on the viewing vector (shorter when seen from above) using a regular buffer geometry - not instanced (see purple squares in Figure 6). However my GPU could not handle very many triangles because every call required multiple if-statements to determine shape and location. In additon, creating a circular splash required moving specific vertices outward, so each vertex required an extra attribute for identifying its location on the polygon. In the end it just looked bad and ran slowly, so I changed back to the line segments. 
 
-- #### Updated design doc: 
-  * All the sections of your original design doc, corrected if necessary
-- #### Results:
-  * Provide images of your finished project
-- #### Evaluation (this is a big one!):
-  * How well did you do? What parameters did you tune along the way? Include some WIP shots that compare intermediate results to your final. Explain why you made the decisions you did.
-- #### Future work:
-  * Given more time, what would you add/improve
-- #### Acknowledgements:
-  * Cite _EVERYTHING_. Implemented a paper? Used some royalty-free music? Talked to classmates / a professor in a way that influenced your project? Attribute everything!
+I improved the water splashes by creating particles at all locations on the animated water plane where a rain drop appear above (Figure 7B). The particle shader uses a texture to define the shape. I used a simple circle, but a more sophistacated splash could also be used. Then the size and color of each was animated with a high frequency noise. The images below show this improvement (left: noise filtered color, right: particles). The color is interpolated between my color of choice (purple) and the color of the water at the point so the drops fade away.
 
-## Logistics
+| <img src="/images/raindrops.png" width="425"> <img src="/images/particlerain.png" width="425"> |
+| --------------------------- |
+| Figure 7: Rain droplet splashes (A: original perlin noise implementation; B: particles) |
 
-Like every prior project, your code will be submitted via github. Fork the empty final project repo and start your code base from there. Take this as an opportunity to practice using git properly in a team setting if you’re a new user.  For each weekly submission, provide a link to your pull request. Your repo will contain all the code and documentation associated with your project. The readme for your repo will eventually be your final report. At the top level, include a folder called “documentation”, where you’ll put your design doc and milestone write-ups.
+### Fog
+The rain in the distance can barely be differentiated due to the distance from the camera. In order to bring back the effect of the rain, I add fog in the distance, using [iq's glsl fog] [2]. I used simple fog with exponential drop off. The scattering fog that iq discusses would not make much sense in a scene with no concept of a light location. The images below depict the selection of the b coefficient which controls how much the fog falls off, and thus how "foggy" the scene appears.
 
-Don’t wait to merge your code! Seriously, there be dragons. Try to have a working version including all your code so that compatibility and merge issues don’t sneak up on you near the end.
+| b  | 0.0 | 0.035 | 0.1 |
+| -----------| ---------- | ------- | ------- |
+| | <img src="/images/pre-fog.png" width="250"> | <img src="/images/post-fog.png" width="250"> |  <img src="/images/toomuch-fog.png" width="250"> |
 
-## Grading
+Figure 8: Fog Parameter b
 
-- 15% Design Doc (graded as a group)
-- 15% Milestone 1 (graded as a group)
-- 15% Milestone 2 (graded as a group)
-- 55% Final demo + report (graded individually)
+### Rocks
+The rocks were originally going to be instances of one geometry, but creating seperate meshes did not slow down the simulation and instancing does not work (see discussion in rain section above). The geometries are icosahedron and dodecahedrons with lambert shading for a "basic" effect. The rocks are randomly placed along the camera spline, and then moved to the edges of the canyon so that the boat does not run into them. Essentially, the rock's position is incrementally increased or decreased in the X or Z direction until the value in the spline texture falls below a threshold value.   
 
-NOTE: We’ve been pretty lax about our late policy throughout the semester, but our margins on the final project are tight, therefore late submissions will NOT be accepted. If you have a significant reason for being unable to complete your goals, talk to us, and we’ll discuss getting you an incomplete and figure out an adjusted work plan with your group.
+### Boat
+The addition of the boat has little procedural meaning. I added it because the scene felt empty. Its movement and rotation mimic the camera's. The user can add and remove it to the scene with the GUI. 
 
+### Music
+I did not like the effect the music frequency had in my scene. I set the frequency of the perlin noise to the music frequency, but I found the effect to be to inconsistent and jarring in the sky and the water. I also used the music to pulse the rocks. Did not like that either because the scene is calm and soothing and the frequencies are just not. 
 
+## Future Work
+
+* Camera Movement
+
+I would like to improve the interactivity beyond just the viewpoint toggle. Instead of animating the camera along a spline, the user could move anywhere within the widened spline loop area and look around the scene. When that gets boring, the camera would move back to the spline animation.
+
+* Rain running down Canyon
+
+I am thinking of some sort of shader (nothing physical) to create streaks of water running down the conyon walls. 
+
+* Changing Weather
+
+The simulation started as a sunny canyon environment until I added the rain particles. It would be cool for the simulation to smoothly change from sunny to rainy to stormy, etc. The problem with this now is dynamically adding particles to the system. 
+
+* Ambient Occlusion
+
+Since this project achieves all effects without light, an ambient occlusion post processing effect could really improve the quality of the final render. Ambitious me thought [this][3] would be really cool, but I did not have enough time to understand and implement.
+
+## Acknowledgements
+
+* [Advanced Value Noise][5] by iquilezles
+* [Better Fog][2] by iquilezles
+* [Simplex Noise][4] by Stefan Gustavson 
+
+[1]: https://vimeo.com/88946422
+[2]: http://www.iquilezles.org/www/articles/fog/fog.htm
+[3]: http://www.iquilezles.org/www/articles/multiresaocc/multiresaocc.htm
+[4]: http://webstaff.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf
+[5]: http://www.iquilezles.org/www/articles/morenoise/morenoise.htm
