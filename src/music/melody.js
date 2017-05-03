@@ -5,62 +5,25 @@ import euclid from './../utils/euclid.js'
 import {shuffle} from './../utils/utilities.js'
 
 
-export default function generateMelody( scaleNote, randomVar ) {
-	// var s = tonal.scale.get('major', scaleNote);
-	// var sO = tonal.note.fromMidi( tonal.note.midi( scaleNote ) - 12 );
-	// s = tonal.scale.get( 'major', sO ).concat( s );
+export default function generateMelody( scaleNote, option = 0) {
+	
 
-	// var melodyLine = createMelodicContour( 2, s.length );
-	// console.log( createFlairBeatAssignment( 8 ) )
-
-	// var notes = [];
-	// for ( var i = 0; i < melodyLine.length; i++ ) {
-	// 	notes.push( { note: tonal.note.midi(s[melodyLine[i]]), time: 4 } );
-	// }
-
-	// notes = variateMelody( notes, s );
-
-	// // console.log( euclid( 3, 8 ) )
-
-	// // Limit length of melody
-	// var finalNotes = [];
-	// var mLimit = 32;
-	// for ( var i = 0; i < notes.length; i++ ) {
-	// 	if ( mLimit <= 0 ) { break; }
-	// 	if ( notes[i].note == null ) { continue; }
-	// 	mLimit -= notes[i].time;
-	// 	finalNotes.push( notes[i] );
-	// }
-
-	// console.log(tonal.scale.get('major', 'C4'))
-
+	
 	var s = tonal.scale.get('major', scaleNote);
-	// s = tonal.chord.get('Maj7', scaleNote);
+
+	
 
 	var anchors = createAnchors( scaleNote, 15 );
 	var finalNotes = insertHook2( anchors.melody, s );
 	// finalNotes = insertFlairs( finalNotes, s, anchors.high, anchors.low );
-
-	// finalNotes = [];
-	// finalNotes.push( {note: tonal.note.midi( s[0] ), time: 16, type: 1} );
-	// finalNotes.push( {note: tonal.note.midi( s[5] ), time: 16, type: 1} );
-	// finalNotes.push( {note: tonal.note.midi( s[4] ), time: 16, type: 1} );
-
-	// Remove any nulls
-	// for ( var i = 0; i < finalNotes.length; i++ ) {
-	// 	if ( finalNotes[i].note == null ) {
-	// 		finalNotes.splice( i, 1 );
-	// 	}
-	// }
-
-
-	// // Print final note sequence
-	// var debug = [];
-	// for ( var i = 0; i < finalNotes.length; i++ ) {
-	// 	debug.push( finalNotes[i].note );
-	// }
-	// console.log( debug )
-
+	if ( option == 0 ) {
+		finalNotes = [];
+		finalNotes.push( {note: tonal.note.midi( s[0] ), time: 24, type: 1} );
+		finalNotes.push( {note: tonal.note.midi( s[5] ), time: 24, type: 1} );
+		finalNotes.push( {note: tonal.note.midi( s[4] ), time: 24, type: 1} );
+	}
+	
+	console.log( 'In melody:  ' + option )
 	return [finalNotes];
 }
 
@@ -267,7 +230,7 @@ function insertHook2(melody, scale) {
 			}
 		}
 
-		console.log(phrase)
+		// console.log(phrase)
 	}
 
 	return newMelody;

@@ -87,6 +87,7 @@ var Visual = Scene4;
 
 /******************************************************************************/
 var instrument = 60;
+var type = 0;
 var instruments = [
   "accordion",
   "acoustic_bass",
@@ -262,12 +263,15 @@ var composer;
 	            break;
 	        case 32:
 	            // visualConfig.camera.acc = new THREE.Vector3( -5,0,0 );
+	            			musicPlayer.createMusic( ac, type );
+							// musicPlayer.setHarmonicInstrument( instruments[instrument++], ac );
+							// musicPlayer.createHarmonyLine();
+							// console.log( 'In change: ' + type )
+							type = ( type + 1 ) % 2;
 
-							musicPlayer.setHarmonicInstrument( instruments[instrument++], ac );
-							musicPlayer.createHarmonyLine();
-
-							console.log(instrument-1)
-							console.log(instruments[instrument-1])
+							// console.log(instrument-1)
+							// console.log(instruments[instrument-1])
+							allInit  = true;
 	            break;
 	    }
 	  }
@@ -348,15 +352,15 @@ function onLoad(framework) {
 	// RENDERER
 
 	// Initialize music instruments
-	musicPlayer.setMelodicInstrument( 'oboe', ac );
-	musicPlayer.setHarmonicInstrument( 'synthstrings_1', ac );
-	musicPlayer.setBassInstrument( 'gunshot', ac );
+	// musicPlayer.setMelodicInstrument( 'electric_piano_2', ac );
+	// musicPlayer.setHarmonicInstrument( 'synth_bass_2', ac );
+	// musicPlayer.setBassInstrument( './src/soundfonts/percussion.js', ac );
 
-	// Initialize music
-	musicPlayer.createMusic();
-	// console.log(musicPlayer)
+	// // Initialize music
+	// musicPlayer.createMusic( ac, type );
+	// // console.log(musicPlayer)
 
-	allInit = true;
+	// allInit = true;
 
 	// console.log(generateMelody( 'C4', 1 ))
 

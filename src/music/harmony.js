@@ -55,7 +55,7 @@ export default function generateHarmony( melody, interval ) {
 			var r2 = r2Set[ Math.floor( Math.random() * r2Set.length) ];
 
 			var t = 1;
-			var pNote = 78;
+			var pNote = tonal.note.midi( n );
 
 			// Main repeats
 			for ( var k = 0; k < rep2; k++ ) {
@@ -66,7 +66,7 @@ export default function generateHarmony( melody, interval ) {
 				}
 
 			}
-			harmonic.push( {note: pNote, time: t * 2, type: -1} );
+			harmonic.push( {note: tonal.note.midi( s[2] ) - 12, time: t * 2, type: -1} );
 
 			for ( var k = 0; k < rep1; k++ ) {
 				for ( var i = 0; i < pat2.length; i++ ) {
@@ -76,7 +76,7 @@ export default function generateHarmony( melody, interval ) {
 				}
 
 			}
-			harmonic.push( {note: pNote, time: t * 2, type: -1} );
+			harmonic.push( {note: tonal.note.midi( s[3] ) - 12, time: t * 2, type: -1} );
 
 			// Variations
 			var trans1 = Math.random() > 0.2 ? true : false;
@@ -130,32 +130,32 @@ export default function generateHarmony( melody, interval ) {
 				total = total.concat( p );
 			}
 
-			if ( quickDrop ) {
-				var dropLength = Math.floor( Math.random() * 8 ) + 4;
-				var p = [], pause = true, dur = 2;
-				for ( var i = 0; i < dropLength; i++ ) {
-					pause = dur > 0.5 ? true : false;
-					p.push( {note: n, time: dur, type: 1} );
-					// if ( pause ) { p.push( {note: -1, time: dur / 2, type: 1} ); }
-					p.push( {note: n, time: dur, type: 1} );
-					// if ( pause ) { p.push( {note: -1, time: dur / 2, type: 1} ); }
+			// if ( quickDrop ) {
+			// 	var dropLength = Math.floor( Math.random() * 8 ) + 10;
+			// 	var p = [], pause = true, dur = 1;
+			// 	for ( var i = 0; i < dropLength; i++ ) {
+			// 		pause = dur > 0.5 ? true : false;
+			// 		p.push( {note: n - 2 * i, time: dur, type: 1} );
+			// 		p.push( {note: n - 2 * i, time: dur, type: 1} );
+			// 		p.push( {note: n - 2 * i, time: dur, type: 1} );
+			// 		p.push( {note: n - 2 * i, time: dur, type: 1} );
+			// 		// if ( i % 1 == 0 ) { p.push( {note: -1, time: 0.5, type: 1} ); }
 
-					dur /= 1.25 ;
-					dur = Math.max( dur, 0.25 );
-				}
-				p.push( {note: -1, time: 6, type: 1} );
+			// 		dur /= 1.5 ;
+			// 		dur = Math.max( dur, 0.25 );
+			// 	}
+			// 	p.push( {note: -1, time: 6, type: 1} );
 
-				if ( total.length > harmonic.length ) { total = total.concat( harmonic ); }
-				total = total.concat( p );
-			}
+			// 	if ( total.length > harmonic.length ) { total = total.concat( harmonic ); }
+			// 	total = total.concat( p );
+			// }
 
 			// console.log( total );
 			harmonic = total;
 
 			break;
 		case 1:
-			harmonic.push( {note: n, time: 4} );
-			harmonic.push( {note: -1, time: 4} );
+			harmonic = insertHook2();
 			break;
 		case 2:
 			harmonic.push( {note: n, time: 4} );
@@ -165,8 +165,8 @@ export default function generateHarmony( melody, interval ) {
 			break;
 	}
 	
-	harmonic = insertHook2();
-
+	
+	console.log( 'In harmony:  ' + interval )
 	return harmonic;
 }
 
@@ -252,7 +252,7 @@ function insertHook2() {
 			}
 		}
 
-		console.log(phrase)
+		// console.log(phrase)
 	}
 
 	return newMelody;
