@@ -84,6 +84,7 @@ The rain in the distance can barely be differentiated due to the distance from t
 | b  | 0.0 | 0.035 | 0.1 |
 | -----------| ---------- | ------- | ------- |
 | | <img src="/images/pre-fog.png" width="250"> | <img src="/images/post-fog.png" width="250"> |  <img src="/images/toomuch-fog.png" width="250"> |
+
 Figure 8: Fog Parameter b
 
 ### Rocks
