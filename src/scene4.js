@@ -70,6 +70,7 @@ function initScene(framework, visualConfig) {
 
     visualConfig.sceneProps = {
       bouys: [],
+      bubbles: [],
       particles: [],
       lightning: [],
       rain: [],
@@ -162,6 +163,31 @@ function updateScene(framework, visualConfig, delta) {
     }
     visualConfig.sceneProps.bouys = newBouys;
 
+    // Bubbles
+    var newBubbles = [];
+    var oldBubbles = [];
+    for (var i = 0; i < visualConfig.sceneProps.bubbles.length; i++) {
+      var bubble = visualConfig.sceneProps.bubbles[i];
+      var name = bubble.name;
+      var p = scene.getObjectByName(name);
+      if (p !== undefined) {
+        p.position.set(bubble.pos.x, display * bubble.pos.y + idisplay * -10,bubble.pos.z);
+      }
+      bubble.update(delta);
+
+      if (!visualConfig.sceneProps.bubbles[i].shouldDelete) {
+        newBubbles.push(visualConfig.sceneProps.bubbles[i]);
+      } else {
+        oldBubbles.push(visualConfig.sceneProps.bubbles[i]);
+      }
+    }
+    for (var i = 0; i < oldBubbles.length; i++) {
+      var selectedObject = scene.getObjectByName(oldBubbles[i].name);
+      scene.remove( selectedObject );
+    }
+    visualConfig.sceneProps.bubbles = newBubbles;
+
+    // Particles
     var newParticles = [];
     var oldParticles = [];
     for (var i = 0; i < visualConfig.sceneProps.particles.length; i++) {
@@ -185,6 +211,11 @@ function updateScene(framework, visualConfig, delta) {
     }
     visualConfig.sceneProps.particles = newParticles;
 
+    if (visualConfig.sceneProps.particles.length < 50) {
+      visualConfig.sceneProps.particles.push(genParticle(framework.scene));
+      visualConfig.sceneProps.particles.push(genParticle(framework.scene));
+    }
+
 
     lakeMat.uniforms.time.value += delta;
 
@@ -196,8 +227,8 @@ function updateScene(framework, visualConfig, delta) {
 }
 
 function genBouy(scene) {
-  var pos = new THREE.Vector3( (Math.random()-0.5) * 100, 0, Math.random() * 200);
-  var geometry = new THREE.ConeGeometry( 30,20,16,5 );
+  var pos = new THREE.Vector3( (Math.random()-0.5) * 200, 0, Math.random() * 100 + 100);
+  var geometry = new THREE.ConeGeometry( 50,20,16,5 );
   var material = new THREE.ShaderMaterial( {
     uniforms: {
       "time": { value: 0 },
@@ -215,14 +246,23 @@ function genBouy(scene) {
     name: mesh.name,
     mass: 1000,
     pos: pos,
-    vel: new THREE.Vector3( 0,0,-40 ),
+    vel: new THREE.Vector3( 0,0,-10 ),
+    acc: new THREE.Vector3( 0,0,0 ),
     t: Math.random(),
     shouldDelete: false,
     update: function(delta) {
-      this.t += delta;
-      this.pos.x += this.vel.y * delta;
-      this.pos.y = 0.2*(Math.sin(2*this.t)+ 3*Math.sin(this.t+Math.PI/4) + Math.sin(this.t) + Math.sin(this.t+Math.PI/2)) - 5;
+      this.t += delta * 2;
+      this.pos.x += this.vel.x * delta;
+      this.pos.y = 0.5 * (Math.sin(2*this.t)+ 3*Math.sin(this.t+Math.PI/4) + Math.sin(this.t) + Math.sin(this.t+Math.PI/2)) - 5;
       this.pos.z += this.vel.z * delta;
+
+      var dist = this.pos.distanceTo(new THREE.Vector3( 0,0,20 ));
+      var acc = Math.sign(this.pos.x) * Math.exp(-dist/10 + 6);
+      console.log(acc)
+
+      this.acc = new THREE.Vector3( acc, 0,0 );
+      this.vel.x += this.acc.x * delta;
+      // this.vel.z += this.acc.z * 10;
 
       if (this.pos.z < -100) {
         this.shouldDelete = true;
@@ -337,11 +377,41 @@ function genRain(scene) {
   };
 }
 
+function genRange(start, end, negative) {
+  return negative ? Math.sign(Math.random() - 0.5) * (Math.random() * (end - start)) + start : (Math.random() * (end - start)) + start;
+
+}
+
 function genParticle(scene) {
+  var pos = new THREE.Vector3( genRange(50,300,true), Math.random() * 100, genRange(100,300,false) );
+  var geometry = new THREE.IcosahedronGeometry( Math.random(),1 );
+  var material = new THREE.MeshBasicMaterial( {color: 0xccffcc, side: THREE.DoubleSide} );
+  var mesh = new THREE.Mesh( geometry, material );
+  mesh.name = "particle"+Math.random();
+  mesh.position.set(pos.x, pos.y, pos.z);
+  scene.add(mesh);
+  return {
+    name: mesh.name,
+    pos: pos,
+    vel: new THREE.Vector3( 0,0,-Math.random()*50 ),
+    shouldDelete: false,
+    update: function(delta) {
+      this.pos.x += this.vel.x * delta;
+      this.pos.y += this.vel.y * delta;
+      this.pos.z += this.vel.z * delta;
+
+      if (this.pos.z < -10) {
+        this.shouldDelete = true;
+      }
+    }
+  };
+}
+
+function genBubble(scene) {
   var pos = new THREE.Vector3( (Math.random()-0.5) * 200, 0, Math.random() * 200 + 100);
   var geometry = new THREE.IcosahedronGeometry(Math.random()*5, 2);
   var mesh = new THREE.Mesh( geometry );
-  mesh.name = "particle"+Math.random();
+  mesh.name = "bubble"+Math.random();
   mesh.position.set(pos.x, pos.y, pos.z);
   scene.add(mesh);
   return {
@@ -359,14 +429,17 @@ function genParticle(scene) {
   };
 }
 
+
 function bassCallback(framework, visualConfig) {
-  if (Math.random() < 0.5)
+  if (Math.random() < 0.1)
     visualConfig.sceneProps.bouys.push(genBouy(framework.scene));
 }
 
 function melodyCallback(framework, visualConfig) {
-  visualConfig.sceneProps.particles.push(genParticle(framework.scene));
-  visualConfig.sceneProps.lightning.push(genLightning(framework.scene));
+  if (Math.random() < 0.1)
+    visualConfig.sceneProps.bubbles.push(genBubble(framework.scene));
+  if (Math.random() < 0.8)
+    visualConfig.sceneProps.lightning.push(genLightning(framework.scene));
 }
 
 function changeTrigger(visualConfig) {
