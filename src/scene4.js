@@ -252,7 +252,7 @@ function updateScene(framework, visualConfig, delta) {
 }
 
 function genBouy(scene) {
-  var pos = new THREE.Vector3( (Math.random()-0.5) * 200, 0, Math.random() * 100 + 100);
+  var pos = new THREE.Vector3( (Math.random()-0.5) * 200, -10, Math.random() * 100 + 100);
   var geometry = new THREE.ConeGeometry( 50,20,16,5 );
   var material = new THREE.ShaderMaterial( {
     uniforms: {
@@ -271,14 +271,18 @@ function genBouy(scene) {
     name: mesh.name,
     mass: 1000,
     pos: pos,
-    vel: new THREE.Vector3( 0,0,-10 ),
+    y: -10,
+    bounce: -10,
+    vel: new THREE.Vector3( 0,0.5,-10 ),
     acc: new THREE.Vector3( 0,0,0 ),
     t: Math.random(),
     shouldDelete: false,
     update: function(delta) {
       this.t += delta * 2;
       this.pos.x += this.vel.x * delta;
-      this.pos.y = 0.5 * (Math.sin(2*this.t)+ 3*Math.sin(this.t+Math.PI/4) + Math.sin(this.t) + Math.sin(this.t+Math.PI/2)) - 5;
+      this.bounce = 0.5 * (Math.sin(2*this.t)+ 3*Math.sin(this.t+Math.PI/4) + Math.sin(this.t) + Math.sin(this.t+Math.PI/2)) - 5;
+      this.y += 0.5 * delta * (0-this.y);
+      this.pos.y = this.bounce + Math.min(this.y, 0);
       this.pos.z += this.vel.z * delta;
 
       var dist = this.pos.distanceTo(new THREE.Vector3( 0,0,20 ));
@@ -455,7 +459,7 @@ function genBubble(scene) {
 
 
 function bassCallback(framework, visualConfig) {
-  if (Math.random() < 0.1)
+  if (Math.random() < 0.3)
     visualConfig.sceneProps.bouys.push(genBouy(framework.scene));
 }
 

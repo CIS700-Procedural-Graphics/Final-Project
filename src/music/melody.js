@@ -5,62 +5,25 @@ import euclid from './../utils/euclid.js'
 import {shuffle} from './../utils/utilities.js'
 
 
-export default function generateMelody( scaleNote, randomVar ) {
-	// var s = tonal.scale.get('major', scaleNote);
-	// var sO = tonal.note.fromMidi( tonal.note.midi( scaleNote ) - 12 );
-	// s = tonal.scale.get( 'major', sO ).concat( s );
+export default function generateMelody( scaleNote, option = 0) {
+	
 
-	// var melodyLine = createMelodicContour( 2, s.length );
-	// console.log( createFlairBeatAssignment( 8 ) )
-
-	// var notes = [];
-	// for ( var i = 0; i < melodyLine.length; i++ ) {
-	// 	notes.push( { note: tonal.note.midi(s[melodyLine[i]]), time: 4 } );
-	// }
-
-	// notes = variateMelody( notes, s );
-
-	// // console.log( euclid( 3, 8 ) )
-
-	// // Limit length of melody
-	// var finalNotes = [];
-	// var mLimit = 32;
-	// for ( var i = 0; i < notes.length; i++ ) {
-	// 	if ( mLimit <= 0 ) { break; }
-	// 	if ( notes[i].note == null ) { continue; }
-	// 	mLimit -= notes[i].time;
-	// 	finalNotes.push( notes[i] );
-	// }
-
-	// console.log(tonal.scale.get('major', 'C4'))
-
+	
 	var s = tonal.scale.get('major', scaleNote);
-	// s = tonal.chord.get('Maj7', scaleNote);
+
+	
 
 	var anchors = createAnchors( scaleNote, 15 );
 	var finalNotes = insertHook2( anchors.melody, s );
 	// finalNotes = insertFlairs( finalNotes, s, anchors.high, anchors.low );
-
-	finalNotes = [];
-	finalNotes.push( {note: tonal.note.midi( s[0] ), time: 16, type: 1} );
-	finalNotes.push( {note: tonal.note.midi( s[5] ), time: 16, type: 1} );
-	finalNotes.push( {note: tonal.note.midi( s[4] ), time: 16, type: 1} );
-
-	// Remove any nulls
-	// for ( var i = 0; i < finalNotes.length; i++ ) {
-	// 	if ( finalNotes[i].note == null ) {
-	// 		finalNotes.splice( i, 1 );
-	// 	}
-	// }
-
-
-	// // Print final note sequence
-	// var debug = [];
-	// for ( var i = 0; i < finalNotes.length; i++ ) {
-	// 	debug.push( finalNotes[i].note );
-	// }
-	// console.log( debug )
-
+	if ( option == 0 ) {
+		finalNotes = [];
+		finalNotes.push( {note: tonal.note.midi( s[0] ), time: 24, type: 1} );
+		finalNotes.push( {note: tonal.note.midi( s[5] ), time: 24, type: 1} );
+		finalNotes.push( {note: tonal.note.midi( s[4] ), time: 24, type: 1} );
+	}
+	
+	console.log( 'In melody:  ' + option )
 	return [finalNotes];
 }
 
@@ -193,6 +156,15 @@ function insertHook1(melody, scale) {
 }
 
 
+function genRandomIdx(start, end, max) {
+	var num = Math.floor(Math.random() * max);
+	var r = new Set();
+	for (var i = 0; i < num; i++) {
+		r.add(Math.floor(Math.random() * (end - start)) + start);
+	}
+	return r;
+}
+
 function insertHook2(melody, scale) {
 
 	var scale = [ "G2", "A2", "Bb2", "C3", "D3", "Eb3", "F3",
@@ -205,6 +177,8 @@ function insertHook2(melody, scale) {
 		{ notes: [0,-1], rhythm: [4,4] },
 		{ notes: [0,1,1], rhythm: [8/3,8/3,8/3] },
 		{ notes: [0,-2,1], rhythm: [4,2,2] },
+		{ notes: [0,1,-1,-1], rhythm: [2,2,2,2] },
+		{ notes: [0,0], rhythm: [8,16] },
 	];
 
 	var input = [];
@@ -222,22 +196,21 @@ function insertHook2(melody, scale) {
 		loop.push({
 			noteidx: idx,
 			note: tonal.note.midi( scale[idx] ),
-			time: 8,
+			time: 16,
 			type: noteType.hook,
 		});
 	}
 
 	for (var i = 0; i < 10; i++) {
 
-		var target = Math.floor(Math.random()*10);
-
+		// var target = Math.floor(Math.random()*10);
+		var target = genRandomIdx(0,10,7);
 		var phrase = [];
-
 		for (var j = 0; j < loop.length; j++) {
-			if (j === target && Math.random() < 0.8) {
+			if (target.has(j)) {
 
 				var root = loop[j].noteidx;
-				var v = Math.floor(Math.random() * variations.length);
+				var v = Math.random() < 0.5 && v ? v : Math.floor(Math.random() * variations.length);
 				var variation = variations[v];
 				for (var k = 0; k < variation.notes.length; k++) {
 					idx = root + variation.notes[k];
@@ -257,7 +230,7 @@ function insertHook2(melody, scale) {
 			}
 		}
 
-		console.log(phrase)
+		// console.log(phrase)
 	}
 
 	return newMelody;
