@@ -2,14 +2,19 @@ const THREE = require('three');
 const _ = require('lodash');
 const NOISEJS = require('noisejs');
 const CHROMA = require('chroma-js');
+const SEEDRANDOM = require('seedrandom');
 
 export default class GeographyManager {
   constructor(options, map) {
     this.map = map;
     this.seedElevation = options.seedElevation;
     this.seedMoisture = options.seedMoisture;
+    this.seedErosion = options.seedErosion;
     this.elevationNoisiness = options.elevationNoisiness;
     this.moistureNoisiness = options.moistureNoisiness;
+    this.erosionSteps = options.erosionSteps;
+    this.rainDistribution = options.rainDistribution;
+    this.rainFrequency = options.rainFrequency;
     this.biomes = {
       SNOW: 'SNOW',
       TUNDRA: 'TUNDRA',
@@ -49,6 +54,7 @@ export default class GeographyManager {
   generateGeography() {
     this._generateElevationMap();
     this._generateMoistureMap();
+    this._generateErosion();
     this._generateCoastline();
     this._distributeBiomes();
   }
@@ -77,11 +83,11 @@ export default class GeographyManager {
     var numCells = this.map.graphManager.numCells;
     var seed = this.seedElevation;
     var noise = new NOISEJS.Noise(seed);
+    var f = CHROMA.scale(['008ae5', 'yellow']).domain([-1, 1]);
 
     nodes.forEach(function(node) {
       var elevation = noise.simplex2(node.pos.x / numCells * this.elevationNoisiness,
                                      node.pos.y / numCells * this.elevationNoisiness);
-      var f = CHROMA.scale(['008ae5', 'yellow']).domain([-1, 1]);
 
       node.elevationColor = f(elevation);
       node.elevation = elevation;
@@ -107,11 +113,11 @@ export default class GeographyManager {
     var numCells = this.map.graphManager.numCells;
     var seed = this.seedMoisture;
     var noise = new NOISEJS.Noise(seed);
+    var f = CHROMA.scale(['fba271', '5070ff']).domain([-1, 1]);
 
     nodes.forEach(function(node) {
       var moisture = noise.simplex2(node.pos.x / numCells * this.moistureNoisiness,
                                     node.pos.y / numCells * this.moistureNoisiness);
-      var f = CHROMA.scale(['fba271', '5070ff']).domain([-1, 1]);
 
       node.moistureColor = f(moisture);
       node.moisture = moisture;
@@ -128,6 +134,121 @@ export default class GeographyManager {
 
       cell.moistureColor = CHROMA.average(colors);
       cell.moisture = _.mean(moistures);
+    });
+  }
+
+  _generateErosion() {
+    for (var i = 0; i < this.erosionSteps; i++) {
+      var droplets = this._spawnDroplets();
+      var maxLimit = 1000;
+      var l = 0;
+
+      while (l < maxLimit) {
+        var nextDroplets = [];
+        var dropletMaxSpeed = 1.0;
+
+        if (droplets.length === 0) l = maxLimit;
+
+        droplets.forEach(function(droplet) {
+          var node = droplet.node;
+          var elevation = node.elevation;
+          var lowestNeighbor = node.getLowestNeighbor();
+          var lowestElevation = lowestNeighbor.elevation;
+
+          var elevationDelta = elevation - lowestElevation;
+          var lowestNeighborMoisture = lowestNeighbor.moisture;
+          var sedimentChange = (elevationDelta / 10.0) * droplet.speed;
+
+          // Lowest elevation is higher than current elevation
+          if (elevation < lowestElevation) {
+            sedimentChange = -1 * Math.min(droplet.sediment, -1 * elevationDelta);
+          }
+
+          node.elevation -= sedimentChange
+          droplet.sediment += sedimentChange;
+          droplet.node = lowestNeighbor;
+          droplet.speed = Math.max(dropletMaxSpeed, droplet.speed + elevationDelta);
+
+          // If new node is above sea level, add it
+          if (lowestElevation > 0.0) {
+            nextDroplets.push(droplet);
+          }
+        });
+
+        droplets = nextDroplets;
+        l++;
+      }
+    }
+
+    this._updateCellElevations();
+    this._updateElevationColors();
+  }
+
+  _spawnDroplets() {
+    var nodes = this.map.graphManager.nodes;
+    var rng = SEEDRANDOM(this.seedErosion);
+    var droplets = [];
+
+    class Droplet {
+      constructor(node) {
+        this.speed = 0.0;
+        this.sediment = 0.0;
+        this.node = node;
+      }
+    }
+
+    nodes.forEach(function(node) {
+
+      var rand = rng() / this.rainFrequency;
+      var dropletCondition = (this.rainDistribution === 'moisture map') ? (rand < node.moisture) :
+                             (this.rainDistribution === 'uniform')      ? (rand < 0.5) :
+                                                                          (rand < 0.5);
+
+      if (dropletCondition && node.elevation > 0.0) {
+        var droplet = new Droplet(node);
+
+        droplets.push(droplet);
+        node.spawnedDroplet = true;
+      }
+
+      rng = SEEDRANDOM(rng());
+    }, this);
+
+    return droplets;
+  }
+
+  _updateCellElevations() {
+    var cells = this.map.graphManager.cells;
+
+    cells.forEach(function(cell) {
+      var cellElevation = 0;
+      var corners = cell.corners;
+
+      corners.forEach(function(node) {
+        cellElevation += node.elevation;
+      });
+
+      cell.elevation = cellElevation / corners.length;
+    });
+  }
+
+  _updateElevationColors() {
+    var nodes = this.map.graphManager.nodes;
+    var cells = this.map.graphManager.cells;
+    var f = CHROMA.scale(['008ae5', 'yellow']).domain([-1, 1]);
+
+    nodes.forEach(function(node) {
+      node.elevationColor = f(node.elevation);
+    }, this);
+
+    cells.forEach(function(cell) {
+      var colors = [];
+
+      cell.corners.forEach(function(corner) {
+        colors.push(corner.elevationColor);
+      });
+
+      cell.elevationColor = CHROMA.average(colors);
     });
   }
 

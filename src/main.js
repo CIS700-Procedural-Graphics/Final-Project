@@ -69,9 +69,13 @@ function onLoad(framework) {
     },
     geographyManager: {
       seedElevation: 1.0,
-      seedMoisture: 1.0,
+      seedMoisture: 2.0,
+      seedErosion: 1.0,
       elevationNoisiness: 2.0,
-      moistureNoisiness: 2.0
+      moistureNoisiness: 2.0,
+      erosionSteps: 20,
+      rainDistribution: 'uniform', // 'moisture-map', 'uniform',
+      rainFrequency: 1.0
     },
     viewManager: {
       renderGraph: false,
@@ -83,7 +87,8 @@ function onLoad(framework) {
       renderDepth: true,
       renderOceanDepth: false,
       debugShowNodes: false,
-      debugShowCoastalNodes: false
+      debugShowCoastalNodes: false,
+      debugShowDropletNodes: false
     }
   };
 
@@ -108,8 +113,12 @@ function onLoad(framework) {
 
   guiGeographyManager.add(options.geographyManager, 'seedElevation', 0, 100).name('Elevation seed').listen();
   guiGeographyManager.add(options.geographyManager, 'seedMoisture', 0, 100).name('Moisture seed').listen();
+  guiGeographyManager.add(options.geographyManager, 'seedErosion', 0, 100).name('Erosion seed').listen();
   guiGeographyManager.add(options.geographyManager, 'elevationNoisiness', 0, 10).name('Elevation noisiness');
   guiGeographyManager.add(options.geographyManager, 'moistureNoisiness', 0, 10).name('Moisture noisiness');
+  guiGeographyManager.add(options.geographyManager, 'erosionSteps', 0, 100).name('Erosion steps');
+  guiGeographyManager.add(options.geographyManager, 'rainDistribution', ['moisture map', 'uniform']).name('Rain distribution');
+  guiGeographyManager.add(options.geographyManager, 'rainFrequency', 0, 5).name('Rain frequency');
 
   guiViewManager.add(options.viewManager, 'renderGraph').name('Render graph');
   guiViewManager.add(options.viewManager, 'renderColors', ['elevation', 'moisture', 'biomes']).name('Render map colors');
@@ -121,6 +130,7 @@ function onLoad(framework) {
   guiViewManager.add(options.viewManager, 'renderOceanDepth').name('Render ocean depth');
   guiViewManager.add(options.viewManager, 'debugShowNodes').name('Debug nodes');
   guiViewManager.add(options.viewManager, 'debugShowCoastalNodes').name('Debug coastal nodes');
+  guiViewManager.add(options.viewManager, 'debugShowDropletNodes').name('Debug droplet nodes');
 
   for (var i in gui.__folders) {
       var folder = gui.__folders[i];

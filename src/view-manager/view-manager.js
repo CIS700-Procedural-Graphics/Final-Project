@@ -16,6 +16,7 @@ export default class ViewManager {
     this.debugOcean = options.debugOcean;
     this.debugShowNodes = options.debugShowNodes;
     this.debugShowCoastalNodes = options.debugShowCoastalNodes;
+    this.debugShowDropletNodes = options.debugShowDropletNodes;
     this.map = map;
     this.scene = scene;
 
@@ -63,6 +64,10 @@ export default class ViewManager {
 
     if (this.debugShowCoastalNodes) {
       this._renderCoastalNodes();
+    }
+
+    if (this.debugShowDropletNodes) {
+      this._renderDropletNodes();
     }
   }
 
@@ -112,7 +117,7 @@ export default class ViewManager {
       var faceIndices = [];
 
       corners.forEach(function(node, i) {
-        var pos = node.pos.clone().setComponent(2, node.elevation * 5);
+        var pos = node.pos.clone().setComponent(2, node.elevation * 7);
 
         if (!this.renderOceanDepth && node.elevation <= 0) {
           pos.setComponent(2, 0);
@@ -201,7 +206,7 @@ export default class ViewManager {
 
           positions[(i * 3)    ] = pos.x;
           positions[(i * 3) + 1] = pos.y;
-          positions[(i * 3) + 2] = pos.z + (elevation * 5.0);
+          positions[(i * 3) + 2] = pos.z + (elevation * 7.0);
 
           if (!this.renderOceanDepth && elevation <= 0) {
             positions[(i * 3) + 2] = 0;
@@ -367,10 +372,20 @@ export default class ViewManager {
     this._renderPoints(coastalNodes, CHROMA('black').hex());
   }
 
+  _renderDropletNodes() {
+    var nodes = this.map.graphManager.nodes;
+    var nodesWithDroplets = [];
+
+    nodes.forEach(function(node) {
+      if (node.spawnedDroplet) nodesWithDroplets.push(node);
+    });
+
+    this._renderPoints(nodesWithDroplets, CHROMA('blue').hex());
+  }
+
   _renderNodes() {
     var nodes = this.map.graphManager.nodes;
 
-    this._renderNodes(nodes, CHROMA('black').hex());
+    this._renderPoints(nodes, CHROMA('black').hex());
   }
-
 }

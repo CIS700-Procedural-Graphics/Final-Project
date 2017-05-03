@@ -9,4 +9,18 @@ export default class Node {
     this.neighbors = [];
     this.cells = [];
   }
+
+  getLowestNeighbor() {
+    var lowestNeighbor;
+    var lowestElevation = Infinity;
+
+    this.neighbors.forEach(function(neighbor) {
+      if (neighbor.elevation <= lowestElevation) {
+        lowestElevation = neighbor.elevation;
+        lowestNeighbor = neighbor;
+      }
+    });
+
+    return lowestNeighbor;
+  }
 }
