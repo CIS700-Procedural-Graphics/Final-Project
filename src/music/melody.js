@@ -42,7 +42,7 @@ export default function generateMelody( scaleNote, randomVar ) {
 	var s = tonal.scale.get('minor pentatonic', scaleNote);
 	// s = tonal.chord.get('Maj7', scaleNote);
 	var anchors = createAnchors( scaleNote, 10 );
-	var finalNotes = insertHook1( anchors.melody, s );
+	var finalNotes = insertHook2( anchors.melody, s );
 	// finalNotes = insertFlairs( finalNotes, s, anchors.high, anchors.low );
 
 	// Print final note sequence
@@ -179,6 +179,77 @@ function insertHook1(melody, scale) {
 	}
 
 console.log(newMelody)
+
+	return newMelody;
+}
+
+
+function insertHook2(melody, scale) {
+
+	var scale = [ "G2", "A2", "Bb2", "C3", "D3", "Eb3", "F3",
+	 						  "G3", "A3", "Bb3", "C4", "D4", "Eb4", "F4",
+	 						  "G4", "A4", "Bb4", "C5", "D5", "Eb5", "F5",
+	 						  "G5", "A5", "Bb5", "C6", "D6", "Eb6", "F6" ];
+
+	var variations = [
+		{ notes: [0,0], rhythm: [4,4] },
+		{ notes: [0,-1], rhythm: [4,4] },
+		{ notes: [0,1,1], rhythm: [8/3,8/3,8/3] },
+		{ notes: [0,-2,1], rhythm: [4,2,2] },
+	];
+
+	var input = [];
+
+	var intervals = [1, 2, 4];
+	var newMelody = [];
+	var loop = [];
+	var root = Math.floor(Math.random() * scale.length);
+	var interval = 1;
+	for (var i = 0; i < 7; i++) {
+		interval = Math.sign(-interval) * intervals[Math.floor(Math.random() * intervals.length)];
+		var idx = input.length > 0 ? input[i] : root + interval;
+		root = idx;
+
+		loop.push({
+			noteidx: idx,
+			note: tonal.note.midi( scale[idx] ),
+			time: 8,
+			type: noteType.hook,
+		});
+	}
+
+	for (var i = 0; i < 10; i++) {
+
+		var target = Math.floor(Math.random()*10);
+
+		var phrase = [];
+
+		for (var j = 0; j < loop.length; j++) {
+			if (j === target && Math.random() < 0.8) {
+
+				var root = loop[j].noteidx;
+				var v = Math.floor(Math.random() * variations.length);
+				var variation = variations[v];
+				for (var k = 0; k < variation.notes.length; k++) {
+					idx = root + variation.notes[k];
+					root = idx;
+					newMelody.push({
+						noteidx: idx,
+						note: tonal.note.midi( scale[idx] ),
+						time: variation.rhythm[k],
+						type: noteType.hook,
+					});
+					phrase.push(idx);
+				}
+
+			} else {
+				newMelody.push(loop[j]);
+				phrase.push(loop[j].noteidx);
+			}
+		}
+
+		console.log(phrase)
+	}
 
 	return newMelody;
 }

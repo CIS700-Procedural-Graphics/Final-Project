@@ -65,8 +65,8 @@ export default class MusicBox {
 
 				// Play first note
 				instrument.instrument.then( (function(index, instr) {
-					instr.start(instrument.notes[index][instrument.noteCount[index]].note, 
-								instrument.ac.currentTime, 
+					instr.start(instrument.notes[index][instrument.noteCount[index]].note,
+								instrument.ac.currentTime,
 								{gain: this.noise[type]})
 						 .stop(instrument.ac.currentTime + instrument.notes[index][instrument.noteCount[index]].time * instrument.noteLength);
 
@@ -95,8 +95,8 @@ export default class MusicBox {
 					instrument.instrument.then((function(index, instr) {
 
 					if (instrument.notes[index][instrument.noteCount[index]].note > 0) {
-							instr.start(instrument.notes[index][instrument.noteCount[index]].note, 
-										instrument.ac.currentTime, 
+							instr.start(instrument.notes[index][instrument.noteCount[index]].note,
+										instrument.ac.currentTime,
 										{gain: this.noise[type],
 										 adsr: [0,0,0,0]});//[0.3,0.3,0.8,1]
 								 //.stop(instrument.ac.currentTime + instrument.notes[index][instrument.noteCount[index]].time * instrument.noteLength);
@@ -178,4 +178,3 @@ export default class MusicBox {
 	}
 
 }
-
