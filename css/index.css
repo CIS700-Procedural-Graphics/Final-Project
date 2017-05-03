@@ -1,0 +1,16 @@
+body {
+    background-color: black;
+}
+
+.viewport-container {
+  width: 100%;
+  text-align: center;
+}
+
+.viewport {
+  display: inline;
+}
+
+.debug-canvas {
+  vertical-align: top;
+}
