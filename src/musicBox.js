@@ -9,7 +9,8 @@ import {patternedMelody,
 		createMelody} from './music/musicMotifs.js'
 
 import generateMelody from './music/melody.js'
-import generateBass from './music/bass.js'
+import {generateBass, 
+	 	fillEmpty} from './music/bass.js'
 import generateHarmony from './music/harmony.js'
 
 
@@ -21,13 +22,15 @@ export default class MusicBox {
 	// Private functions
 	_init() {
 		this.instruments = [null,null,null];
-		this.noise = [0.6, 0.8, 0.6];
+		this.noise = [0.6, 0.8, 0.3];
+		this.delay = 3;
+		this.delayTimer = null;
 	}
 
-	_setInstrument( instrumentName, ac, type ) {
+	_setInstrument( instrumentName, ac, type, envelope = [0, 0.5, 0, 0.2] ) {
 		var instrument = Soundfont.instrument(ac, instrumentName, { soundfont: 'MusyngKite',
 																	gain: 1,
-																	adsr: [0, 0.3, 0.6, 0.2] });
+																	adsr: envelope });
 		var detailedInstrument = {
 			'instrument': instrument,
 			'ac' 		: ac,
@@ -48,9 +51,10 @@ export default class MusicBox {
 		// Don't play if nothing has been created.
 		if ( instrument.notes.length == 0) { return; }
 
-		// Check for repeats
-		if ( instrument.repeat ) {
-
+		if ( this.delay > 0 ) {
+			if ( this.delayTimer === null ) { this.delayTimer = time; }
+			this.delay -= ( time = this.delayTimer ) / 1000;
+			return;
 		}
 
 		// Case where music is starting
@@ -93,18 +97,29 @@ export default class MusicBox {
 				if (delta > instrument.notes[i][prevNote].time * instrument.noteLength &&
 					instrument.noteCount[i] < instrument.notes[i].length) {
 					instrument.played[i] = false;
-					instrument.instrument.then((function(index, instr) {
+					var pNote = instrument.notes[i][instrument.noteCount[i]].note;
+					var pTime = instrument.notes[i][instrument.noteCount[i]].time;
+					var instr = instrument;
+					var testbool = false;
+					if ( instrument.notes[i][instrument.noteCount[i]].type == -1 ) {
+						instr = this.instruments[2];
+						testbool = true;
+					}
+					
+					// console.log( instrument )
+					instr.instrument.then((function(index, instr) {
 
-					if (instrument.notes[index][instrument.noteCount[index]].note > 0) {
-							instr.start(instrument.notes[index][instrument.noteCount[index]].note, 
-										instrument.ac.currentTime, 
-										{gain: this.noise[type]})//;//[0.3,0.3,0.8,1]
-								 .stop(instrument.ac.currentTime + instrument.notes[index][instrument.noteCount[index]].time * instrument.noteLength);
-							if (index == 0) { callback(); }
-						}
-						instrument.played[index] = true;
-						instrument.noteCount[index]++;
-					}).bind(this, i))
+						if ( pNote > 0) {
+							// if ( testbool ) { console.log( pNote ); }
+							instr.start(pNote, 
+											instrument.ac.currentTime, 
+											{gain: this.noise[type]})//;//[0.3,0.3,0.8,1]
+									 .stop(instrument.ac.currentTime + pTime * instrument.noteLength);
+								if (index == 0) { callback(); }
+							}
+							instrument.played[index] = true;
+							instrument.noteCount[index]++;
+						}).bind(this, i))
 
 					instrument.time[i] = time;
 				}
@@ -122,12 +137,13 @@ export default class MusicBox {
 
 	// Public functions
 	setMelodicInstrument( instrumentName, ac ) {
-		this._setInstrument( instrumentName, ac, 0 );
-		this.instruments[0].noteLength = 1/8;
+		this._setInstrument( instrumentName, ac, 0, [0.7, 0.5, 0.3, 1.0] );
+		this.instruments[0].noteLength = 1/4;
 	}
 
 	setHarmonicInstrument( instrumentName, ac ) {
-		this._setInstrument( instrumentName, ac, 1 );
+		this._setInstrument( instrumentName, ac, 1, [0.1, 0.7, 0.3, 0.1] );
+		this.instruments[1].noteLength = 1/4;
 	}
 
 	setBassInstrument( instrumentName, ac ) {
@@ -137,11 +153,10 @@ export default class MusicBox {
 	// Functions for bass line
 	createBassLine() {
 		this._clearGeneratedMusic( 2 );
-		// this.instruments[2].notes.push(beatGenerator( euclid(2,8), 180, 400, 'F3' ));
-		// this.instruments[2].notes.push(beatGenerator( euclid(9,12), 120, 400, 'C4' ));
-		// this.instruments[2].notes.push(beatGenerator( euclid(7,15), 180, 400, 'D2' ));
 		this.instruments[2].notes.push(generateBass( 1, 4 ));
-		this.instruments[2].notes.push(generateBass( 2, 8 ));
+		// this.instruments[2].notes.push(generateBass( 2, 8 ));
+		// this.instruments[2].notes.push(generateBass( 3, 16 ));
+		
 	}
 
 	playBassLine( time, callback ) {
@@ -152,6 +167,7 @@ export default class MusicBox {
 	createHarmonyLine() {
 		this._clearGeneratedMusic( 1 );
 		this.instruments[1].notes.push(generateHarmony( this.instruments[0].notes[0], 0 ));
+		this.instruments[2].notes.push(fillEmpty( this.instruments[1].notes[0] ));
 		// this.instruments[1].notes.push(generateHarmony( this.instruments[0].notes[0], 1 ));
 		// this.instruments[1].notes.push(generateHarmony( this.instruments[0].notes[0], 2 ));
 	}
