@@ -54,12 +54,12 @@ export default function generateMelody( scaleNote, randomVar ) {
 	// }
 
 
-	// Print final note sequence
-	var debug = [];
-	for ( var i = 0; i < finalNotes.length; i++ ) {
-		debug.push( finalNotes[i].note );
-	}
-	console.log( debug )
+	// // Print final note sequence
+	// var debug = [];
+	// for ( var i = 0; i < finalNotes.length; i++ ) {
+	// 	debug.push( finalNotes[i].note );
+	// }
+	// console.log( debug )
 
 	return [finalNotes];
 }

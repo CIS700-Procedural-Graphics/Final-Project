@@ -86,7 +86,7 @@ var Visual = Scene4;
 
 
 /******************************************************************************/
-var instrument = 26;
+var instrument = 60;
 var instruments = [
   "accordion",
   "acoustic_bass",
@@ -263,8 +263,8 @@ var composer;
 	        case 32:
 	            // visualConfig.camera.acc = new THREE.Vector3( -5,0,0 );
 
-							musicPlayer.setMelodicInstrument( instruments[instrument++], ac );
-							musicPlayer.createMelodyLine();
+							musicPlayer.setHarmonicInstrument( instruments[instrument++], ac );
+							musicPlayer.createHarmonyLine();
 
 							console.log(instrument-1)
 							console.log(instruments[instrument-1])
