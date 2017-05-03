@@ -24,6 +24,7 @@ function initScene(framework, visualConfig) {
     scene.background = new THREE.Color( 0x000000 );
     renderTarget = new THREE.WebGLRenderTarget( 512, 512, { format: THREE.RGBFormat } );
 
+
     // lakeCamera = camera.clone();
     // lakeCamera.position.set(0,0,0);
     // lakeCamera.lookAt(new THREE.Vector3(0,0,-1));
@@ -71,6 +72,10 @@ function initScene(framework, visualConfig) {
 		mirrorMesh.add( groundMirror );
 		mirrorMesh.rotateX( - Math.PI / 2 );
 		scene.add( mirrorMesh );
+
+
+    // var snd = new Audio("file.wav"); // buffers automatically when created
+    // snd.play();
 
     visualConfig.sceneProps = {
       bouys: [],
@@ -287,7 +292,7 @@ function genBouy(scene) {
 }
 
 function genLightning(scene) {
-  var pos = new THREE.Vector3( (Math.random()-0.5) * 500, 200, Math.random() * 10 + 100);
+  var pos = new THREE.Vector3( genRange(50,200,true), 200, genRange(100,300,false) );
   var meshLine = new MeshLine.MeshLine();
   var meshLineGeo = new THREE.Geometry();
 	for (var i = 0; i < 100; i++) {
@@ -300,7 +305,7 @@ function genLightning(scene) {
 						opacity: 1,
 						resolution: new THREE.Vector2( window.innerWidth, window.innerHeight ),
 						sizeAttenuation: 10,
-						lineWidth: 20,
+						lineWidth: genRange(10,20,false),
 						near: 1,
 						far: 100000,
 						depthTest: true,
@@ -399,7 +404,7 @@ function genRange(start, end, negative) {
 
 function genParticle(scene) {
   var pos = new THREE.Vector3( genRange(50,300,true), Math.random() * 100, genRange(100,300,false) );
-  var geometry = new THREE.IcosahedronGeometry( Math.random(),1 );
+  var geometry = new THREE.IcosahedronGeometry( Math.random()*0.5,1 );
   var material = new THREE.MeshBasicMaterial( {color: 0xccffcc, side: THREE.DoubleSide} );
   var mesh = new THREE.Mesh( geometry, material );
   mesh.name = "particle"+Math.random();
@@ -408,7 +413,7 @@ function genParticle(scene) {
   return {
     name: mesh.name,
     pos: pos,
-    vel: new THREE.Vector3( 0,0,-Math.random()*50 ),
+    vel: new THREE.Vector3( 0,0,-genRange(10,30) ),
     shouldDelete: false,
     update: function(delta) {
       this.pos.x += this.vel.x * delta;
@@ -451,7 +456,7 @@ function bassCallback(framework, visualConfig) {
 }
 
 function melodyCallback(framework, visualConfig) {
-  if (Math.random() < 0.1)
+  // if (Math.random() < 0.1)
     // visualConfig.sceneProps.bubbles.push(genBubble(framework.scene));
   if (Math.random() < 0.8)
     visualConfig.sceneProps.lightning.push(genLightning(framework.scene));
