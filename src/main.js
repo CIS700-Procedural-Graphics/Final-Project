@@ -4,17 +4,22 @@ import Framework from './framework'
 import Grid, {GridCell} from './grid.js'
 import Player from './player.js'
 
-var player;
-var playerPromise;
-var grid;
-var gridDimension = 5.0;
+var player, playerPromise;
+var grid, gridDimension = 5.0;
 var allMeshes = new Set();
-var fw;
+var fw; //framework for restart
 
+//raymarching
+var mouse = {x: -1, y: 1}; //set the mouse at the top left corner of screen
+var isectObj = null; //the object in the scene currently closest to the camera 
+var isectPrevMaterial;
+
+/*
 var Sliders = function() {
   this.anglefactor = 1.0;
 };
 var sliders = new Sliders();
+*/
 
 //http://www.iquilezles.org/www/articles/palettes/palettes.htm
 function palette(t, option) {
@@ -81,6 +86,9 @@ function onLoad(framework) {
   renderer.shadowMapWidth = 2048;
   renderer.shadowMapHeight = 2048;
   */
+
+  // when the mouse moves, call the given function
+  document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 
   restart(framework);
 
@@ -217,6 +225,18 @@ function checkKey(e) {
 }
 
 
+function onDocumentMouseMove( event ) 
+{
+  //the following line would stop any other event handler from firing
+  //(such as the mouse's TrackballControls)
+  //event.preventDefault();
+  
+  // update the mouse variable
+  mouse.x = 2*(event.clientX/window.innerWidth) - 1;
+  mouse.y = -2*(event.clientY/window.innerHeight) + 1;
+}
+
+
 // called on frame updates
 function onUpdate(framework) {
 
@@ -230,6 +250,50 @@ function onUpdate(framework) {
     }
 
   });
+
+  //RAYMARCHING
+  //https://stemkoski.github.io/Three.js/Mouse-Over.html
+  //https://github.com/mrdoob/three.js/issues/5587
+  //http://stackoverflow.com/questions/20361776/orthographic-camera-and-pickingray
+
+  //create ray with origin at the mouse position, direction as camera direction
+  var vector = new THREE.Vector3(mouse.x, mouse.y, -1); //z = -1 IMPORTANT!
+  vector.unproject(framework.camera);
+  var direction = new THREE.Vector3(0, 0, -1).transformDirection(framework.camera.matrixWorld);
+  var raycaster = new THREE.Raycaster();
+  raycaster.set(vector, direction);
+
+  // create an array containing all objects in the scene with which the ray intersects
+  var intersects = raycaster.intersectObjects(framework.scene.children);
+
+  if (intersects.length > 0)
+  {
+    //if the closest object isectObj is not the currently stored intersection object
+    if (intersects[0].object != isectObj) 
+    {
+      //restore previous intersection object (if it exists) to its original color
+      if (isectObj) {
+        isectObj.material = isectPrevMaterial;
+      }
+      //store reference to closest object as current intersection object
+      isectObj = intersects[0].object;
+      //store color of closest object (for later restoration)
+      isectPrevMaterial = isectObj.material;
+      //set a new color for closest object
+      isectObj.material = new THREE.MeshLambertMaterial({color: 0xffffff});
+      
+    }
+  } 
+  else
+  {
+    //restore previous intersection object (if it exists) to its original color
+    if (isectObj)  {
+      isectObj.material = isectPrevMaterial;
+    }
+    //remove previous intersection object reference
+    //by setting current intersection object to "nothing"
+    isectObj = null;
+  }
     
 }
 
