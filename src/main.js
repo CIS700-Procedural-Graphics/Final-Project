@@ -118,6 +118,13 @@ function onLoad(framework) {
   setupBackground(App.scene);
   setupWater(App.scene, App.renderer, App.camera);
 
+  //add music
+  document.getElementById('music').play();
+
+  //add terrain
+  //scene.add(terrainMesh);
+  setupTerrain(App.scene);
+
   //set up obj mesh in scene
   var lion_obj = './geometry/LionLowPoly3DModel.obj';
   setupObj(App.scene, lion_obj, 1);
@@ -125,15 +132,12 @@ function onLoad(framework) {
   var lighthouse_obj = './geometry/lighthouse2.obj';
   setupObj(App.scene, lighthouse_obj, 2);
 
-  var rock_obj = './geometry/Rock_6.obj';
-  setupObj(App.scene, rock_obj, 3);
+  var stonewall_obj = './geometry/stonewall.obj';
+  setupObj(App.scene, stonewall_obj, 3);
 
-  //add terrain
-  //scene.add(terrainMesh);
-  setupTerrain(App.scene);
+  setupRocks(App.scene);
 
-  //add music
-  document.getElementById('music').play();
+  // setupFerns(App.scene);
 
 }//end onload
 
@@ -168,9 +172,8 @@ function onUpdate(framework) {
 function setupCamera(camera) {
   // set camera position
 
-  //(-24.5, 9.59, -8.32)
-  camera.position.set(-24.5, 9.59, -8.32);//(-25.26, 6.7, -20.14);
-  camera.lookAt(new THREE.Vector3(-12, 10, 10));//(-15,4,0));    //FIDGET WITH THIS
+  camera.position.set(-11.28, 7.39, -4.31);//(-24.5, 9.59, -8.32);//(-25.26, 6.7, -20.14);
+  camera.lookAt(new THREE.Vector3(5, 10, 10));   //(-12, 10, 10));//(-15,4,0));    //FIDGET WITH THIS
 }
 
 // =========================================== Lights setup ===========================================
@@ -308,38 +311,50 @@ function setupObj(scene, file, type) {
 
   if(type == 1) //lion's head
   {
-    material = new THREE.MeshLambertMaterial({ color: 0xeeeeee });
+    //material = new THREE.MeshLambertMaterial({ color: 0xeeeeee });
     //material = new THREE.MeshPhongMaterial({map : THREE.ImageUtils.loadTexture('./src/assets/BrickMedievalBlock.jpg') } );
     //material = new THREE.MeshPhongMaterial({map : THREE.ImageUtils.loadTexture('./src/assets/Rock_6_Tex/Rock_6_d.png') } );
+
+    // var texMap = texLoader.load('./src/assets/sand/rock.jpg'); //'./src/assets/Lion/Lion_Albido.tga');
+    // var dispMap = texLoader.load('./src/assets/sand/rock_DISP.tga');
+    // var normMap = texLoader.load('./src/assets/sand/rock_NRM.tga');
+    // var aoMap = texLoader.load('./src/assets/sand/rock_OCC.tga');
+    //
+    // material = new THREE.MeshPhongMaterial({
+    //   map : texMap,
+    //   displacementMap: dispMap,
+    //   //normalMap: normMap,
+    //   aoMap: aoMap
+    // });
+
+    material = setupTexture('./assets/grass1.bmp', './glsl/terrain2-vert.glsl', './glsl/terrain2-frag.glsl');
   }
+
   if(type == 2) //lighthouse
   {
-    //material = setupTexture('./assets/BrickMedievalBlocks.bmp', './glsl/terrain-vert.glsl', './glsl/terrain-frag.glsl')
-
     var texMap = texLoader.load('./src/assets/walls/Brick_S.jpg');
     var dispMap = texLoader.load('./src/assets/walls/Brick_DISP.tga');
     var normMap = texLoader.load('./src/assets/walls/Brick_NRM.tga');
     var aoMap = texLoader.load('./src/assets/walls/Brick_OCC.tga');
 
     material = new THREE.MeshPhongMaterial({
-      map : texMap, //THREE.ImageUtils.loadTexture('./src/assets/walls/Brick_S.jpg'),
-      displacementMap: dispMap, //THREE.ImageUtils.loadTexture('./src/assets/walls/Brick_DISP.tga'),
-      normalMap: normMap, //THREE.ImageUtils.loadTexture('./src/assets/walls/Brick_NRM.tga'),
-      aoMap: aoMap //THREE.ImageUtils.loadTexture('./src/assets/walls/Brick_OCC.tga')
+      map : texMap,
+      displacementMap: dispMap,
+      normalMap: normMap,
+      aoMap: aoMap
     });
   }
-  if(type == 3) //rock
+
+  if(type == 3) //stone wall
   {
-    var texMap = texLoader.load('./src/assets/Rock_6_Tex/Rock_6_d.png');
-    //var dispMap = texLoader.load('./src/assets/Rock_6_Tex/Rock_6_d.png');
-    var normMap = texLoader.load('./src/assets/Rock_6_Tex/Rock_6_n.png');
-    var aoMap = texLoader.load('./src/assets/Rock_6_Tex/Rock_6_ao.png');
+    var texMap = texLoader.load('./src/assets/stonewall/stonewall_diff.jpg');
+    var normMap = texLoader.load('./src/assets/stonewall/stonewall_norm.jpg');
+    var specMap = texLoader.load('./src/assets/stonewall/stonewall_spec.jpg');
 
     material = new THREE.MeshPhongMaterial({
-      map : texMap, //THREE.ImageUtils.loadTexture('./src/assets/Rock_6_Tex/Rock_6_d.png'),
-      //displacementMap: dispMap,
-      normalMap : normMap, //THREE.ImageUtils.loadTexture('./src/assets/Rock_6_Tex/Rock_6_n.png'),
-      aoMap : aoMap //THREE.ImageUtils.loadTexture('./src/assets/Rock_6_Tex/Rock_6_ao.png')
+      map : texMap,
+      normalMap : normMap,
+      specularMap : specMap
     } );
   }
 
@@ -364,17 +379,149 @@ function setupObj(scene, file, type) {
         mesh.scale.set(0.5, 0.5, 0.5);
       }
 
-      if(type == 3) //rock
+      if(type == 3) //stone wall
       {
-        mesh.translateY(5);
-        mesh.translateX(-10);
-        mesh.translateZ(10);
+        mesh.rotateY(-Math.PI / 3.0);
+        mesh.translateX(-3);
+        mesh.translateZ(-12);
+        //mesh.translateY(-4);
       }
 
       scene.add(mesh);
   });
 
+  objLoaded.then(function(geo) {
+      mesh = new THREE.Mesh(geo, material);
+
+      if(type == 3) //stone wall
+      {
+        mesh.rotateY(-Math.PI / 2.5);
+        mesh.translateX(3);
+        mesh.translateZ(-12);
+        //mesh.translateY(-4);
+        scene.add(mesh);
+      }
+  });
+
+  objLoaded.then(function(geo) {
+      mesh = new THREE.Mesh(geo, material);
+
+      if(type == 3) //stone wall
+      {
+        mesh.rotateY(-Math.PI / 2);
+        mesh.translateX(10);
+        mesh.translateZ(-14);
+        //mesh.translateY(-4);
+        scene.add(mesh);
+      }
+  });
+
 }//end setupObj
+
+function setupRocks(scene)
+{
+  var objLoaded = new Promise((resolve, reject) => {
+      (new THREE.OBJLoader()).load(require('./geometry/Rock_6.obj'), function(obj) {
+          var geo = obj.children[0].geometry;
+          geo.computeBoundingSphere();
+          resolve(geo);
+      });
+  })
+
+  var mesh;
+  var material;
+  var texLoader = new  THREE.TextureLoader();
+
+  var texMap = texLoader.load('./src/assets/Rock_6_Tex/Rock_6_d.png');
+  var normMap = texLoader.load('./src/assets/Rock_6_Tex/Rock_6_n.png');
+  var aoMap = texLoader.load('./src/assets/Rock_6_Tex/Rock_6_ao.png');
+
+  material = new THREE.MeshPhongMaterial({
+    map : texMap,
+    normalMap : normMap,
+    aoMap : aoMap
+  } );
+
+  objLoaded.then(function(geo) {
+      mesh = new THREE.Mesh(geo, material);
+      mesh.translateY(1);
+      mesh.translateX(10);
+      mesh.translateZ(15);
+      mesh.scale.set(2.0, 2.0, 2.0);
+      scene.add(mesh);
+  });
+
+  objLoaded.then(function(geo) {
+      mesh = new THREE.Mesh(geo, material);
+      mesh.translateY(1);
+      mesh.translateX(5);
+      mesh.translateZ(20);
+      mesh.scale.set(4.0, 4.0, 4.0);
+      scene.add(mesh);
+  });
+
+  // objLoaded.then(function(geo) {
+  //     mesh = new THREE.Mesh(geo, material);
+  //     mesh.translateY(1);
+  //     mesh.translateX(10);
+  //     mesh.translateZ(-7);
+  //     scene.add(mesh);
+  // });
+  //
+  // objLoaded.then(function(geo) {
+  //     mesh = new THREE.Mesh(geo, material);
+  //     mesh.translateY(1);
+  //     mesh.translateX(10);
+  //     mesh.translateZ(-5);
+  //     scene.add(mesh);
+  // });
+  //
+  // objLoaded.then(function(geo) {
+  //     mesh = new THREE.Mesh(geo, material);
+  //     mesh.translateY(1);
+  //     mesh.translateX(10);
+  //     mesh.translateZ(-3);
+  //     scene.add(mesh);
+  // });
+
+
+
+}//end setuprocks function
+
+
+function setupFerns(scene)
+{
+  var objLoaded = new Promise((resolve, reject) => {
+      (new THREE.OBJLoader()).load(require('./geometry/Ferns.obj'), function(obj) {
+          var geo = obj.children[0].geometry;
+          geo.computeBoundingSphere();
+          resolve(geo);
+      });
+  })
+
+  var mesh;
+  var material;
+  var texLoader = new  THREE.TextureLoader();
+
+  var texMap = texLoader.load('./src/assets/fern/Branches0030_1_M.png');
+  var normMap = texLoader.load('./src/assets/fern/Branches0030_1_M_NRM.jpg');
+
+  material = new THREE.MeshPhongMaterial({
+    map : texMap
+    //normalMap : normMap
+  } );
+
+  objLoaded.then(function(geo) {
+      mesh = new THREE.Mesh(geo, material);
+      mesh.translateY(10);
+      //mesh.translateX(10);
+      //mesh.translateZ(15);
+      mesh.scale.set(2.0, 2.0, 2.0);
+      scene.add(mesh);
+  });
+
+
+}//end setup ferns function
 
 
 // =========================================== Terrain setup ===========================================
@@ -398,8 +545,11 @@ function setupTerrain(scene)
   terrainGeo.verticesNeedUpdate = true;
 
   var terrainMaterial = setupTexture('./assets/grass1.bmp', './glsl/noise-vert.glsl', './glsl/noise-frag.glsl');
+
   //var terrainMaterial = setupTexture('./assets/grass1.bmp', './glsl/tiling-vert.glsl', './glsl/tiling-frag.glsl');
   //terrainMaterial.extensions.derivatives = true;
+
+  //var terrainMaterial = setupTexture('./assets/grass1.bmp', './glsl/terrain2-vert.glsl', './glsl/terrain2-frag.glsl');
 
   var terrainMesh = new THREE.Mesh(terrainGeo, terrainMaterial);
   terrainMesh.rotateY(-Math.PI / 2.0);

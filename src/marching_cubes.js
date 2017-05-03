@@ -6,6 +6,13 @@ import LUT from './marching_cube_LUT.js';
 var VISUAL_DEBUG = true;
 
 
+
+import WaterShader from './waterShader.js'
+WaterShader(THREE);
+
+
+
+
 // ================================================ SHADERS ================================================ //
 const LAMBERT_WHITE = new THREE.MeshLambertMaterial({ color: 0xeeeeee });
 const LAMBERT_GREEN = new THREE.MeshLambertMaterial({ color: 0xeeeeee, side: THREE.DoubleSide});
@@ -64,6 +71,38 @@ const METABALLMATERIAL = new THREE.ShaderMaterial({
 textureLoaded.then(function(texture) {
     METABALLMATERIAL.uniforms.texture.value = texture;
 });
+
+
+
+
+// function waterTexture()
+// {
+//   var waterNormals;   //to get water texture
+//   var water;
+//
+//   waterNormals = new THREE.TextureLoader().load('textures/waternormals.jpg');
+//   waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping;
+//
+//
+//   water = new THREE.Water(renderer, camera, scene, {
+//     textureWidth: 512,
+//     textureHeight: 512,
+//     waterNormals: waterNormals,
+//     alpha: 1.0,
+//     sunDirection: light.position.clone().normalize(),
+//     sunColor: 0xffffff,
+//     waterColor: 0x001e0f,
+//     distortionScale: 50.0
+//   });
+//
+// }
+
+
+
+
+
+
+
 
 // ================================================ MARCHING CUBE CLASS ================================================ //
 export default class MarchingCubes {

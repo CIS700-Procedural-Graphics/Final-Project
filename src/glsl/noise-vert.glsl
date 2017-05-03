@@ -146,7 +146,10 @@ void main() {
     //to send to frag shader - calculate post-noise normal and position
     vNormal = normal;//calculateNormal(normal);  //normal;
     vPos = position;//vec3(noise_output);  //position;
-    vUv = 0.1 * vec2(mod(position.x, 1.25), mod(position.z, 1.25));// % vec2(1, 1));//uv;
+
+    vUv = 0.1 * vec2(mod(position.x, 1.25), mod(position.z, 1.25)); //uv;
+    //vUv = 3.0 * vec2(mod(position.x, 2.0), mod(position.z, 2.0));
+
     vAmount = noise_output;
 
     //change position of mesh based on perlin output

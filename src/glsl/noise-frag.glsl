@@ -30,7 +30,7 @@ void main() {
   // gl_FragColor = vec4(color.rgb, 1.0);
 
   //texture mapping
-  vec4 grass = texture2D(texture, vUv * 1.0);
+  vec4 grass = texture2D(texture, vUv * 8.0);
   gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0) + grass;
 
 }
