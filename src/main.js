@@ -268,7 +268,7 @@ var composer;
 							// musicPlayer.createHarmonyLine();
 							// console.log( 'In change: ' + type )
 							type = ( type + 1 ) % 2;
-
+							visualConfig.musicType = type;
 							// console.log(instrument-1)
 							// console.log(instruments[instrument-1])
 							allInit  = true;
@@ -418,6 +418,9 @@ function onUpdate(framework) {
 	var nTime = Date.now();
 	if (allInit) {
 		musicPlayer.playHarmony( nTime, function() {
+			if (type == 1) {
+				Visual.harmonyCallback(framework, visualConfig);
+			}
 		});
 
 		musicPlayer.playMelody( nTime, function() {

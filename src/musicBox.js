@@ -29,6 +29,7 @@ export default class MusicBox {
 					1: [0.1, 0.7, 0.3, 0.1],
 					3: [0.1, 0.7, 0.3, 0.1]
 				},
+				noteLength: [1/4, 1/4, 1/2],
 				noise : [0.6, 0.8, 0.3],
 				instruments : [
 					'electric_piano_2', 'lead_2_sawtooth', './src/soundfonts/percussion.js'
@@ -40,9 +41,10 @@ export default class MusicBox {
 					1: [0.5, 0.5, 0.3, 1.0],
 					3: [0.1, 0.7, 0.3, 0.1]
 				},
+				noteLength: [1/4, 1/8, 1/4],
 				noise : [0.6, 0.4, 0.3],
 				instruments : [
-					'oboe', 'synthstrings_1', 'gunshot'
+					'oboe', 'synthstrings_1', 'percussive_organ'
 				]
 			}
 		]
@@ -162,21 +164,22 @@ export default class MusicBox {
 	setMelodicInstrument( instrumentName, ac, option = 0 ) {
 		var setting = this.settings[option];
 		this._setInstrument( instrumentName, ac, 0, setting.envelopes[0] );
-		this.instruments[0].noteLength = 1/4;
-		// [0.7, 0.5, 0.3, 1.0] 
+		this.instruments[0].noteLength = setting.noteLength[0];
+		// [0.7, 0.5, 0.3, 1.0]
 	}
 
 	setHarmonicInstrument( instrumentName, ac, option = 0 ) {
 		var setting = this.settings[option];
 
-		this._setInstrument( instrumentName, ac, 1, setting.envelopes[1] ); 
+		this._setInstrument( instrumentName, ac, 1, setting.envelopes[1] );
 		this._setInstrument( 'pad_3_polysynth', ac, 3, setting.envelopes[3] );
-		this.instruments[1].noteLength = 1/4;
+		this.instruments[1].noteLength = setting.noteLength[1];
 	}
 
-	setBassInstrument( instrumentName, ac ) {
+	setBassInstrument( instrumentName, ac, option = 0 ) {
+		var setting = this.settings[option];
 		this._setInstrument( instrumentName, ac, 2 );
-		this.instruments[2].noteLength = 1/2;
+		this.instruments[2].noteLength = setting.noteLength[2];
 	}
 
 	// Functions for bass line

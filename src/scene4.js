@@ -438,7 +438,8 @@ function genParticle(scene) {
 function genBubble(scene) {
   var pos = new THREE.Vector3( (Math.random()-0.5) * 200, 0, Math.random() * 200 + 100);
   var geometry = new THREE.IcosahedronGeometry(Math.random()*5, 2);
-  var mesh = new THREE.Mesh( geometry );
+  var material = new THREE.MeshBasicMaterial( {color: 0xcccccc, side: THREE.DoubleSide} );
+  var mesh = new THREE.Mesh( geometry, material );
   mesh.name = "bubble"+Math.random();
   mesh.position.set(pos.x, pos.y, pos.z);
   scene.add(mesh);
@@ -462,6 +463,59 @@ function bassCallback(framework, visualConfig) {
   if (Math.random() < 0.3)
     visualConfig.sceneProps.bouys.push(genBouy(framework.scene));
 }
+
+function harmonyCallback(framework, visualConfig) {
+  var scene = framework.scene;
+  if (Math.random() < 0.9 && visualConfig.sceneProps.bubbles.length < 10) {
+    visualConfig.sceneProps.bubbles.push(genBubble(framework.scene));
+  } else {
+    for (var j = 0; j < visualConfig.sceneProps.bubbles.length; j++) {
+      var name = visualConfig.sceneProps.bubbles[j].name;
+      var b = scene.getObjectByName(name);
+      if (b !== undefined) {
+        b.material.color.setHex(0xcccccc);
+      }
+    }
+
+    var i = Math.floor(Math.random() * visualConfig.sceneProps.bubbles.length);
+    var name = visualConfig.sceneProps.bubbles[i].name;
+    var b = scene.getObjectByName(name);
+    if (b !== undefined) {
+      b.material.color.setHex(0xf44242);
+    }
+
+    var i = Math.floor(Math.random() * visualConfig.sceneProps.bubbles.length);
+    var name = visualConfig.sceneProps.bubbles[i].name;
+    var b = scene.getObjectByName(name);
+    if (b !== undefined) {
+      b.material.color.setHex(0xf4be41);
+    }
+
+    var i = Math.floor(Math.random() * visualConfig.sceneProps.bubbles.length);
+    var name = visualConfig.sceneProps.bubbles[i].name;
+    var b = scene.getObjectByName(name);
+    if (b !== undefined) {
+      b.material.color.setHex(0x5bc124);
+    }
+
+    var i = Math.floor(Math.random() * visualConfig.sceneProps.bubbles.length);
+    var name = visualConfig.sceneProps.bubbles[i].name;
+    var b = scene.getObjectByName(name);
+    if (b !== undefined) {
+      b.material.color.setHex(0x91f0f7);
+    }
+
+    var i = Math.floor(Math.random() * visualConfig.sceneProps.bubbles.length);
+    var name = visualConfig.sceneProps.bubbles[i].name;
+    var b = scene.getObjectByName(name);
+    if (b !== undefined) {
+      b.material.color.setHex(0xe48be5);
+    }
+  }
+  // if (Math.random() < 0.8)
+    // visualConfig.sceneProps.lightning.push(genLightning(framework.scene));
+}
+
 
 function melodyCallback(framework, visualConfig) {
   // if (Math.random() < 0.1)
@@ -488,6 +542,7 @@ export default {
   updateScene: updateScene,
   bassCallback: bassCallback,
   melodyCallback: melodyCallback,
+  harmonyCallback: harmonyCallback,
   changeTrigger: changeTrigger,
   cleanupScene: cleanupScene
 }
