@@ -7,11 +7,7 @@ import {shuffle} from './../utils/utilities.js'
 
 export default function generateMelody( scaleNote, option = 0) {
 	
-
-	
 	var s = tonal.scale.get('major', scaleNote);
-
-	
 
 	var anchors = createAnchors( scaleNote, 15 );
 	var finalNotes = insertHook2( anchors.melody, s );
@@ -23,7 +19,7 @@ export default function generateMelody( scaleNote, option = 0) {
 		finalNotes.push( {note: tonal.note.midi( s[4] ), time: 24, type: 1} );
 	}
 	
-	console.log( 'In melody:  ' + option )
+	// console.log( 'In melody:  ' + option )
 	return [finalNotes];
 }
 

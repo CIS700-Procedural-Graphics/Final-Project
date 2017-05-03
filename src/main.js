@@ -263,7 +263,8 @@ var composer;
 	            break;
 	        case 32:
 	            // visualConfig.camera.acc = new THREE.Vector3( -5,0,0 );
-	            			musicPlayer.createMusic( ac, type );
+	            			var note = additionalControls.note + additionalControls.octave;
+	            			musicPlayer.createMusic( ac, type, note, additionalControls.scale );
 							// musicPlayer.setHarmonicInstrument( instruments[instrument++], ac );
 							// musicPlayer.createHarmonyLine();
 							// console.log( 'In change: ' + type )
@@ -285,8 +286,9 @@ var ac = new AudioContext()
 
 // parameters
 var additionalControls = {
-	'base' : 11,
-	'multi' : 13
+	'octave' : 3,
+	'note' : 'C',
+	'scale' : 'ionian pentatonic'
 };
 
 // update flag
@@ -366,18 +368,22 @@ function onLoad(framework) {
 
 	// edit params and listen to changes like this
 	// more information here: https://workshop.chromeexperiments.com/examples/gui/#1--Basic-Usage
-	gui.add(camera, 'fov', 0, 180).onChange(function(newVal) {
-		camera.updateProjectionMatrix();
+	gui.add(additionalControls, 'scale', tonal.scale.names() ).onChange(function(newVal) {
+		additionalControls['scale'] = newVal;
+		var note = additionalControls.note + additionalControls.octave;
+		musicPlayer.createMusic( ac, type, note, additionalControls.scale );
 	});
 
-	gui.add(additionalControls, 'base', 1, 20).onChange(rate_limit(function(newVal, done) {
-		additionalControls['base'] = Math.round(newVal);
-		update = true;
+	gui.add(additionalControls, 'octave', [2, 3, 4, 5, 6]).onChange(rate_limit(function(newVal, done) {
+		additionalControls['octave'] = newVal;
+		var note = additionalControls.note + additionalControls.octave;
+		musicPlayer.createMusic( ac, type, note, additionalControls.scale );
 	}));
 
-	gui.add(additionalControls, 'multi', 1, 20).onChange(rate_limit(function(newVal, done) {
-		additionalControls['multi'] = Math.round(newVal);
-		update = true;
+	gui.add(additionalControls, 'note', ['C', 'D', 'E', 'F', 'G', 'A', 'B']).onChange(rate_limit(function(newVal, done) {
+		additionalControls['note'] = newVal;
+		var note = additionalControls.note + additionalControls.octave;
+		musicPlayer.createMusic( ac, type, note, additionalControls.scale );
 	}));
 
 	Visual.initScene(framework, visualConfig);

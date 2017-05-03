@@ -1,5 +1,7 @@
 var tonal = require('tonal')
 
+import Smooth1DNoise from './../utils/random.js'
+
 var harmonyPat = [ [0, 1, 2, 2], [0, 2, 1, 2], [0, 1, 2, 1],
 				   [0, 1, 0, 1], [0, 1, 2, 3], [0, 2, 1, 3],
 				   [0, 3, 1, 3], [1, 0, 3, 1], [1, 3, 2, 1, 0],
@@ -12,7 +14,7 @@ var rhythms = {
 
 
 
-export default function generateHarmony( melody, interval ) {
+export default function generateHarmony( melody, interval = 0, scale ) {
 	// Adjust interval to be min 0, max 2
 	interval = Math.min( Math.max( 0, interval ), 2);
 
@@ -31,7 +33,7 @@ export default function generateHarmony( melody, interval ) {
 	var sn = tonal.note.fromMidi( melody[0].note + 12 );
 
 	// Find chord with this at the top
-	var s = tonal.scale.get( 'ionian pentatonic', sn );
+	var s = tonal.scale.get( scale, sn );
 	var c;
 	for ( var j = 0; j < s.length; j++ ) {
 		c = tonal.chord.get( 'm', s[j] );
@@ -45,8 +47,8 @@ export default function generateHarmony( melody, interval ) {
 			var pat1 = harmonyPat[ Math.floor( Math.random() * harmonyPat.length ) ];
 			var pat2 = harmonyPat[ Math.floor( Math.random() * harmonyPat.length ) ];
 
-			var rep1 = Math.floor( Math.random() * 1 ) + 1;
-			var rep2 = Math.floor( Math.random() * 1 ) + 1;
+			var rep1 = Math.floor( Math.random() * 3 ) + 1;
+			var rep2 = Math.floor( Math.random() * 4 ) + 1;
 
 			var r1Set = rhythms[pat1.length];
 			var r2Set = rhythms[pat2.length];
@@ -78,81 +80,75 @@ export default function generateHarmony( melody, interval ) {
 			}
 			harmonic.push( {note: tonal.note.midi( s[3] ) - 12, time: t * 2, type: -1} );
 
-			// Variations
-			var trans1 = Math.random() > 0.2 ? true : false;
-			var trans2 = Math.random() > 0.2 ? true : false;
-			var short  = Math.random() > 0.2 ? true : false;
-			var quickDrop = Math.random() > 0 ? true : false;
-			var total = harmonic;
-			var pat3 = [];
-			if ( trans1 ) {
-				var p = [];
+			var contour = createContour( 0.8, 20, 20 );
+			var prevHarm = false;
+			var total = [], pat3 = [];
+			for ( var x = 0; x < contour.length; x++ ) {
+				
+				if ( prevHarm == false ) {
+					total = total.concat( harmonic );
+					prevHarm = true;
+				} else {
+					if ( contour[x] < 6 ) {
+						var p = [];
+						pat3 = harmonyPat[ Math.floor( Math.random() * harmonyPat.length ) ];
+						for ( var k = 0; k < rep2; k++ ) {
+							for ( var i = 0; i < pat3.length; i++ ) {
+								p.push( {note: tonal.note.midi( s[pat3[i]] ) - 12, time: t} );
+							}
+						}
 
-				pat3 = harmonyPat[ Math.floor( Math.random() * harmonyPat.length ) ];
-				for ( var k = 0; k < rep2; k++ ) {
-					for ( var i = 0; i < pat3.length; i++ ) {
-						p.push( {note: tonal.note.midi( s[pat3[i]] ) + 12, time: t} );
+						pat3 = harmonyPat[ Math.floor( Math.random() * harmonyPat.length ) ];
+						for ( var i = 0; i < pat3.length; i++ ) {
+							p.push( {note: tonal.note.midi( s[pat3[i]] ) - 12, time: t} );
+						}
+						total = total.concat( p );	
 					}
-				}
+					else if ( contour[x] < 10 ) {
+						var p = [];
+						pat3 = harmonyPat[ Math.floor( Math.random() * harmonyPat.length ) ];
+						for ( var k = 0; k < rep2; k++ ) {
+							for ( var i = 0; i < pat3.length; i++ ) {
+								p.push( {note: tonal.note.midi( s[pat3[i]] ) + 7, time: t} );
+							}
+						}
 
-				pat3 = harmonyPat[ Math.floor( Math.random() * harmonyPat.length ) ];
-				for ( var i = 0; i < pat3.length; i++ ) {
-					p.push( {note: tonal.note.midi( s[pat3[i]] ) + 12, time: t} );
+						pat3 = harmonyPat[ Math.floor( Math.random() * harmonyPat.length ) ];
+						for ( var i = 0; i < pat3.length; i++ ) {
+							p.push( {note: tonal.note.midi( s[pat3[i]] ) + 7, time: t} );
+						}
+						total = total.concat( p );			
+					} else if ( contour[x] < 14 ) {
+						var p = [];
+						pat3 = harmonyPat[ Math.floor( Math.random() * harmonyPat.length ) ];
+						for ( var k = 0; k < rep2; k++ ) {
+							for ( var i = 0; i < pat3.length; i++ ) {
+								p.push( {note: tonal.note.midi( s[pat3[i]] ) + 12, time: t} );
+							}
+						}
+						pat3 = harmonyPat[ Math.floor( Math.random() * harmonyPat.length ) ];
+						for ( var i = 0; i < pat3.length; i++ ) {
+							p.push( {note: tonal.note.midi( s[pat3[i]] ) + 12, time: t} );
+						}
+						if ( total.length > harmonic.length ) { total = total.concat( harmonic ); }
+						total = total.concat( p );
+					} else {
+						var p = [];
+						pat3 = harmonyPat[ Math.floor( Math.random() * harmonyPat.length ) ];
+						for ( var k = 0; k < rep2 * 3; k++ ) {
+							for ( var i = 0; i < pat3.length; i++ ) {
+								p.push( {note: tonal.note.midi( s[pat3[i]] ), time: t / 2} );
+							}
+						}
+						if ( total.length > harmonic.length ) { total = total.concat( harmonic ); }
+						total = total.concat( p );
+					}
+					prevHarm = false;
 				}
-				total = total.concat( p );
+							
 			}
 
-			if ( trans2 ) {
-				var p = [];
-				pat3 = harmonyPat[ Math.floor( Math.random() * harmonyPat.length ) ];
-				for ( var k = 0; k < rep2; k++ ) {
-					for ( var i = 0; i < pat3.length; i++ ) {
-						p.push( {note: tonal.note.midi( s[pat3[i]] ) + 5, time: t} );
-					}
-				}
-				pat3 = harmonyPat[ Math.floor( Math.random() * harmonyPat.length ) ];
-				for ( var i = 0; i < pat3.length; i++ ) {
-					p.push( {note: tonal.note.midi( s[pat3[i]] ) + 5, time: t} );
-				}
-				if ( total.length > harmonic.length ) { total = total.concat( harmonic ); }
-				total = total.concat( p );
-			}
-
-			if ( short ) {
-				var p = [];
-				pat3 = harmonyPat[ Math.floor( Math.random() * harmonyPat.length ) ];
-				for ( var k = 0; k < rep2 * 3; k++ ) {
-					for ( var i = 0; i < pat3.length; i++ ) {
-						p.push( {note: tonal.note.midi( s[pat3[i]] ), time: t / 2} );
-					}
-				}
-				if ( total.length > harmonic.length ) { total = total.concat( harmonic ); }
-				total = total.concat( p );
-			}
-
-			// if ( quickDrop ) {
-			// 	var dropLength = Math.floor( Math.random() * 8 ) + 10;
-			// 	var p = [], pause = true, dur = 1;
-			// 	for ( var i = 0; i < dropLength; i++ ) {
-			// 		pause = dur > 0.5 ? true : false;
-			// 		p.push( {note: n - 2 * i, time: dur, type: 1} );
-			// 		p.push( {note: n - 2 * i, time: dur, type: 1} );
-			// 		p.push( {note: n - 2 * i, time: dur, type: 1} );
-			// 		p.push( {note: n - 2 * i, time: dur, type: 1} );
-			// 		// if ( i % 1 == 0 ) { p.push( {note: -1, time: 0.5, type: 1} ); }
-
-			// 		dur /= 1.5 ;
-			// 		dur = Math.max( dur, 0.25 );
-			// 	}
-			// 	p.push( {note: -1, time: 6, type: 1} );
-
-			// 	if ( total.length > harmonic.length ) { total = total.concat( harmonic ); }
-			// 	total = total.concat( p );
-			// }
-
-			// console.log( total );
 			harmonic = total;
-
 			break;
 		case 1:
 			harmonic = insertHook2();
@@ -165,8 +161,6 @@ export default function generateHarmony( melody, interval ) {
 			break;
 	}
 	
-	
-	console.log( 'In harmony:  ' + interval )
 	return harmonic;
 }
 
@@ -256,4 +250,27 @@ function insertHook2() {
 	}
 
 	return newMelody;
+}
+
+
+function createContour( seed, range, spacing ) {
+
+	// Subsample a smoothed contour
+	var contour = Smooth1DNoise( Math.round( range ) , Math.random() * seed, 200 );
+	var subsampledContour = [];
+	for ( var i = 0; i < contour.length; i+=spacing ) {
+		subsampledContour.push(Math.floor( contour[i] ));
+	}
+
+	// Remove repeats of more than 3
+	var max_length = subsampledContour.length - 2;
+	for ( var i = 0; i < max_length; i++ ) {
+		if ( subsampledContour[i] == subsampledContour[i+1] && subsampledContour[i+1] == subsampledContour[i+2] ) {
+			subsampledContour.splice( i, 1 );
+			max_length--;
+			i--;
+		}
+	}
+
+	return subsampledContour;
 }

@@ -26,8 +26,8 @@ export default class MusicBox {
 			{
 				envelopes : {
 					0: [0.7, 0.5, 0.3, 1.0],
-					1: [0.1, 0.7, 0.3, 0.1],
-					3: [0.1, 0.7, 0.3, 0.1]
+					1: [0.1, 0.7, 0.5, 0.2],
+					3: [0.1, 0.5, 0.3, 0.8]
 				},
 				noise : [0.6, 0.8, 0.3],
 				instruments : [
@@ -123,19 +123,19 @@ export default class MusicBox {
 					var pTime = instrument.notes[i][instrument.noteCount[i]].time;
 					var instr = instrument;
 					var testbool = false;
+
 					if ( instrument.notes[i][instrument.noteCount[i]].type == -1 ) {
 						instr = this.instruments[3];
 						testbool = true;
+						// console.log( '???' )
 					}
 
-					// console.log( instrument )
 					instr.instrument.then((function(index, instr) {
 
 						if ( pNote > 0) {
-							// if ( testbool ) { console.log( pNote ); }
 							instr.start(pNote,
-											instrument.ac.currentTime,
-											{gain: this.noise[type]})//;//[0.3,0.3,0.8,1]
+										instrument.ac.currentTime,
+										{gain: this.noise[type]})
 									 .stop(instrument.ac.currentTime + pTime * instrument.noteLength);
 								if (index == 0) { callback(); }
 							}
@@ -184,10 +184,11 @@ export default class MusicBox {
 		this._clearGeneratedMusic( 2 );
 		this.instruments[2].notes.push(generateBass( 1, 4 ));
 
-		// if ( option == 0 ) {
-		// 	this.instruments[2].notes.push(generateBass( 3, 24 ));
-		// 	// this.instruments[2].notes.push(generateBass( 3, 32 ));
-		// }
+		if ( option == 0 ) {
+			// this.instruments[2].notes.push(generateBass( 3, 24 ));
+			// this.instruments[2].notes.push(generateBass( 3, 32 ));
+			// console.log( this.instruments[2].notes )
+		}
 		// this.instruments[2].notes.push(generateBass( 2, 8 ));
 		// this.instruments[2].notes.push(generateBass( 3, 16 ));
 
@@ -198,12 +199,9 @@ export default class MusicBox {
 	}
 
 	// Functions for the harmony
-	createHarmonyLine( option = 0 ) {
+	createHarmonyLine( option = 0, scale = 'major pentatonic' ) {
 		this._clearGeneratedMusic( 1 );
-		this.instruments[1].notes.push(generateHarmony( this.instruments[0].notes[0], option ));
-		// this.instruments[2].notes.push(fillEmpty( this.instruments[1].notes[0] ));
-		// this.instruments[1].notes.push(generateHarmony( this.instruments[0].notes[0], 1 ));
-		// this.instruments[1].notes.push(generateHarmony( this.instruments[0].notes[0], 2 ));
+		this.instruments[1].notes.push(generateHarmony( this.instruments[0].notes[0], option, scale ));
 	}
 
 	playHarmony( time, callback ) {
@@ -211,11 +209,9 @@ export default class MusicBox {
 	}
 
 	// Functions for the melody
-	createMelodyLine( option = 0 ) {
+	createMelodyLine( option = 0, note = 'C3' ) {
 		this._clearGeneratedMusic( 0 );
-		// this.instruments[0].notes.push(generateMelody( 'C3', 1 ));
-		// this.instruments[0].notes.push(generateMelody( 'F3', 4 ));
-		this.instruments[0].notes = generateMelody( 'C3', option )
+		this.instruments[0].notes = generateMelody( note, option )
 	}
 
 	playMelody( time, callback ) {
@@ -223,7 +219,7 @@ export default class MusicBox {
 	}
 
 	// Make full music
-	createMusic( ac, type = 0 ) {
+	createMusic( ac, type = 0, note = 'C3', scale = 'major pentatonic' ) {
 		// Set instruments
 		var instruments = this.settings[type].instruments;
 		this.setMelodicInstrument( instruments[0], ac );
@@ -234,8 +230,8 @@ export default class MusicBox {
 		this.noise = this.settings[type].noise;
 
 		// Create music
-		this.createMelodyLine( type );
-		this.createHarmonyLine( type );
+		this.createMelodyLine( type, note );
+		this.createHarmonyLine( type, scale );
 		this.createBassLine( type );
 	}
 
