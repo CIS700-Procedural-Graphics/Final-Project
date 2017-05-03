@@ -18,7 +18,7 @@ I am happy with how this project turned out, not just visually but implementatio
 ### Sky
 The sky is a sphere surrounding the scene with a perlin noise fragment shader. The noise value is bucketed to create a toon shader effect. 
 
-| <img src="/images/sky.png" width="400"> | 
+| ![](./images/sky.png) | 
 | --------------------------------------- |
 | Figure 1: Toon shaded Perlin Noise |
 
@@ -44,7 +44,7 @@ Figure 3: Filters
 
  The height is proportional to the value of the texture. To create the striation of cliff walls, the texture value is bucketed before a noise value is added. Figure 4 shows the effect of the spline texture and filters in the scene.
 
-| <img src="/images/terrain2.png" width="400"> |
+| ![](./images/terrain2.png) |
 | --------------------------------- |
 | Figure 4: Spline gorge |
 
@@ -58,7 +58,7 @@ Rain dynamics are pretty simple. Originally each rain droplet fell at a constant
 
 Particle systems can be quite costly. In order to keep the simulation at runtime, I used the same terrain map generated from the camera spline to spawn particles. Particles are only created within the confines of the gorge. Once the particles reach y = 0, their position and velocity are reset to their original - or similar - values (saved in the particle struct). The droplets are drawn with THREE.LineSegments such that the endpoints are the particle's position and a small offset from this position in the velocity direction. This creates a constant number of particles in a looped cloud (Figure 5). The problem with this approach is that all the line segment in the THREE geometry have the same thickness and random length. There is no way to attentuate based on distance from the camera.
 
-| <img src="/images/raincloud.png" width="400"> | 
+| ![](./images/raincloud.png) | 
 | ------------------------------ |
 |Figure 5: Particles confined to camera's spline region |
 
@@ -66,7 +66,7 @@ The next rain effect I implemented was the rain hitting the water. I do not hand
 
 To fix the raindrop thickness and the droplet splashes, I tried moving this code to a rain shader. Instead of creating a line segment geometry, I tried instancing a polygon at each particle position. When the particle is above the water (code for perlin noise for water copied in the rain's vertex shader), the polygon becomes a triangle with the thickness of the bottom dependent on distance and angle from camera and the color is grey. When the particle is below the water, the polygon becomes a hexagon with a radius dependent on the distance below the water. The color of these droplets would be interpolated between purple and the color of the water so that they disappear over time. Figure 6 shows an attempt at this method. 
 
-|<img src="/images/badrain.png" width="600"> |
+| ![](./images/badrain.png) |
 | ---------------------------- |
 | Figure 6: Droplet implementation in vertex shader |
 
@@ -74,7 +74,7 @@ While in theory it is a great idea, instancing in THREE.js is not perfected acco
 
 I improved the water splashes by creating particles at all locations on the animated water plane where a rain drop appear above (Figure 7B). The particle shader uses a texture to define the shape. I used a simple circle, but a more sophistacated splash could also be used. Then the size and color of each was animated with a high frequency noise. The images below show this improvement (left: noise filtered color, right: particles). The color is interpolated between my color of choice (purple) and the color of the water at the point so the drops fade away.
 
-| <img src="/images/raindrops.png" width="400"> <img src="/images/particlerain.png" width="400"> |
+| <img src="/images/raindrops.png" width="425"> <img src="/images/particlerain.png" width="425"> |
 | --------------------------- |
 | Figure 7: Rain droplet splashes (A: original perlin noise implementation; B: particles) |
 
