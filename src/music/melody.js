@@ -22,13 +22,6 @@ export default function generateMelody( scaleNote, randomVar ) {
 
 	// // console.log( euclid( 3, 8 ) )
 
-	// // Remove any nulls
-	// for ( var i = 0; i < notes.length; i++ ) {
-	// 	if ( notes[i].note == null ) {
-	// 		notes.splice( i, 1 );
-	// 	}
-	// }
-
 	// // Limit length of melody
 	// var finalNotes = [];
 	// var mLimit = 32;
@@ -44,6 +37,14 @@ export default function generateMelody( scaleNote, randomVar ) {
 	var anchors = createAnchors( scaleNote, 10 );
 	var finalNotes = insertHook( anchors.melody, s );
 	finalNotes = insertFlairs( finalNotes, s, anchors.high, anchors.low );
+
+	// Remove any nulls
+	for ( var i = 0; i < finalNotes.length; i++ ) {
+		if ( finalNotes[i].note == null ) {
+			finalNotes.splice( i, 1 );
+		}
+	}
+
 
 	// Print final note sequence
 	var debug = [];
@@ -83,7 +84,7 @@ function generateRhythm(numBeats) {
 
 function insertHook(melody, scale) {
 
-	var pattern = [true, true, true, true];
+	var pattern = [true, true, true, false, false, true, false];
 	var newMelody = [];
 
 	var hook = [];
@@ -158,7 +159,8 @@ function insertHook(melody, scale) {
 function insertFlairs( melody, scale, highAnchor, lowAnchor ) {
 	// Create flairs for the different anchors
 	var lowFlairs = [], highFlairs = [];
-	for ( var i = 0; i < 3; i++ ) {
+	var numTotal = 2;
+	for ( var i = 0; i < numTotal; i++ ) {
 		lowFlairs.push( createFlair( lowAnchor, scale ) );
 		highFlairs.push( createFlair( highAnchor, scale ) );
 	}
@@ -169,9 +171,9 @@ function insertFlairs( melody, scale, highAnchor, lowAnchor ) {
 		if ( melody[i].type == noteType.anchor ) {
 			var r = Math.random(), flair;
 			if ( r > 0.5 ) {
-				flair = lowFlairs[Math.floor( Math.random() * 3 )];
+				flair = lowFlairs[Math.floor( Math.random() * numTotal )];
 			} else {
-				flair = highFlairs[Math.floor( Math.random() * 3 )];
+				flair = highFlairs[Math.floor( Math.random() * numTotal )];
 			}
 
 			for ( var j = 0; j < flair.length; j++ ) {
@@ -196,7 +198,7 @@ function createFlair( anchor, scale, length = 8 ) {
 	var beats = createFlairBeatAssignment( length );
 	var pattern = createMelodicContour( 2, scale.length );
 
-	pattern = tempStuff[Math.floor( Math.random() * 4 )];
+	// pattern = tempStuff[Math.floor( Math.random() * 4 )];
 
 	var flair = [{note: anchor.note, time: beats[0], type: noteType.flair}];
 	for ( var i = 1; i < beats.length; i++ ) {
@@ -217,26 +219,6 @@ function createFlairBeatAssignment( numBeats ) {
 	beats.push( l );
 	for ( var i = 0; i < maxShort; i++ ) { beats.push( 1 ); }
 	for ( var i = 0; i < remainingBeats; i+=2 ) { beats.push( 2 ); }
-
-	// while (sum < numBeats) {
-	// 	// Randomly select beat length
-	// 	r = Math.random();
-	// 	if ( r > 0.8 && !usedLong ) {
-	// 		b = Math.random() > 0.3 ? 4 : 6;
-	// 	} else if ( r > 0.4 ) {
-	// 		b = 1;
-	// 	} else {
-	// 		b = 2;
-	// 	}
-
-	// 	// If beat fits, then allocate it, otherwise skip
-	// 	if ( sum + b <= numBeats) {
-	// 		beats.push( b );
-	// 		sum += b;
-	// 		if ( b > 3 ) { usedLong = true; }
-	// 		if ( b == 1) { maxShort++; }
-	// 	}
-	// }
 
 	return shuffle( beats );
 }
@@ -267,7 +249,7 @@ function createMelodicContour( seed, range ) {
 	//
 	if (seed % 2 == 0) {
 		// Subsample a smoothed contour
-		var contour = Smooth1DNoise( Math.round( range * 0.8 ) , 0.03, 200 );
+		var contour = Smooth1DNoise( Math.round( range * 0.8 ) , 0.01, 200 );
 		var subsampledContour = [];
 		for ( var i = 0; i < contour.length; i+=10 ) {
 			subsampledContour.push(Math.floor( contour[i] ));

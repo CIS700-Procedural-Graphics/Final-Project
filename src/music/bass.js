@@ -12,9 +12,9 @@ export default function generateBass( voiceNumber, length = 8 ) {
 			var v = 36;
 			for ( var i = 0; i < length; i++ ) {
 				bassLine.push( {note: v, time: 1} );
-				bassLine.push( {note: -1, time: 1} );
+				// bassLine.push( {note: -1, time: 2} );
 				bassLine.push( {note: v, time: 1} );
-				bassLine.push( {note: -1, time: 1} );
+				// bassLine.push( {note: -1, time: 2} );
 			}
 			break;
 		// 2. Random Euclidian meter
