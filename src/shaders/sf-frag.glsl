@@ -24,6 +24,7 @@ void main() {
 
 	vec3 col = palette(t, a, b, c, d);
 	col += vec3(t - 0.5);
+	
 
 	gl_FragColor = vec4(col, 1.0);
   	// gl_FragColor = vec4(normalize(f_position), 1.0);

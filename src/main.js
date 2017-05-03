@@ -230,7 +230,7 @@ function onLoad(framework) {
   smesh.scale.set(10.0, 10.0, 10.0);
   scene.add(smesh);
 
-  // Superformula Flower Generater -------------/
+  // TODO: Superformula Flower Generater -------------/
 
 
 
