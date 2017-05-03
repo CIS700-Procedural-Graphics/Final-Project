@@ -23,3 +23,16 @@ export function shuffle(array) {
 
   return array;
 }
+
+export function findClosest( array, value ) {
+	var minDiff = 10000, idx = 0, min;
+	for ( var i = 0; i < array.length; i++ ) {
+		min = Math.abs( array[i] - value );
+		if ( min < minDiff ) {
+			minDiff = min;
+			idx = i;
+		}
+	}
+
+	return {index: idx, value: array[idx], diff: minDiff};
+}

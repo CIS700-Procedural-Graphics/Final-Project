@@ -349,8 +349,8 @@ function onLoad(framework) {
 
 	// Initialize music instruments
 	musicPlayer.setMelodicInstrument( 'fx_6_goblins', ac );
-	musicPlayer.setHarmonicInstrument( 'acoustic_grand_piano', ac );
-	musicPlayer.setBassInstrument( 'acoustic_bass', ac );
+	musicPlayer.setHarmonicInstrument( 'electric_piano_1', ac );
+	musicPlayer.setBassInstrument( './src/soundfonts/percussion.js', ac );
 
 	// Initialize music
 	musicPlayer.createMusic();

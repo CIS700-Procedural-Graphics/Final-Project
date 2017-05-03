@@ -1,4 +1,5 @@
 import Soundfont from 'soundfont-player'
+var tonal = require('tonal')
 
 // Local imports
 import euclid from './utils/euclid.js'
@@ -20,17 +21,17 @@ export default class MusicBox {
 	// Private functions
 	_init() {
 		this.instruments = [null,null,null];
-		this.noise = [1, 0.35, 0.75];
+		this.noise = [0.6, 0.8, 0.6];
 	}
 
 	_setInstrument( instrumentName, ac, type ) {
-		var instrument = Soundfont.instrument(ac, instrumentName, { soundfont: 'fuildR3',
+		var instrument = Soundfont.instrument(ac, instrumentName, { soundfont: 'MusyngKite',
 																	gain: 1,
-																	adsr: [0, 0, 0, 0] });
+																	adsr: [0, 0.3, 0.6, 0.2] });
 		var detailedInstrument = {
 			'instrument': instrument,
 			'ac' 		: ac,
-			'noteLength': 1/8,
+			'noteLength': 1/4,
 			'noteCount' : [],
 			'notes'     : [],
 			'time'		: [],
@@ -95,11 +96,11 @@ export default class MusicBox {
 					instrument.instrument.then((function(index, instr) {
 
 					if (instrument.notes[index][instrument.noteCount[index]].note > 0) {
+
 							instr.start(instrument.notes[index][instrument.noteCount[index]].note,
 										instrument.ac.currentTime,
-										{gain: this.noise[type],
-										 adsr: [0,0,0,0]});//[0.3,0.3,0.8,1]
-								 //.stop(instrument.ac.currentTime + instrument.notes[index][instrument.noteCount[index]].time * instrument.noteLength);
+										{gain: this.noise[type]})//;//[0.3,0.3,0.8,1]
+								 .stop(instrument.ac.currentTime + instrument.notes[index][instrument.noteCount[index]].time * instrument.noteLength);
 							if (index == 0) { callback(); }
 						}
 						instrument.played[index] = true;
@@ -152,8 +153,8 @@ export default class MusicBox {
 	createHarmonyLine() {
 		this._clearGeneratedMusic( 1 );
 		this.instruments[1].notes.push(generateHarmony( this.instruments[0].notes[0], 0 ));
-		this.instruments[1].notes.push(generateHarmony( this.instruments[0].notes[0], 1 ));
-		this.instruments[1].notes.push(generateHarmony( this.instruments[0].notes[0], 2 ));
+		// this.instruments[1].notes.push(generateHarmony( this.instruments[0].notes[0], 1 ));
+		// this.instruments[1].notes.push(generateHarmony( this.instruments[0].notes[0], 2 ));
 	}
 
 	playHarmony( time, callback ) {
@@ -163,7 +164,9 @@ export default class MusicBox {
 	// Functions for the melody
 	createMelodyLine() {
 		this._clearGeneratedMusic( 0 );
-		this.instruments[0].notes.push(generateMelody( 'C3', 1 ));
+		// this.instruments[0].notes.push(generateMelody( 'C3', 1 ));
+		// this.instruments[0].notes.push(generateMelody( 'F3', 4 ));
+		this.instruments[0].notes = generateMelody( 'C3', 1 )
 	}
 
 	playMelody( time, callback ) {
