@@ -1,23 +1,22 @@
 # Zionical
 
 This project is inspired by [Panoramical][1], a musical landscape with highly abstracted and colorful environments. 
-Press "V" for viewpoint change. 
+
+Press "V" for viewpoint change.
+
 Press "P" to pause;
 
 ## Results
-
-I am very happy with how this project turned out, not just visually but implementation-wise. I unintentionally incorporated topics from various different lectures, not just the noise lecture as was the original intent. I used a particle system, cosine color palettes, toolbox functions, and of course lots of noise and shaders.
-
-![](./images/final1.png) 
-![](./images/final2.png) 
 ![](./images/final4.png)
+![](./images/final2.png) 
+![](./images/final1.png)
+
+I am happy with how this project turned out, not just visually but implementation-wise. I unintentionally incorporated topics from various different lectures, not just the noise lecture as was the original intent. I used a particle system, cosine color palettes, toolbox functions, filters, and of course lots of noise and shaders. 
 
 ## Evaluation
 
 ### Sky
-perlin noise
-toon shading
-spherical map
+The sky is a sphere surrounding the scene with a perlin noise fragment shader. The noise value is bucketed to create a toon shader effect. 
 
 <img src="/images/sky.png" width="400">
 
@@ -25,9 +24,11 @@ spherical map
 
 The camera and canyon are closely tied together because the camera can only move through empty space in the canyon (aka not move through rocks), so the implementations had to be connected. I decided to first define a camera animation along a closed spline. I could have first started with defining the canyon gorge layout and then add the camera movement inside, but this seemed more difficult to me because if I laid spline knots in the gorge, I could not be guaranteed that all interpolated spline points would remain in the gorge. I chose a spline because I wanted to have a continuous animation, which I could achieved with a closed loop, but I also wanted the path to twist and turn so as not to be an obvious circle. By offsetting the knot points pseudo-randomly, I am able to perturb the path just enough to appear random but not too jerky, since it is still controlled by a smooth curve. Figure 1 shows some examples of the generated splines. 
 
-<img src="/images/map1.png" width="300"> 		<img src="/images/map2.png" width="300"> 		<img src="/images/map3.png" width="300"> 
+<img src="/images/map1.png" width="275"> 		<img src="/images/map2.png" width="275"> 		<img src="/images/map3.png" width="275"> 
 
 While the paths appear relatively circular, the terrain is large enough that the circular nature is not noticed. The spline is controlled by a smoothness factor along with a maximum radius which insures that the spline fits within the terrain plane and that the spline never gets too close to the edge so that it always has a canyon wall. The smoothness parameter controls how much each subsequent spline know can change in radial distance from the previous. When smoothness = 0, the spline is a circle and when smoothness = 1, the spline can flucuate as much as half its maximum radius between know points. Any more perturbation would cause the camera to jerk since the spline points become less smooth.
+
+In addition to the perturbed spline, the camera uses a unperturbed circle for the animation of the bird's eye viewpoint. This is because the turning of the camera along the spline was too noticable when looking down. For the third person viewpoint, the camera position is offset backwards and upwards from the spline position (relative to the boat).
 
 ### Canyon
 Once I had the camera animated, I needed to create canyon walls surrounding the spline. I first tried to use seperate planes for the left and right sides and move the planes with the camera. This was unnecessarily complicated to orchestrate and moving the planes and updating the noise made the canyon look alive, not rock-like. I also wasn't sure how to make the rock faces look more sheared than bumpy. I changed the canyon to have noise in the y direction and liked this effect better. Using the camera spline from above, I created a texture to pass to the vertex shader to define where on the plane was the gorge and where the cliffs were. I achieved this by looping through the spline points and creating a texture where the value was maximum on the spline and zero everywhere else. I increased the resolution of the texture and applied a gaussian blur in both the x and y directions (texture coordinates) to create tapered cliffs rather than shear, unnatural ones. This created a very narrow passage since now less values were maximum, so I widened the path before applying a gaussian blur by filtering the image by the maximum value in a local texel area. See Figure 2 for a filter pipeline.  
@@ -77,7 +78,7 @@ The rain in the distance can barely be differentiated due to the distance from t
 The rocks were originally going to be instances of one geometry, but creating seperate meshes did not slow down the simulation and instancing does not work (see rain section above). The geometries are icosahedron and dodecahedrons with flat shading for a "blocky" effect. The rocks are randomly placed along the camera spline, and then moved to the edges of the canyon so that my little boat does not run into them. Essentially, the rock's position is incrementally increased or decreased in the X or Z direction until the value in the spline texture falls below a certain threshold.   
 
 ### Boat
-The addition of the boat has little procedural meaning. I added it because the scene felt empty. Its movement and rotation mimics the camera's. 
+The addition of the boat has little procedural meaning. I added it because the scene felt empty. Its movement and rotation mimic the camera's. 
 
 ### Music
 I did not like the effect the music frequency had in my scene. I set the frequency of the perlin noise to the music frequency, but I found the effect to be to inconsistent and jarring in the sky and the water. I also used the music to pulse the rocks. Did not like that either because the scene is calm and soothing and the frequencies are just not. 
@@ -85,20 +86,25 @@ I did not like the effect the music frequency had in my scene. I set the frequen
 ## Future Work
 
 * Camera Movement
-I would like to improve the interactivity beyond just the viewpoint toggle. Instead of animating the camera along a spline, the user could move anywhere within the widened spline loop area and look around the scene. When that gets boring, the camera would move back to the spline animation.
-* Changing Weather
-The simulation started as a sunny canyon environment until I added the rain particles. It would be cool for the simulation to smoothly change from sunny to rainy to stormy, etc. The problem with this now is dynamically adding particles to the system.  
-* Ambient Occlusion
-Since this project achieves all effects without light, an ambient occlusion post processing effect could really improve the quality of the final render. Ambitious me thought [this][3] would be really cool, but I did not have enough time to understand and implement.
 
+I would like to improve the interactivity beyond just the viewpoint toggle. Instead of animating the camera along a spline, the user could move anywhere within the widened spline loop area and look around the scene. When that gets boring, the camera would move back to the spline animation.
+
+* Changing Weather
+
+The simulation started as a sunny canyon environment until I added the rain particles. It would be cool for the simulation to smoothly change from sunny to rainy to stormy, etc. The problem with this now is dynamically adding particles to the system. 
+
+* Ambient Occlusion
+
+Since this project achieves all effects without light, an ambient occlusion post processing effect could really improve the quality of the final render. Ambitious me thought [this][3] would be really cool, but I did not have enough time to understand and implement.
 
 ## Acknowledgements
 
-* [Realtime Procedural Terrain Generation][2] 
-* Perlin Noise and [Simplex][3] Noise 
-* [Diamond-square algorithm][4]
-* [Fractal landscape][5]
+* [Advanced Value Noise][5] by iquilezles
+* [Better Fog][2] by iquilezles
+* [Simplex Noise][4] by Stefan Gustavson 
 
 [1]: https://vimeo.com/88946422
 [2]: http://www.iquilezles.org/www/articles/fog/fog.htm
 [3]: http://www.iquilezles.org/www/articles/multiresaocc/multiresaocc.htm
+[4]: http://webstaff.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf
+[5]: http://www.iquilezles.org/www/articles/morenoise/morenoise.htm
