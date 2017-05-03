@@ -1,128 +1,83 @@
-Hannah Bollar [Single Person Project]
+Hannah Bollar. hbollar.
 ======================
 
 **University of Pennsylvania, CIS 700: Procedural Graphics, Final Project**
 
 ## View the Project
 
-NOTE: PROJECT STILL IN PROGRESS. Turn volume on and possibly wear headphones to hear the sound.
+Turn volume on and possibly wear headphones to hear the sound.
 
 ###### [Click Here to View the Current Project](https://hanbollar.github.io/Final-Project/)
 
+## About the Look of the Project
+
+
+
+
+
+
+
 ## The Audio
 
-Maple Story Music - Ellinia
+Legend of Zelda - Wind Waker's Main Theme
+###### [Click Here to View the Source Video](https://www.youtube.com/watch?v=gEoU70DXr90)
+Demonstration of a vibrant song. Its output varies between even tones [mostly whites] and strong tones [pinks and reds] while also allowing for a consistently changing number of balls from which particles are being emitted. The most interesting version of song to be used for this visualizer.
 
+turkish march orchestra [rondo alla turca]
+###### [Click Here to View the Source Video](https://www.youtube.com/watch?v=se_Swf7-68M)
+Demonstration of a pretty even song on the music visualizer that doesnt become too powerful. Particles come out pretty consistently for this song; however, throughout the entirety of the piece, the particles remain mostly in the white, yellow, and orange range.
+
+Maple Story Music - Ellinia
 ###### [Click Here to View the Source Video](https://www.youtube.com/watch?v=_M-ytoRguS8)
+Demonstration of a build up song using this music visualizer. Very few particles come out at the beginning and almost all are white, and by the end the song is in full force showing most colors for the particles and outputing from all balls on the ring.
+
+Pirates of the Caribbean 
+###### [Click Here to View the Source Video](https://www.youtube.com/watch?v=27mB8verLK8)
+Demonstration of a strong and powerful song using this music visualizer. Shows strong color variation from the particles and particles almost consistently come out of each ball.
 
 ## The Project
 
-Project Proposal: Music Visualizer
+Project: Music Visualizer
 ------------
 
-- #### Introduction
-  ###### What motivates this project?
+- #### Main Techniques:
 
-  * I've worked with learning a lot of different procedural techniques throughout this past semester now I want to see if I can combine parts of them with my interest in particle simulations.
+  * (1) Working on shader manipulations for texture and coloring
+      *  the plane uses a blue based opacity
+      *  the balls are rendered with an opacity and a coloring such that the green and purple remain in the same locations relative to the eye position for the object to give the ringed effect
+  * (2) Update and timers
+      * timing the update functions to properly maintain the movement of the particles and the reloading of particular pieces when each song plays
+  * (3) Noise function that affects the music particles position in space with increasing amplitude the farther the particles get from their source
+      * Note that the noise function is entirely position based so all points that come from each ball will follow the same noise based path [looked better this way -with the lines- than not having the lines since it more easily shows a pause in the level of power of in the music]
+  * (4) using THREE.js sound manipulation tools
+      * interpretation of wav file data
+      * allow for the playing of multiple pieces of music
 
-- #### Goal
-  ###### What do you intend to achieve with this project?
-
-  * Creating a functioning music visualizer that not only has manipulations based on coloring/shader information but also noise and time manipulations to create the piece altogether.
-
-- #### Inspiration/reference: 
-  ###### Attach some materials, visual or otherwise you intend as reference
-
-  * See notes below - in particular the youtube videos
-
-- #### Specification:
-  ###### Outline the main features of your project
-
-  * See timeline for feature and notes below for more information. [when i clean up this file for the final submission of the project the notes will be gone and the features will be properly detailed here instead of in the timeline area]
-
-- #### Techniques:
-  ###### What are the main technical/algorithmic tools you’ll be using? Give an overview, citing  specific papers/articles
-
-  * Building this project as I have been doing with the others - entirely javascript based with noise manipulations from a helper file. 
-  * (1) Working on shaders and particle manipulations in the gpu
-  * (2) Varying noise functions
-  * (3) how to interpret midi file data so can visualize the music properly [https://chrisballprojects.wordpress.com/2013/03/17/midi-visualisations-in-processing/]
-
-- #### Design:
-  ###### How will your program fit together? Make a simple free-body diagram illustrating the pieces.
-  ![](./images/PicOfFileSetup.png)
-
-- #### Timeline:
-  ###### Create a week-by-week set of milestones for each person in your group.
-  * See notes below
-
-Timeline
+Timeline for Workflow
 ------------
 - #### Milestone 1
-	* positioning of spots where balls shoot out
-	* interpreting the music as data (but dont have to do anything with the data yet)
-	* set up water plane in space, surrounding environment box [skybox]
-	* gui to pick which music to play [for now just have it as a pause and play button for playing one set of music]
-	* have all the shader materials set up for everything but the balls [balls will have gpu manipulations based on time so for now leave as default]
-	* add box to pause and play
-	* add box to maintain repeat for song or not
-	* make so the loaded song plays out the speakers with the right timing [ie using same timer as gl]
+  • positioning of spots where balls shoot out
+  • gui to pick which music to play [for now just have it as a pause and play button for playing one set of music]
+  • have all the shader materials set up for everything but the balls [balls will have gpu manipulations based on time so for now leave as default]
+  • add box to pause and play
+  • add box to maintain repeat for song or not
+  • make so the loaded song plays out the speakers with the right timing [ie using same timer as gl]
 
 - #### Milestone 2
-	* Set up using of music data for balls being shot out from particular location
-	* make the wave bottom move/flow
-	* add noise to the movement of the balls [ie the farther up they go the more the noise affects them]
-	* add timer for life of the balls [life meaning being shown visually or not - to maintain the same number of balls overall]
+	Sections completed for this milestone per my milestone 2 plan: 
+    • Set up using of music data for particles being shot out from particular location - by indexing from 0 - 7 [later to be implemented that the frequency will convert to fill the 0-7 indexing bins once i have the proper way to interpret the wave file data]
+    • add noise to the movement of the balls
+    • particles disappear when theyre farther than a specific distance from the center of the region
+    • Set up Particles manipulation class and proper connections between framework and data held within the class so can easily create / add / manipulate all at once
+    • rebuilt skybox with proper coloring
 
 - #### Milestone 3 [ready for submission]
-	* finish all parts of prev milestones not yet completed and see notes for additional features to implement 
-	* note: should be fully functioning before this deadline
-	* [if time] add ability for user to manipulate [ie click somewhere and the particles react - but only for clicking - could act as an attractor or a repellor
-	* [if time] make it so users can input a midi file and that i can load from it [ ie can load the visualizer for any given file ] - set timer so that song loops continuously
-
-NOTES:
-------------
-
-music visualizer:
-
-particles, ribbon creation, shape visualization, using what shader
-
-2 diff variations at min
-3 diff variations of the visualizer at max [maybe dep on frequency]
-
-can build texture in substance designer?
-
-DO THE YOUTUBE VIDEO FOR PIANO MUSIC / piano interpretation of music based on keys
-https://www.youtube.com/watch?v=fpViZkhpPHk&list=PL_2OwBBRw9hDSXyaIPrCeKUCNnCrHAHEn
-
-some particles just floating around and when hit by an object they bounce --> but they have an origin theyre supposed to try and get back to --> like nop's plane variation
-
-so particles coming from keys at the bottom hitting through the plane particles
-
-try and do it on the gpu? since just particles
---> based on music input for specific values have the rgb color input stand as whether or not on plane or seen yet [note this is done with time] --> maybe have a loading screen while this computation is being done --> then once have all proper data from music for the gpu --> run as particle sim --> so can load up from two different piano music files to start with
-like this one: https://www.youtube.com/watch?v=KiRLdhnDKwc&list=PL_2OwBBRw9hDSXyaIPrCeKUCNnCrHAHEn&index=14 <- to demonstrate following mariano's technique of doing it as height for buildings
-
---> if do it on the gpu can have a max number of particles to begin with where input includes on/off/start time to visualize it --> note this is loaded up --> just loop through once start time becomes the max for the music vid and reloop back time to beg[like with mariano's cube anim --> just reloop as a vid]
-
-can do this at bottom with opacity in distance so cant see moving texture
-https://www.youtube.com/watch?v=82Q6DRqf9H4&list=PL_2OwBBRw9hDKSZvusG6aBFh6bx32E9i5
-have texture as color and opacity to be sent in for plane shader for where the particles come out at the bottom -- OR -- have it as the plane where once the particles cross through it --> go all crazy instead of in the plane music lines
-^^ from this following color scheme of starting at purple and that blue --> once across  the purple going to that blue to and that blue to yellow/limegreen? 
--- to do this maybe have the third component of the color not used to be 0 or 1 for picking what color it will switch to and just grab from a vec2 in the gpu
-
-OR MAYBE ADD IN A FIREBALL GIF VISUALIZER??
-
-PARTICLES: tune / piano style based on keys
-BACKGROUND COLORING EFFECT: the beat itself of the music
-
-small balls each in a row --> once break through particle plane they explode into at least 5 smaller ball particles --> when outside particular spherical area [OR AFTER A PARTICULAR AMOUNT OF TIME IN EXISTANCE] -- also size of objects after hitting plane decreases based time of existance --> delete and bring back to orig so maintain total num of particles just with pos and seen/not
-
-chromeexperiments --> CHECK OUT FOR WORK
-
-MIDI FILE TYPE
-
-MOUSE MANIPULATION WHEN CLICKING
-BARS ALWAYS MADE OF PARTICLES -  amount of influence they get by noise field --> increases dep on height
-
-TRUNG & NOP
+	* display time in secs and in proper minutes per the amount remaining in the song
+  * readjust bin allocation for which bits being used from the wave file data
+  * set up restart button for the music
+  * add color val based on being specific amounts above the particle show up threshold
+  * add actual music interpretation of the wave data
+  * allow for loading of different music [used large variation in song type to demonstrate how my visualizer performs for each kind]
+  * noise affecting the points more by distance
+  * change the music selection so done in a drop down menu and not a slider
+  * set up gui element for which song is currently playing
