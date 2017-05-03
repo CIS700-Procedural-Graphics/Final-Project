@@ -13,8 +13,16 @@ import {generateBass,
 	 	fillEmpty} from './music/bass.js'
 import generateHarmony from './music/harmony.js'
 
+var musicSettings = musicSettingsB;
+
+var musicSettingsB = {
+	volume: [0.6, 0.4, 0.3],
+	mEnvelope: [0.5, 0.5, 0.3, 1.0],
+	hEnvelope: [0.5, 0.5, 0.3, 1.0],
+}
 
 export default class MusicBox {
+
 	constructor() {
 		this._init();
 	}
@@ -22,7 +30,7 @@ export default class MusicBox {
 	// Private functions
 	_init() {
 		this.instruments = [null,null,null];
-		this.noise = [0.6, 0.8, 0.3];
+		this.noise = [0.6, 0.4, 0.3];
 		this.delay = 3;
 		this.delayTimer = null;
 	}
@@ -30,7 +38,6 @@ export default class MusicBox {
 	_setInstrument( instrumentName, ac, type, envelope = [0, 0.5, 0, 0.2] ) {
 		var instrument = Soundfont.instrument(ac, instrumentName, { soundfont: 'MusyngKite',
 																	gain: 1,
-																	adsr: [0, 0.3, 0.6, 1.0] });
 																	adsr: envelope }); // time_to_high, dur_of_high, time_of_sustain, time_to_die
 		var detailedInstrument = {
 			'instrument': instrument,
@@ -138,13 +145,13 @@ export default class MusicBox {
 
 	// Public functions
 	setMelodicInstrument( instrumentName, ac ) {
-		this._setInstrument( instrumentName, ac, 0, [0.7, 0.5, 0.3, 1.0] );
-		this.instruments[0].noteLength = 1/4;
+		this._setInstrument( instrumentName, ac, 0, [0.5, 0.5, 0.3, 1.0] );
+		this.instruments[0].noteLength = 1/8;
 	}
 
 	setHarmonicInstrument( instrumentName, ac ) {
-		this._setInstrument( instrumentName, ac, 1, [0.1, 0.7, 0.3, 0.1] );
-		this.instruments[1].noteLength = 1/4;
+		this._setInstrument( instrumentName, ac, 1, [0.3, 0.4, 1.0, 0.5] );
+		this.instruments[1].noteLength = 1/8;
 	}
 
 	setBassInstrument( instrumentName, ac ) {
