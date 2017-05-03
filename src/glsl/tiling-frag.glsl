@@ -1,4 +1,7 @@
 //#extension GL_OES_standard_derivatives : enable
+// #version 300 es
+
+//taken from http://iquilezles.org/www/articles/texturerepetition/texturerepetition.htm
 
 uniform sampler2D texture;
 uniform vec2 resolution;
@@ -41,8 +44,10 @@ vec3 textureNoTile(sampler2D samp, vec2 uv)
 
         vec2 temp = vec2(uv.x + o.z, uv.y + o.w);
         //vec4 texgrad = textureGrad( samp, temp, ddx, ddy );
+        //vec4 texgrad = textureLod(samp, temp, ddx.x);
         //vec4 texgrad = texture( samp, temp, 0.1);   //WHY DOESNT THIS WORK?!?!?!?!?!?
-        vec4 texgrad = vec4(temp.x, ddx.x, temp.y, ddy.y);
+        //vec4 texgrad = vec4(temp.x, ddx.x, temp.y, ddy.y);
+        vec4 texgrad = texture2D(samp, temp);
         vec3 c = vec3(texgrad.x, texgrad.y, texgrad.z);
 
         va += w * c;
@@ -68,6 +73,6 @@ void main() {
   //gl_FragColor = vec4(0.0, 0.0, 0.0, 1.0) + grass;
 
   //vec2 uv = (gl_FragCoord.xy / resolution.x);
-  vec3 col = textureNoTile( texture, 8.0 * vUv).zyx;
+  vec3 col = textureNoTile( texture, 15.0 * vUv).zyx;  //8.0
 	gl_FragColor = vec4( col, 1.0 );
 }

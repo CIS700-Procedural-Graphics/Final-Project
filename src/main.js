@@ -135,9 +135,27 @@ function onLoad(framework) {
   var stonewall_obj = './geometry/stonewall.obj';
   setupObj(App.scene, stonewall_obj, 3);
 
+  var tower_obj = './geometry/tower.obj';
+  setupObj(App.scene, tower_obj, 4);
+
+  var house_obj = './geometry/house_mod.obj';
+  setupObj(App.scene, house_obj, 5);
+
+  var tavern_obj = './geometry/Tavern.obj';
+  setupObj(App.scene, tavern_obj, 6);
+
+  var boat_obj = './geometry/boat.obj';
+  setupObj(App.scene, boat_obj, 7);
+
   setupRocks(App.scene);
 
-  // setupFerns(App.scene);
+  setupTrees(App.scene);
+
+  setupDeadTrees(App.scene);
+
+  setupDryGrass(App.scene);
+
+  //setupBirchTrees(App.scene);
 
 }//end onload
 
@@ -297,13 +315,7 @@ function setupWater(scene, renderer, camera){
 
 // =========================================== OBJ setup ===========================================
 function setupObj(scene, file, type) {
-  var objLoaded = new Promise((resolve, reject) => {
-      (new THREE.OBJLoader()).load(require(file), function(obj) {
-          var geo = obj.children[0].geometry;
-          geo.computeBoundingSphere();
-          resolve(geo);
-      });
-  })
+  var objLoaded = loadObj(file);
 
   var mesh;
   var material;
@@ -358,6 +370,42 @@ function setupObj(scene, file, type) {
     } );
   }
 
+  if(type == 4) //tower
+  {
+    var texMap = texLoader.load('./src/assets/tower/BrickGroutless0025_3_S.jpg');
+    material = new THREE.MeshPhongMaterial({
+      map : texMap
+    } );
+  }
+
+  if(type == 5) //house
+  {
+    material = setupTexture('./assets/BrickMedievalBlocks.bmp', './glsl/terrain2-vert.glsl', './glsl/terrain2-frag.glsl');
+  }
+
+  if(type == 6) //tavern
+  {
+    var texMap = texLoader.load('./src/assets/tavern/Texture_6.png');
+    var normMap = texLoader.load('./src/assets/tavern/Texture_6_NRM.png');
+    var aoMap = texLoader.load('./src/assets/tavern/Texture_6_OCC.png');
+
+    material = new THREE.MeshPhongMaterial({
+      map : texMap,
+      normalMap : normMap,
+      aoMap: aoMap
+    } );
+  }
+
+  if(type == 7) //boat
+  {
+    var texMap = texLoader.load('./src/assets/tower/WoodPlanksDirty0008_L.jpg');
+
+    material = new THREE.MeshPhongMaterial({
+      map : texMap,
+      side: THREE.DoubleSide
+    } );
+  }
+
   objLoaded.then(function(geo) {
       mesh = new THREE.Mesh(geo, material);
 
@@ -368,6 +416,7 @@ function setupObj(scene, file, type) {
         mesh.translateX(5);
         mesh.translateY(-20);
         mesh.scale.set(0.5, 0.5, 0.5);
+        scene.add(mesh);
       }
 
       if(type == 2) //lighthouse
@@ -377,17 +426,57 @@ function setupObj(scene, file, type) {
         mesh.translateY(15);
         mesh.rotateY(-Math.PI);
         mesh.scale.set(0.5, 0.5, 0.5);
+        //scene.add(mesh);
       }
 
-      if(type == 3) //stone wall
+      // if(type == 3) //stone wall
+      // {
+      //   mesh.rotateY(-Math.PI / 3.0);
+      //   mesh.translateX(-1);
+      //   mesh.translateZ(-12);
+      //   //mesh.translateY(-4);
+      // }
+
+      if(type == 4) //tower
       {
-        mesh.rotateY(-Math.PI / 3.0);
-        mesh.translateX(-3);
-        mesh.translateZ(-12);
-        //mesh.translateY(-4);
+        mesh.rotateY(-Math.PI / 2.0);
+        mesh.translateZ(-100);
+        mesh.translateX(-20);
+        mesh.translateY(15);
+        mesh.scale.set(8.0, 8.0, 8.0);
+        scene.add(mesh);
       }
 
-      scene.add(mesh);
+      // if(type == 5) //house
+      // {
+      //   mesh.translateZ(130);
+      //   mesh.translateX(60);
+      //   mesh.translateY(17);
+      //   mesh.scale.set(5.0, 5.0, 5.0);
+      //   scene.add(mesh);
+      // }
+
+      if(type == 6) //tavern
+      {
+        mesh.rotateY((2.0 * Math.PI / 3.0));
+        mesh.translateZ(-10);
+        mesh.translateX(-160);
+        mesh.translateY(17);
+        mesh.scale.set(3.0, 3.0, 3.0);
+        scene.add(mesh);
+      }
+
+      if(type == 7) //boat
+      {
+        mesh.rotateY(-Math.PI/4.0);
+        mesh.translateZ(45);
+        mesh.translateX(20);
+        mesh.translateY(2.5);
+        mesh.scale.set(3.0, 3.0, 3.0);
+        scene.add(mesh);
+      }
+
+
   });
 
   objLoaded.then(function(geo) {
@@ -396,7 +485,7 @@ function setupObj(scene, file, type) {
       if(type == 3) //stone wall
       {
         mesh.rotateY(-Math.PI / 2.5);
-        mesh.translateX(3);
+        mesh.translateX(5);
         mesh.translateZ(-12);
         //mesh.translateY(-4);
         scene.add(mesh);
@@ -409,7 +498,7 @@ function setupObj(scene, file, type) {
       if(type == 3) //stone wall
       {
         mesh.rotateY(-Math.PI / 2);
-        mesh.translateX(10);
+        mesh.translateX(12);
         mesh.translateZ(-14);
         //mesh.translateY(-4);
         scene.add(mesh);
@@ -420,13 +509,7 @@ function setupObj(scene, file, type) {
 
 function setupRocks(scene)
 {
-  var objLoaded = new Promise((resolve, reject) => {
-      (new THREE.OBJLoader()).load(require('./geometry/Rock_6.obj'), function(obj) {
-          var geo = obj.children[0].geometry;
-          geo.computeBoundingSphere();
-          resolve(geo);
-      });
-  })
+  var objLoaded = loadObj('./geometry/Rock_6.obj');
 
   var mesh;
   var material;
@@ -445,8 +528,8 @@ function setupRocks(scene)
   objLoaded.then(function(geo) {
       mesh = new THREE.Mesh(geo, material);
       mesh.translateY(1);
-      mesh.translateX(10);
-      mesh.translateZ(15);
+      mesh.translateX(7);
+      mesh.translateZ(20);
       mesh.scale.set(2.0, 2.0, 2.0);
       scene.add(mesh);
   });
@@ -454,74 +537,231 @@ function setupRocks(scene)
   objLoaded.then(function(geo) {
       mesh = new THREE.Mesh(geo, material);
       mesh.translateY(1);
-      mesh.translateX(5);
+      mesh.translateX(14);
       mesh.translateZ(20);
       mesh.scale.set(4.0, 4.0, 4.0);
       scene.add(mesh);
   });
 
-  // objLoaded.then(function(geo) {
-  //     mesh = new THREE.Mesh(geo, material);
-  //     mesh.translateY(1);
-  //     mesh.translateX(10);
-  //     mesh.translateZ(-7);
-  //     scene.add(mesh);
-  // });
-  //
-  // objLoaded.then(function(geo) {
-  //     mesh = new THREE.Mesh(geo, material);
-  //     mesh.translateY(1);
-  //     mesh.translateX(10);
-  //     mesh.translateZ(-5);
-  //     scene.add(mesh);
-  // });
-  //
-  // objLoaded.then(function(geo) {
-  //     mesh = new THREE.Mesh(geo, material);
-  //     mesh.translateY(1);
-  //     mesh.translateX(10);
-  //     mesh.translateZ(-3);
-  //     scene.add(mesh);
-  // });
-
-
-
+  objLoaded.then(function(geo) {
+      mesh = new THREE.Mesh(geo, material);
+      mesh.translateY(1);
+      mesh.translateX(12);
+      mesh.translateZ(-7);
+      mesh.scale.set(4.0, 4.0, 4.0);
+      scene.add(mesh);
+  });
 }//end setuprocks function
 
 
-function setupFerns(scene)
+function setupTrees(scene)
 {
-  var objLoaded = new Promise((resolve, reject) => {
-      (new THREE.OBJLoader()).load(require('./geometry/Ferns.obj'), function(obj) {
-          var geo = obj.children[0].geometry;
-          geo.computeBoundingSphere();
-          resolve(geo);
-      });
-  })
+  var objLoaded = loadObj('./geometry/Pine_4m.obj');
 
   var mesh;
   var material;
-  var texLoader = new  THREE.TextureLoader();
 
-  var texMap = texLoader.load('./src/assets/fern/Branches0030_1_M.png');
-  var normMap = texLoader.load('./src/assets/fern/Branches0030_1_M_NRM.jpg');
+  var texLoader = new  THREE.TextureLoader();
+  var texMap = texLoader.load('./src/assets/pine/pine-leaf-diff.png');
+  var normMap = texLoader.load('./src/assets/pine/pine-leaf-norm.png');
+
+  material = new THREE.MeshPhongMaterial({
+    map : texMap,
+    normalMap : normMap
+  } );
+
+  //screen right
+  objLoaded.then(function(geo) {
+      mesh = new THREE.Mesh(geo, material);
+      mesh.translateX(-15);
+      mesh.translateZ(120);
+      mesh.scale.set(0.05, 0.05, 0.05);
+      scene.add(mesh);
+  });
+  //screen right
+  objLoaded.then(function(geo) {
+      mesh = new THREE.Mesh(geo, material);
+      mesh.translateX(-25);
+      mesh.translateZ(150);
+      mesh.scale.set(0.07, 0.07, 0.07);
+      scene.add(mesh);
+  });
+
+  //behind the house left
+  objLoaded.then(function(geo) {
+      mesh = new THREE.Mesh(geo, material);
+      mesh.translateX(75);
+      mesh.translateZ(120);
+      mesh.scale.set(0.1, 0.1, 0.1);
+      scene.add(mesh);
+  });
+  //behind the house left
+  objLoaded.then(function(geo) {
+      mesh = new THREE.Mesh(geo, material);
+      mesh.translateX(85);
+      mesh.translateZ(125);
+      mesh.scale.set(0.1, 0.1, 0.1);
+      scene.add(mesh);
+  });
+  //behind house right
+  objLoaded.then(function(geo) {
+      mesh = new THREE.Mesh(geo, material);
+      mesh.translateX(55);
+      mesh.translateZ(160);
+      mesh.scale.set(0.1, 0.1, 0.1);
+      scene.add(mesh);
+  });
+
+}//end setup trees function
+
+
+function setupDeadTrees(scene)
+{
+  var objLoaded = loadObj('./geometry/Dead_trees.obj');
+
+  var mesh;
+  var material;
+  var texLoader = new THREE.TextureLoader();
+  var texMap = texLoader.load('./src/geometry/Dead_trees.mtl');
 
   material = new THREE.MeshPhongMaterial({
     map : texMap
-    //normalMap : normMap
   } );
 
   objLoaded.then(function(geo) {
       mesh = new THREE.Mesh(geo, material);
+      mesh.translateX(25);
+      mesh.translateZ(100);
       mesh.translateY(10);
-      //mesh.translateX(10);
-      //mesh.translateZ(15);
-      mesh.scale.set(2.0, 2.0, 2.0);
+      mesh.scale.set(1.0, 1.0, 1.0);
+      scene.add(mesh);
+  });
+
+  objLoaded.then(function(geo) {
+      mesh = new THREE.Mesh(geo, material);
+      mesh.translateX(20);
+      mesh.translateZ(100);
+      mesh.translateY(10);
+      mesh.scale.set(1.5, 1.5, 1.5);
+      scene.add(mesh);
+  });
+
+  objLoaded.then(function(geo) {
+      mesh = new THREE.Mesh(geo, material);
+      mesh.translateX(10);
+      mesh.translateZ(27);
+      mesh.translateY(-10);
+      mesh.scale.set(1.0, 1.0, 1.0);
+      scene.add(mesh);
+  });
+  objLoaded.then(function(geo) {
+      mesh = new THREE.Mesh(geo, material);
+      mesh.translateX(5);
+      mesh.translateZ(35);
+      mesh.translateY(-10);
+      mesh.scale.set(1.0, 1.0, 1.0);
+      scene.add(mesh);
+  });
+
+  objLoaded.then(function(geo) {
+      mesh = new THREE.Mesh(geo, material);
+      mesh.translateX(5);
+      mesh.translateZ(10);
+      mesh.translateY(-10);
+      mesh.scale.set(1.0, 1.0, 1.0);
+      scene.add(mesh);
+  });
+
+}//end setup trees function
+
+function setupDryGrass(scene)
+{
+  var objLoaded = loadObj('./geometry/grassLong/gras-long-dry.obj');
+
+  var mesh;
+  var material;
+  var texLoader = new THREE.TextureLoader();
+  var texMap = texLoader.load('./src/assets/grassLong/gras-long-dry-diff.png');//'assets/grassLong/gras-long-diff.png'
+
+  material = new THREE.MeshPhongMaterial({
+    map : texMap
+  } );
+
+  objLoaded.then(function(geo) {
+      mesh = new THREE.Mesh(geo, material);
+      mesh.translateX(10);
+      mesh.translateZ(15);
+      mesh.scale.set(0.01, 0.01, 0.01);
+      scene.add(mesh);
+  });
+
+  objLoaded.then(function(geo) {
+      mesh = new THREE.Mesh(geo, material);
+      mesh.translateX(5);
+      mesh.translateZ(23);
+      mesh.scale.set(0.01, 0.01, 0.01);
+      scene.add(mesh);
+  });
+
+  objLoaded.then(function(geo) {
+      mesh = new THREE.Mesh(geo, material);
+      mesh.translateX(5);
+      mesh.translateZ(-5);
+      mesh.scale.set(0.01, 0.01, 0.01);
       scene.add(mesh);
   });
 
 
-}//end setup ferns function
+
+}//end setup trees function
+
+
+// function setupBirchTrees(scene)
+// {
+//   var objLoaded = new Promise((resolve, reject) => {
+//       (new THREE.OBJLoader()).load(require('./geometry/birch/birch_13m.obj'), function(obj) {
+//           var geo = obj.children[0].geometry;
+//           geo.computeBoundingSphere();
+//           resolve(geo);
+//       });
+//   })
+//
+//   var mesh;
+//   var material;
+//   var texLoader = new THREE.TextureLoader();
+//   var texMap = texLoader.load('./src/assets/birch/birch-leaf-diff.png');
+//   var normMap = texLoader.load('./src/assets/birch/birch-leaf-diff-norm.png');
+//
+//   material = new THREE.MeshPhongMaterial({
+//     map : texMap,
+//     normalMap : normMap
+//   } );
+//
+//   //material = new THREE.MeshLambertMaterial({ color: 0xeeeeee });
+//
+//   objLoaded.then(function(geo) {
+//       mesh = new THREE.Mesh(geo, material);
+//       //mesh.translateX(5);
+//       //mesh.translateZ(10);
+//       mesh.translateY(-5);
+//       mesh.scale.set(0.005, 0.005, 0.005);
+//       scene.add(mesh);
+//   });
+//
+// }//end setup trees function
+
+function loadObj(file)
+{
+  var objLoaded = new Promise((resolve, reject) => {
+      (new THREE.OBJLoader()).load(require(file), function(obj) {
+          var geo = obj.children[0].geometry;
+          geo.computeBoundingSphere();
+          resolve(geo);
+      });
+  });
+
+  return objLoaded;
+}
 
 
 // =========================================== Terrain setup ===========================================
