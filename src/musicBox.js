@@ -6,6 +6,7 @@ import euclid from './utils/euclid.js'
 import {patternedMelody,
 		createMainTheme,
 		createMelody} from './music/musicMotifs.js'
+
 import generateMelody from './music/melody.js'
 import generateBass from './music/bass.js'
 import generateHarmony from './music/harmony.js'
@@ -19,15 +20,15 @@ export default class MusicBox {
 	// Private functions
 	_init() {
 		this.instruments = [null,null,null];
-		this.noise = [0.5, 0.25, 0.25];
+		this.noise = [1, 0.35, 0.75];
 	}
 
 	_setInstrument( instrumentName, ac, type ) {
-		var instrument = Soundfont.instrument(ac, instrumentName, { soundfont: 'MusyngKite',
+		var instrument = Soundfont.instrument(ac, instrumentName, { soundfont: 'fuildR3',
 																	gain: 1,
 																	adsr: [0, 0, 0, 0] });
 		var detailedInstrument = {
-			'instrument':  instrument,
+			'instrument': instrument,
 			'ac' 		: ac,
 			'noteLength': 1/8,
 			'noteCount' : [],
@@ -67,7 +68,7 @@ export default class MusicBox {
 					instr.start(instrument.notes[index][instrument.noteCount[index]].note, 
 								instrument.ac.currentTime, 
 								{gain: this.noise[type]})
-						 .stop(instrument.notes[index][instrument.noteCount[index]].time * instrument.noteLength);
+						 .stop(instrument.ac.currentTime + instrument.notes[index][instrument.noteCount[index]].time * instrument.noteLength);
 
 					if (index == 0) { callback(); }
 					instrument.played[index] = true;
@@ -93,11 +94,12 @@ export default class MusicBox {
 					instrument.played[i] = false;
 					instrument.instrument.then((function(index, instr) {
 
-						if (instrument.notes[index][instrument.noteCount[index]].note > 0) {
+					if (instrument.notes[index][instrument.noteCount[index]].note > 0) {
 							instr.start(instrument.notes[index][instrument.noteCount[index]].note, 
 										instrument.ac.currentTime, 
 										{gain: this.noise[type],
-										 adsr: [0,0,0,0]});
+										 adsr: [0,0,0,0]});//[0.3,0.3,0.8,1]
+								 //.stop(instrument.ac.currentTime + instrument.notes[index][instrument.noteCount[index]].time * instrument.noteLength);
 							if (index == 0) { callback(); }
 						}
 						instrument.played[index] = true;
@@ -121,6 +123,7 @@ export default class MusicBox {
 	// Public functions
 	setMelodicInstrument( instrumentName, ac ) {
 		this._setInstrument( instrumentName, ac, 0 );
+		this.instruments[0].noteLength = 1/8;
 	}
 
 	setHarmonicInstrument( instrumentName, ac ) {
@@ -160,7 +163,7 @@ export default class MusicBox {
 	// Functions for the melody
 	createMelodyLine() {
 		this._clearGeneratedMusic( 0 );
-		this.instruments[0].notes.push(generateMelody( 'C4', 1 ));
+		this.instruments[0].notes.push(generateMelody( 'C3', 1 ));
 	}
 
 	playMelody( time, callback ) {
