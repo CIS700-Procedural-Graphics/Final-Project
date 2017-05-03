@@ -36,6 +36,11 @@ I intend to achieve a beautiful looking pond scene which is also animated and in
 - Random/Noise generation
 - Orbit Camera
 
+### Final Presentation
+- Generated a superformula flower with interactive parameters.
+  - See [this reference](http://paulbourke.net/geometry/supershape/) to understand how changing the parameters will affect the shape.
+- Added audio track
+
 ### Milestone 2
 ![alt text][m2_rockformation]
 ![alt test][m2_skybox]
