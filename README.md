@@ -11,7 +11,7 @@ Turn volume on and possibly wear headphones to hear the sound.
 
 ## About the Look of the Project
 
-This project interprets wave data for four particular songs and emits particles from six balls that each correspond to a particular set of binned bits. If the value of the bits for a bin are above a particular threshold then that bin's ball will emit a particle. The coloring of the particle then depends on how much the actual value is greater than the tested threshold value. The colors begin at white then as the difference between the two values becomes larger the colors shift to yellow, orange, red, and finally pink. As the particles are emitted, there is a bit of noise affecting their movement as they shift through space that increases the further the particles are from the center ball. A particle dies and is removed once it is too far from that same center ball. As explained in the 'The Audio' section, this visualizer works well for vibrant songs that have varying output in terms of strong tones but an constantly changing distribution regarding which tones have more importance during particular moments of the song.
+This project interprets the wave file data of four particular songs and emits particles from six balls that each correspond to a particular set of binned bits of the wave file data. If the value of the bits for a bin are above a particular threshold then that bin's ball will emit a particle. The coloring of the particle then depends on how much the actual value is greater than the tested threshold value. The colors begin at white then as the difference between the two values becomes larger the colors shift to yellow, orange, red, and finally pink. As the particles are emitted, there is a bit of noise affecting their movement as they shift through space that increases the further the particles are from the center ball. A particle dies and is removed once it is too far from that same center ball. As explained in the 'The Audio' section, this visualizer works well for vibrant songs that have varying output in terms of strong tones but are constantly changing distribution in regards to which tones have more importance during particular moments of the song.
 
 ## The Audio
 
@@ -50,19 +50,19 @@ Project: Music Visualizer
 Timeline for Workflow
 ------------
 - #### Milestone 1
-  • positioning of spots where balls shoot out
-  • gui to pick which music to play [for now just have it as a pause and play button for playing one set of music]
-  • have all the shader materials set up for everything but the balls [balls will have gpu manipulations based on time so for now leave as default]
-  • add box to pause and play
-  • add box to maintain repeat for song or not
-  • make so the loaded song plays out the speakers with the right timing [ie using same timer as gl]
+  * positioning of spots where balls shoot out
+  * gui to pick which music to play [for now just have it as a pause and play button for playing one set of music]
+  * have all the shader materials set up for everything but the balls [balls will have gpu manipulations based on time so for now leave as default]
+  * add box to pause and play
+  * add box to maintain repeat for song or not
+  * make so the loaded song plays out the speakers with the right timing [ie using same timer as gl]
 
 - #### Milestone 2
-  • set up using of music data for particles being shot out from particular location - by indexing from 0 - 7 [later to be implemented that the frequency will convert to fill the 0-7 indexing bins once i have the proper way to interpret the wave file data]
-  • add noise to the movement of the balls
-  • particles disappear when theyre farther than a specific distance from the center of the region
-  • set up Particles manipulation class and proper connections between framework and data held within the class so can easily create / add / manipulate all at once
-  • rebuilt skybox with proper coloring
+  * set up using of music data for particles being shot out from particular location - by indexing from 0 - 7 [later to be implemented that the frequency will convert to fill the 0-7 indexing bins once i have the proper way to interpret the wave file data]
+  * add noise to the movement of the balls
+  * particles disappear when theyre farther than a specific distance from the center of the region
+  * set up Particles manipulation class and proper connections between framework and data held within the class so can easily create / add / manipulate all at once
+  * rebuilt skybox with proper coloring
 
 - #### Milestone 3 [ready for submission]
 	* display time in secs and in proper minutes per the amount remaining in the song
