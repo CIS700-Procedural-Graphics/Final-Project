@@ -1,8 +1,9 @@
 uniform mat4 textureMatrix;
+uniform vec2 splashes[ 5 ];
+uniform float time;
+
 varying vec4 mirrorCoord;
 varying vec4 fragCoord;
-uniform vec2 splashes[ 5 ];
-
 
 void main() {
 
@@ -12,5 +13,4 @@ void main() {
 	fragCoord = worldPosition;
 
 	gl_Position = projectionMatrix * mvPosition;
-
 }

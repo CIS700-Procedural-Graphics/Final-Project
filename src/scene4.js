@@ -84,7 +84,8 @@ function initScene(framework, visualConfig) {
       lightning: [],
       rain: [],
       display: 1.0,
-      vdisplay: 0.0
+      vdisplay: 0.0,
+      globalTime: 0
     };
     visualConfig.sceneReady = true;
 }
@@ -101,6 +102,8 @@ function updateScene(framework, visualConfig, delta) {
   // camera.lookAt(new THREE.Vector3(0,10,10));
 
   if (visualConfig.sceneReady) {
+    visualConfig.sceneProps.globalTime += delta;
+
     visualConfig.sceneProps.display += delta * visualConfig.sceneProps.vdisplay;
     visualConfig.sceneProps.display = Math.max(0, Math.min(1, visualConfig.sceneProps.display));
     if (visualConfig.sceneProps.display === 1 || visualConfig.sceneProps.display === 0) {
@@ -240,6 +243,7 @@ function updateScene(framework, visualConfig, delta) {
     // lakeMat.uniforms.time.value += delta;
 
     groundMirror.updateSplash(splashes);
+    groundMirror.updateTime(visualConfig.sceneProps.globalTime);
     groundMirror.render();
 
     // renderer.render( scene, lakeCamera, renderTarget, true );

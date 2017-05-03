@@ -7,6 +7,7 @@ const THREE = require('three'); // older modules are imported like this. You sho
 THREE.ShaderLib[ 'mirror' ] = {
 
 	uniforms: {
+		"time": { value: 0 },
 		"splashes": { type: "v2v", value: [ new THREE.Vector2(-9999,-9999), new THREE.Vector2(-9999,-9999), new THREE.Vector2(-9999,-9999), new THREE.Vector2(-9999,-9999), new THREE.Vector2(-9999,-9999) ] },
 		"mirrorColor": { value: new THREE.Color( 0xff0000 ) },
 		"mirrorSampler": { value: null },
@@ -124,6 +125,11 @@ THREE.Mirror.prototype.updateSplash = function ( splashes ) {
 
 };
 
+THREE.Mirror.prototype.updateTime = function ( time ) {
+
+	this.material.uniforms.time.value = time;
+
+};
 
 THREE.Mirror.prototype.renderWithMirror = function ( otherMirror ) {
 

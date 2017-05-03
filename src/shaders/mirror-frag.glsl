@@ -1,6 +1,7 @@
 uniform vec3 mirrorColor;
 uniform sampler2D mirrorSampler;
 uniform vec2 splashes[ 5 ];
+uniform float time;
 
 varying vec4 fragCoord;
 varying vec4 mirrorCoord;
@@ -10,6 +11,7 @@ float blendOverlay(float base, float blend) {
 }
 
 void main() {
+
 
   vec4 color = texture2DProj(mirrorSampler, mirrorCoord);
   color = vec4(blendOverlay(mirrorColor.r, color.r), blendOverlay(mirrorColor.g, color.g), blendOverlay(mirrorColor.b, color.b), 1.0);

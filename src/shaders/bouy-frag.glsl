@@ -15,6 +15,7 @@ void main() {
   float diff = max(dot(vNormal, lightDir), 0.0);
   vec3 diffColor = diff * lightColor;
        diffColor += color.rgb;
+       //diffColor += normalize(vNormal);
        diffColor /= vec3(2.0,2.0,2.0);
 
 
