@@ -21,7 +21,7 @@ function initScene(framework, visualConfig) {
     // camera.up.set(new THREE.Vector3(0,1,0));
     camera.position.set(visualConfig.camera.pos.x, visualConfig.camera.pos.y, visualConfig.camera.pos.z);
     camera.lookAt(new THREE.Vector3(0, 20, 10));
-    scene.background = new THREE.Color( 0x336688 );
+    scene.background = new THREE.Color( 0x000000 );
 
     lakeCamera = camera.clone();
     lakeCamera.position.set(0,0,0);
@@ -31,7 +31,7 @@ function initScene(framework, visualConfig) {
     var texture = THREE.ImageUtils.loadTexture('./water.jpg'); // water texture from wind waker
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
-    var lakeGeo = new THREE.PlaneGeometry( 500,250,200,100 );
+    var lakeGeo = new THREE.PlaneGeometry( 1000,1000,10,20 );
     lakeMat = new THREE.ShaderMaterial({
       uniforms: {
         "time": { value: 0 },
@@ -46,12 +46,12 @@ function initScene(framework, visualConfig) {
       fragmentShader: require('./shaders/terrain-frag.glsl')
     });
     var plane = new THREE.Mesh( lakeGeo, lakeMat/*new THREE.MeshBasicMaterial( { map: renderTarget } )*/ );
-    plane.position.set(0,0,100);
+    plane.position.set(0,250,500);
     plane.rotateX(Math.PI/2);
     // scene.add(plane);
 
-    groundMirror = new THREE.Mirror( renderer, camera, { clipBias: 0.003, textureWidth: window.width, textureHeight: window.height, color: 0x777777 } );
-    var planeGeo = new THREE.PlaneGeometry( 500,250,200,100 );
+    groundMirror = new THREE.Mirror( renderer, camera, { clipBias: 0.003, textureWidth: window.width, textureHeight: window.height, color: 0x8c8f9c } );
+    var planeGeo = new THREE.PlaneGeometry( 500,500,100,100 );
     var mirrorMesh = new THREE.Mesh( planeGeo, groundMirror.material );
 		mirrorMesh.add( groundMirror );
 		mirrorMesh.rotateX( - Math.PI / 2 );
@@ -65,12 +65,15 @@ function initScene(framework, visualConfig) {
     skyboxMesh.position.set(0,0,0);
     scene.add(skyboxMesh);
 
-    scene.fog=new THREE.FogExp2( 0x663333, 0.015 );
+    var light = new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 );
+    scene.add( light );
 
     visualConfig.sceneProps = {
       bouys: [],
       particles: [],
-      lightning: []
+      lightning: [],
+      rain: [],
+      display: 1.0
     };
     visualConfig.sceneReady = true;
 }
@@ -87,7 +90,8 @@ function updateScene(framework, visualConfig, delta) {
   // camera.lookAt(new THREE.Vector3(0,10,10));
 
   if (visualConfig.sceneReady) {
-
+    var display = visualConfig.sceneProps.display;
+    var idisplay = 1-display;
 
     // Lightning
     var newLightning = [];
@@ -112,6 +116,29 @@ function updateScene(framework, visualConfig, delta) {
     }
     visualConfig.sceneProps.lightning = newLightning;
 
+    // Rain
+    var newRain = [];
+    var oldRain = [];
+    for (var i = 0; i < visualConfig.sceneProps.rain.length; i++) {
+      visualConfig.sceneProps.rain[i].update(delta);
+
+      if (!visualConfig.sceneProps.rain[i].shouldDelete) {
+        newRain.push(visualConfig.sceneProps.rain[i]);
+      } else {
+        oldRain.push(visualConfig.sceneProps.rain[i]);
+      }
+    }
+    for (var i = 0; i < oldRain.length; i++) {
+      var selectedObject = scene.getObjectByName(oldRain[i].name);
+      scene.remove( selectedObject );
+    }
+    visualConfig.sceneProps.rain = newRain;
+
+    if (visualConfig.sceneProps.rain.length < 50) {
+      visualConfig.sceneProps.rain.push(genRain(scene));
+      visualConfig.sceneProps.rain.push(genRain(scene));
+    }
+
     var newBouys = [];
     var oldBouys = [];
     for (var i = 0; i < visualConfig.sceneProps.bouys.length; i++) {
@@ -119,7 +146,7 @@ function updateScene(framework, visualConfig, delta) {
       var name = bouy.name;
       var b = scene.getObjectByName(name);
     	if (b !== undefined) {
-    		b.position.set(bouy.pos.x,bouy.pos.y,bouy.pos.z);
+    		b.position.set(bouy.pos.x, display * bouy.pos.y + idisplay * -20,bouy.pos.z);
     	}
       bouy.update(delta);
 
@@ -142,7 +169,7 @@ function updateScene(framework, visualConfig, delta) {
       var name = particle.name;
       var p = scene.getObjectByName(name);
       if (p !== undefined) {
-        p.position.set(particle.pos.x,particle.pos.y,particle.pos.z);
+        p.position.set(particle.pos.x, display * particle.pos.y + idisplay * -10,particle.pos.z);
       }
       particle.update(delta);
 
@@ -258,8 +285,60 @@ function genLightning(scene) {
   };
 }
 
+function genRain(scene) {
+  var pos = new THREE.Vector3( (Math.random()-0.5) * 500, 200, Math.random() * 10 + 100);
+  var meshLine = new MeshLine.MeshLine();
+  var meshLineGeo = new THREE.Geometry();
+  var length = Math.floor(Math.random() * 5 + 2);
+	for (var i = 0; i < length; i++) {
+		meshLineGeo.vertices.push(pos);
+	}
+  meshLine.setGeometry( meshLineGeo,  function( p ) { return p; }  );
+
+  var meshLineMat = new MeshLine.MeshLineMaterial( {
+						color: new THREE.Color( "rgb(188, 203, 226)" ),
+						opacity: 1,
+						resolution: new THREE.Vector2( window.innerWidth, window.innerHeight ),
+						sizeAttenuation: 1,
+						lineWidth: 0.25,
+						near: 1,
+						far: 100000,
+						depthTest: true,
+						blending: THREE.AdditiveBlending,
+						transparent: false,
+						side: THREE.DoubleSide
+					});
+  var meshLineMesh = new THREE.Mesh( meshLine.geometry, meshLineMat ); // this syntax could definitely be improved!
+  meshLineMesh.name = "rain"+Math.random();
+  meshLineMesh.frustumCulled = false;
+
+  scene.add(meshLineMesh);
+
+  return {
+    meshLine: meshLine,
+    name: meshLineMesh.name,
+    pos: pos,
+    vel: new THREE.Vector3( 10 * Math.random(),-100 * (Math.random() + 0.5),10 * Math.random()  ),
+    acc: new THREE.Vector3( 0,0,0 ),
+    lastChange: 0,
+    shouldDelete: false,
+    update(delta) {
+
+
+      this.vel = this.vel.clone().add(this.acc.clone().multiplyScalar(delta));
+      this.pos = this.pos.clone().add(this.vel.clone().multiplyScalar(delta));
+
+      this.meshLine.advance(this.pos);
+
+      if (this.pos.y < -100) {
+        this.shouldDelete = true;
+      }
+    }
+  };
+}
+
 function genParticle(scene) {
-  var pos = new THREE.Vector3( (Math.random()-0.5) * 100, 0, Math.random() * 200 );
+  var pos = new THREE.Vector3( (Math.random()-0.5) * 200, 0, Math.random() * 200 + 100);
   var geometry = new THREE.IcosahedronGeometry(Math.random()*5, 2);
   var mesh = new THREE.Mesh( geometry );
   mesh.name = "particle"+Math.random();
@@ -281,7 +360,8 @@ function genParticle(scene) {
 }
 
 function bassCallback(framework, visualConfig) {
-  visualConfig.sceneProps.bouys.push(genBouy(framework.scene));
+  if (Math.random() < 0.5)
+    visualConfig.sceneProps.bouys.push(genBouy(framework.scene));
 }
 
 function melodyCallback(framework, visualConfig) {
