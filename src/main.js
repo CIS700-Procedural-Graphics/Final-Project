@@ -63,7 +63,7 @@ function onLoad(framework) {
       directionalLight: 0.5
     },
     graphManager: {
-      cellType: 'square', // 'square', 'hex', 'voronoi'
+      cellType: 'square',           // 'square', 'hex', 'voronoi'
       numCells: 50,
       seedVoronoi: 1.0,
     },
@@ -74,13 +74,13 @@ function onLoad(framework) {
       elevationNoisiness: 2.0,
       moistureNoisiness: 2.0,
       erosionSteps: 20,
-      rainDistribution: 'uniform', // 'moisture-map', 'uniform',
+      rainDistribution: 'uniform',  // 'moisture-map', 'uniform',
       rainFrequency: 1.0
     },
     viewManager: {
       renderGraph: false,
-      renderColors: 'biomes', // 'elevation', 'moisture', 'biomes'
-      render3D: 'polygon', // 'polygon', 'shader', 'none'
+      renderColors: 'biomes',       // 'elevation', 'moisture', 'biomes'
+      render3D: 'polygon',          // 'polygon', 'shader', 'none'
       renderCoastline: false,
       renderPolygonVariation: true,
       seedPolygonVariation: 1.0,
