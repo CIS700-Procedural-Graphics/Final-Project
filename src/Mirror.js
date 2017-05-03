@@ -7,50 +7,15 @@ const THREE = require('three'); // older modules are imported like this. You sho
 THREE.ShaderLib[ 'mirror' ] = {
 
 	uniforms: {
+		"splashes": { type: "v2v", value: [ new THREE.Vector2(-9999,-9999), new THREE.Vector2(-9999,-9999), new THREE.Vector2(-9999,-9999), new THREE.Vector2(-9999,-9999), new THREE.Vector2(-9999,-9999) ] },
 		"mirrorColor": { value: new THREE.Color( 0xff0000 ) },
 		"mirrorSampler": { value: null },
 		"textureMatrix" : { value: new THREE.Matrix4() }
 	},
 
-	vertexShader: [
+	vertexShader: require('./shaders/mirror-vert.glsl'),
 
-		"uniform mat4 textureMatrix;",
-
-		"varying vec4 mirrorCoord;",
-
-		"void main() {",
-
-			"vec4 mvPosition = modelViewMatrix * vec4( position, 1.0 );",
-			"vec4 worldPosition = modelMatrix * vec4( position, 1.0 );",
-			"mirrorCoord = textureMatrix * worldPosition;",
-
-			"gl_Position = projectionMatrix * mvPosition;",
-
-		"}"
-
-	].join( "\n" ),
-
-	fragmentShader: [
-
-		"uniform vec3 mirrorColor;",
-		"uniform sampler2D mirrorSampler;",
-
-		"varying vec4 mirrorCoord;",
-
-		"float blendOverlay(float base, float blend) {",
-			"return( base < 0.5 ? ( 2.0 * base * blend ) : (1.0 - 2.0 * ( 1.0 - base ) * ( 1.0 - blend ) ) );",
-		"}",
-
-		"void main() {",
-
-			"vec4 color = texture2DProj(mirrorSampler, mirrorCoord);",
-			"color = vec4(blendOverlay(mirrorColor.r, color.r), blendOverlay(mirrorColor.g, color.g), blendOverlay(mirrorColor.b, color.b), 1.0);",
-
-			"gl_FragColor = color;",
-
-		"}"
-
-	].join( "\n" )
+	fragmentShader: require('./shaders/mirror-frag.glsl'),
 
 };
 
@@ -149,6 +114,16 @@ THREE.Mirror = function ( renderer, camera, options ) {
 
 THREE.Mirror.prototype = Object.create( THREE.Object3D.prototype );
 THREE.Mirror.prototype.constructor = THREE.Mirror;
+
+THREE.Mirror.prototype.updateSplash = function ( splashes ) {
+
+	while (splashes.length < 5) {
+		splashes.push(new THREE.Vector2(-9999,-9999));
+	}
+	this.material.uniforms.splashes.value = splashes;
+
+};
+
 
 THREE.Mirror.prototype.renderWithMirror = function ( otherMirror ) {
 

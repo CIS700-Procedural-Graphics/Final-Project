@@ -22,51 +22,55 @@ function initScene(framework, visualConfig) {
     camera.position.set(visualConfig.camera.pos.x, visualConfig.camera.pos.y, visualConfig.camera.pos.z);
     camera.lookAt(new THREE.Vector3(0, 20, 10));
     scene.background = new THREE.Color( 0x000000 );
-
-    lakeCamera = camera.clone();
-    lakeCamera.position.set(0,0,0);
-    lakeCamera.lookAt(new THREE.Vector3(0,0,-1));
-
     renderTarget = new THREE.WebGLRenderTarget( 512, 512, { format: THREE.RGBFormat } );
-    var texture = THREE.ImageUtils.loadTexture('./water.jpg'); // water texture from wind waker
-    texture.wrapS = THREE.RepeatWrapping;
-    texture.wrapT = THREE.RepeatWrapping;
-    var lakeGeo = new THREE.PlaneGeometry( 1000,1000,10,20 );
-    lakeMat = new THREE.ShaderMaterial({
-      uniforms: {
-        "time": { value: 0 },
-        "cameraPos": { value: visualConfig.camera.pos },
-        "waterSampler": { value: texture },
-        "mirrorSampler": { value: renderTarget.texture },
-    		"mirrorColor": { value: new THREE.Color( 0xaaaaaa ) },
-    		"textureMatrix" : { value: new THREE.Matrix4() }
-      },
-      side: THREE.DoubleSide,
-      vertexShader: require('./shaders/terrain-vert.glsl'),
-      fragmentShader: require('./shaders/terrain-frag.glsl')
-    });
-    var plane = new THREE.Mesh( lakeGeo, lakeMat/*new THREE.MeshBasicMaterial( { map: renderTarget } )*/ );
-    plane.position.set(0,250,500);
-    plane.rotateX(Math.PI/2);
+
+    // lakeCamera = camera.clone();
+    // lakeCamera.position.set(0,0,0);
+    // lakeCamera.lookAt(new THREE.Vector3(0,0,-1));
+    //
+    // var texture = THREE.ImageUtils.loadTexture('./water.jpg'); // water texture from wind waker
+    // texture.wrapS = THREE.RepeatWrapping;
+    // texture.wrapT = THREE.RepeatWrapping;
+    // var lakeGeo = new THREE.PlaneGeometry( 1000,1000,10,20 );
+    // lakeMat = new THREE.ShaderMaterial({
+    //   uniforms: {
+    //     "time": { value: 0 },
+    //     "cameraPos": { value: visualConfig.camera.pos },
+    //     "waterSampler": { value: texture },
+    //     "mirrorSampler": { value: renderTarget.texture },
+    // 		"mirrorColor": { value: new THREE.Color( 0xaaaaaa ) },
+    // 		"textureMatrix" : { value: new THREE.Matrix4() }
+    //   },
+    //   side: THREE.DoubleSide,
+    //   vertexShader: require('./shaders/terrain-vert.glsl'),
+    //   fragmentShader: require('./shaders/terrain-frag.glsl')
+    // });
+    // var plane = new THREE.Mesh( lakeGeo, lakeMat/*new THREE.MeshBasicMaterial( { map: renderTarget } )*/ );
+    // plane.position.set(0,250,500);
+    // plane.rotateX(Math.PI/2);
     // scene.add(plane);
 
+
+    // var skyboxGeo = new THREE.BoxGeometry( 1000,1000,1000 );
+    var skyboxGeo = new THREE.IcosahedronGeometry( 900,1 );
+    var skyboxMat2 = new THREE.ShaderMaterial({
+        uniforms: {
+        },
+        side: THREE.DoubleSide,
+        vertexShader: require('./shaders/sky-vert.glsl'),
+        fragmentShader: require('./shaders/sky-frag.glsl')
+      });
+    var skyboxMesh = new THREE.Mesh( skyboxGeo, skyboxMat2 );
+    skyboxMesh.position.set(0,0,0);
+    scene.add(skyboxMesh);
+
+
     groundMirror = new THREE.Mirror( renderer, camera, { clipBias: 0.003, textureWidth: window.width, textureHeight: window.height, color: 0x8c8f9c } );
-    var planeGeo = new THREE.PlaneGeometry( 500,500,100,100 );
+    var planeGeo = new THREE.PlaneGeometry( 1000,1000,1,1 );
     var mirrorMesh = new THREE.Mesh( planeGeo, groundMirror.material );
 		mirrorMesh.add( groundMirror );
 		mirrorMesh.rotateX( - Math.PI / 2 );
 		scene.add( mirrorMesh );
-
-
-
-    var skyboxGeo = new THREE.BoxGeometry( 1000,1000,1000 );
-    var skyboxMat = new THREE.MeshBasicMaterial( { color: 0x333333, side: THREE.DoubleSide } );
-    var skyboxMesh = new THREE.Mesh( skyboxGeo, skyboxMat );
-    skyboxMesh.position.set(0,0,0);
-    scene.add(skyboxMesh);
-
-    var light = new THREE.HemisphereLight( 0xffffbb, 0x080820, 1 );
-    scene.add( light );
 
     visualConfig.sceneProps = {
       bouys: [],
@@ -74,7 +78,8 @@ function initScene(framework, visualConfig) {
       particles: [],
       lightning: [],
       rain: [],
-      display: 1.0
+      display: 1.0,
+      vdisplay: 0.0
     };
     visualConfig.sceneReady = true;
 }
@@ -91,6 +96,11 @@ function updateScene(framework, visualConfig, delta) {
   // camera.lookAt(new THREE.Vector3(0,10,10));
 
   if (visualConfig.sceneReady) {
+    visualConfig.sceneProps.display += delta * visualConfig.sceneProps.vdisplay;
+    visualConfig.sceneProps.display = Math.max(0, Math.min(1, visualConfig.sceneProps.display));
+    if (visualConfig.sceneProps.display === 1 || visualConfig.sceneProps.display === 0) {
+      visualConfig.sceneProps.vdisplay = 0;
+    }
     var display = visualConfig.sceneProps.display;
     var idisplay = 1-display;
 
@@ -120,8 +130,13 @@ function updateScene(framework, visualConfig, delta) {
     // Rain
     var newRain = [];
     var oldRain = [];
+    var splashes = [];
     for (var i = 0; i < visualConfig.sceneProps.rain.length; i++) {
       visualConfig.sceneProps.rain[i].update(delta);
+
+      if (Math.abs(visualConfig.sceneProps.rain[i].pos.y) < 1) {
+        splashes.push(new THREE.Vector2(visualConfig.sceneProps.rain[i].pos.x, visualConfig.sceneProps.rain[i].pos.z));
+      }
 
       if (!visualConfig.sceneProps.rain[i].shouldDelete) {
         newRain.push(visualConfig.sceneProps.rain[i]);
@@ -135,7 +150,7 @@ function updateScene(framework, visualConfig, delta) {
     }
     visualConfig.sceneProps.rain = newRain;
 
-    if (visualConfig.sceneProps.rain.length < 50) {
+    if (visualConfig.sceneProps.rain.length < 50 && Math.random() < display) {
       visualConfig.sceneProps.rain.push(genRain(scene));
       visualConfig.sceneProps.rain.push(genRain(scene));
     }
@@ -217,11 +232,12 @@ function updateScene(framework, visualConfig, delta) {
     }
 
 
-    lakeMat.uniforms.time.value += delta;
+    // lakeMat.uniforms.time.value += delta;
 
+    groundMirror.updateSplash(splashes);
     groundMirror.render();
 
-    renderer.render( scene, lakeCamera, renderTarget, true );
+    // renderer.render( scene, lakeCamera, renderTarget, true );
 
   }
 }
@@ -258,7 +274,6 @@ function genBouy(scene) {
 
       var dist = this.pos.distanceTo(new THREE.Vector3( 0,0,20 ));
       var acc = Math.sign(this.pos.x) * Math.exp(-dist/10 + 6);
-      console.log(acc)
 
       this.acc = new THREE.Vector3( acc, 0,0 );
       this.vel.x += this.acc.x * delta;
@@ -437,7 +452,7 @@ function bassCallback(framework, visualConfig) {
 
 function melodyCallback(framework, visualConfig) {
   if (Math.random() < 0.1)
-    visualConfig.sceneProps.bubbles.push(genBubble(framework.scene));
+    // visualConfig.sceneProps.bubbles.push(genBubble(framework.scene));
   if (Math.random() < 0.8)
     visualConfig.sceneProps.lightning.push(genLightning(framework.scene));
 }

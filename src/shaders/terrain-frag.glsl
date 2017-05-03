@@ -26,10 +26,10 @@ void main() {
   vec3 lightDir = normalize(lightPos - fragPos);
   float diff = max(dot(vNormal, lightDir), 0.0);
   vec3 diffColor = diff * lightColor;
-  diffColor += color.xyz * 0.5;
-  diffColor += applyFog(color.xyz, 0.1*length(fragPos-cameraPos)) * 0.5;
+  // diffColor += color.xyz * 0.5;
+  // diffColor += applyFog(color.xyz, 0.1*length(fragPos-cameraPos)) * 0.5;
 
 
-  gl_FragColor = vec4( diffColor.x + noise / 5.0, diffColor.y + noise / 5.0, diffColor.z, 1.0 );
+  gl_FragColor = vec4( diffColor, 0.0 );
 
 }
