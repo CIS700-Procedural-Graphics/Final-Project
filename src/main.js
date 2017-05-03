@@ -142,6 +142,20 @@ var rockMat = new THREE.ShaderMaterial({
     fragmentShader: require('./shaders/rock-frag.glsl')
   });
 
+var sf = {
+  a: 1,
+  b: 1,
+  m: 3,
+  n1: 30,
+  n2: 15,
+  n3: 15,
+  aa: 1,
+  bb: 1,
+  mm: 3,
+  nn1: 30,
+  nn2: 30,
+  nn3: 15
+}
 
 // TODO: Clean this up into different functions
 // called after the scene loads
@@ -183,13 +197,19 @@ function onLoad(framework) {
 
   var s = new superformula();
   s.init();
-  var geo = new THREE.BoxGeometry(1, 1, 1);
+  var geo = new THREE.BoxGeometry(1, 2, 3);
   var mesh = new THREE.Mesh(geo, redLambert);
   scene.add(mesh);
 
   var smesh = new THREE.Mesh(s.geometry, material);
-  smesh.scale.set(10, 10, 10);
+  smesh.scale.set(100, 100, 100);
   scene.add(smesh);
+  // s.geometry.scale(10, 10, 10);
+  //  var pointMat = new THREE.PointsMaterial( { color: 0xffffff });  
+  // var points = new THREE.Points(s.geometry, pointMat);
+  // pointMat.sizeAttenuation = false;
+
+  //scene.add(points);
 
 if (SHOW) {
   // WATER ------------------------/
@@ -266,6 +286,58 @@ if (SHOW) {
   fcamera.add(camera, 'fov', 0, 180).onChange(function(newVal) {
     camera.updateProjectionMatrix();
   });
+
+  var fsuper = gui.addFolder('SuperFormula');
+  fsuper.add(sf, 'a', 1, 50).onChange(function(newVal) {
+    s.setState(sf.a, sf.b, sf.m, sf.n1, sf.n2, sf.n3, sf.aa, sf.bb, sf.mm, sf.nn1, sf.nn2, sf.nn3);
+  });
+  
+  fsuper.add(sf, 'b', 1, 50).onChange(function(newVal) {
+    s.setState(sf.a, sf.b, sf.m, sf.n1, sf.n2, sf.n3, sf.aa, sf.bb, sf.mm, sf.nn1, sf.nn2, sf.nn3);
+  });
+
+  fsuper.add(sf, 'm', 1, 50).onChange(function(newVal) {
+    s.setState(sf.a, sf.b, sf.m, sf.n1, sf.n2, sf.n3, sf.aa, sf.bb, sf.mm, sf.nn1, sf.nn2, sf.nn3);
+  });
+
+  fsuper.add(sf, 'n1', 1, 50).onChange(function(newVal) {
+    s.setState(sf.a, sf.b, sf.m, sf.n1, sf.n2, sf.n3, sf.aa, sf.bb, sf.mm, sf.nn1, sf.nn2, sf.nn3);
+  });
+
+  fsuper.add(sf, 'n2', 1, 50).onChange(function(newVal) {
+    s.setState(sf.a, sf.b, sf.m, sf.n1, sf.n2, sf.n3, sf.aa, sf.bb, sf.mm, sf.nn1, sf.nn2, sf.nn3);
+  });
+
+  fsuper.add(sf, 'n3', 1, 50).onChange(function(newVal) {
+    s.setState(sf.a, sf.b, sf.m, sf.n1, sf.n2, sf.n3, sf.aa, sf.bb, sf.mm, sf.nn1, sf.nn2, sf.nn3);
+  });
+
+  fsuper.add(sf, 'aa', 1, 50).onChange(function(newVal) {
+    s.setState(sf.a, sf.b, sf.m, sf.n1, sf.n2, sf.n3, sf.aa, sf.bb, sf.mm, sf.nn1, sf.nn2, sf.nn3);
+  });
+  
+  fsuper.add(sf, 'bb', 1, 50).onChange(function(newVal) {
+    s.setState(sf.a, sf.b, sf.m, sf.n1, sf.n2, sf.n3, sf.aa, sf.bb, sf.mm, sf.nn1, sf.nn2, sf.nn3);
+  });
+
+  fsuper.add(sf, 'mm', 1, 50).onChange(function(newVal) {
+    s.setState(sf.a, sf.b, sf.m, sf.n1, sf.n2, sf.n3, sf.aa, sf.bb, sf.mm, sf.nn1, sf.nn2, sf.nn3);
+  });
+
+  fsuper.add(sf, 'nn1', 1, 50).onChange(function(newVal) {
+    s.setState(sf.a, sf.b, sf.m, sf.n1, sf.n2, sf.n3, sf.aa, sf.bb, sf.mm, sf.nn1, sf.nn2, sf.nn3);
+  });
+
+  fsuper.add(sf, 'nn2', 1, 50).onChange(function(newVal) {
+    s.setState(sf.a, sf.b, sf.m, sf.n1, sf.n2, sf.n3, sf.aa, sf.bb, sf.mm, sf.nn1, sf.nn2, sf.nn3);
+  });
+
+  fsuper.add(sf, 'nn3', 1, 50).onChange(function(newVal) {
+    s.setState(sf.a, sf.b, sf.m, sf.n1, sf.n2, sf.n3, sf.aa, sf.bb, sf.mm, sf.nn1, sf.nn2, sf.nn3);
+  });
+
+
+
 }
 
 // Stone making helper function

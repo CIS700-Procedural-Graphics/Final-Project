@@ -29,8 +29,8 @@ function cartToPolar3D(v3, r1, theta, r2, phi) {
 // Returns radius
 function superformulaR(a, b, m, n1, n2, n3, phi) {
 
-	return (1.0 / n1) * (Math.pow(Math.abs(Math.cos(m * phi * 0.25) / a), n2) + 
-		   				 Math.pow(Math.abs(Math.sin(m * phi * 0.25) / a), n3));
+	return Math.pow((Math.pow(Math.abs(Math.cos(m * phi * 0.25) / a), n2) + 
+		   				 Math.pow(Math.abs(Math.sin(m * phi * 0.25) / a), n3)), -1.0 / n1);
 }
 
 function superformulaTo2D(a, b, m, n1, n2, n3, theta) {
@@ -41,6 +41,9 @@ function superformulaTo2D(a, b, m, n1, n2, n3, theta) {
 function superformulaTo3D(a, b, m, n1, n2, n3, theta, aa, bb, mm, nn1, nn2, nn3, phi) {
 	var r1 = superformulaR(a, b, m, n1, n2, n3, theta);
 	var r2 = superformulaR(aa, bb, mm, nn1, nn2, nn3, phi);
+
+	// console.log(r1);
+	// console.log(r2);
 
 	return polarToCart3D(r1, theta, r2, phi);
 }
@@ -85,7 +88,6 @@ export default function superformula() {
 		for (var i = 0; i < this.maxi; i++) {
 			for (var j = 0; j < this.maxj; j++) {
 				this.geometry.vertices[this.getidx(i, j)] = new THREE.Vector3(0.0, 0.0, 0.0);
-				//this.geometry.vertices.push(new THREE.Vector3(0.0, 0.0, 0.0));
 			}
 		}
 
