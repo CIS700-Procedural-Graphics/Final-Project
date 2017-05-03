@@ -143,18 +143,18 @@ var rockMat = new THREE.ShaderMaterial({
   });
 
 var sf = {
-  a: 1,
-  b: 1,
-  m: 3,
-  n1: 30,
-  n2: 15,
-  n3: 15,
-  aa: 1,
-  bb: 1,
-  mm: 3,
-  nn1: 30,
-  nn2: 30,
-  nn3: 15
+  a: 1.2,
+  b: 1.1,
+  m: 20,
+  n1: 10,
+  n2: 0.1,
+  n3: 10,
+  aa: 1.9,
+  bb: 1.8,
+  mm: 16.5,
+  nn1: 8,
+  nn2: 9.19,
+  nn3: 1.7
 }
 
 // TODO: Clean this up into different functions
@@ -196,17 +196,26 @@ function onLoad(framework) {
 
 
   var s = new superformula();
-  s.init();
+  s.init(); // Initialiaze
   var geo = new THREE.BoxGeometry(1, 2, 3);
   var mesh = new THREE.Mesh(geo, redLambert);
-  //scene.add(mesh);
+  scene.add(mesh);
 
   // var smesh = new THREE.Mesh(s.geometry, material);
-
-  var smesh = new THREE.Mesh(s.geometry, new THREE.MeshBasicMaterial( { vertexColors: THREE.FaceColors, side: THREE.DoubleSide } ));
-  //smesh.scale.set(100, 100, 100);
+  //var smesh = new THREE.Mesh(s.geometry, new THREE.MeshBasicMaterial( { vertexColors: THREE.FaceColors, side: THREE.DoubleSide } ));
+  var sfmat = new THREE.ShaderMaterial({
+    uniforms: {
+      u_albedo: 0xffffff
+    },
+    side: THREE.DoubleSide,
+    wireframe: false,
+    vertexShader: require('./shaders/sf-vert.glsl'),
+    fragmentShader: require('./shaders/sf-frag.glsl')
+  });
+  var smesh = new THREE.Mesh(s.geometry, sfmat);
   scene.add(smesh);
-  //s.geometry.scale(10, 10, 10);
+
+  // s.geometry.scale(10, 10, 10);
   //  var pointMat = new THREE.PointsMaterial( { color: 0xffffff });  
   // var points = new THREE.Points(s.geometry, pointMat);
   // pointMat.sizeAttenuation = false;
@@ -297,7 +306,7 @@ if (SHOW) {
     s.setState(sf.a, sf.b, sf.m, sf.n1, sf.n2, sf.n3, sf.aa, sf.bb, sf.mm, sf.nn1, sf.nn2, sf.nn3);
   });
 
-  fsuper.add(sf, 'm', 1, 50).onChange(function(newVal) {
+  fsuper.add(sf, 'm', 0, 50).onChange(function(newVal) {
     s.setState(sf.a, sf.b, sf.m, sf.n1, sf.n2, sf.n3, sf.aa, sf.bb, sf.mm, sf.nn1, sf.nn2, sf.nn3);
   });
 
@@ -321,7 +330,7 @@ if (SHOW) {
     s.setState(sf.a, sf.b, sf.m, sf.n1, sf.n2, sf.n3, sf.aa, sf.bb, sf.mm, sf.nn1, sf.nn2, sf.nn3);
   });
 
-  fsuper.add(sf, 'mm', 1, 50).onChange(function(newVal) {
+  fsuper.add(sf, 'mm', 0, 50).onChange(function(newVal) {
     s.setState(sf.a, sf.b, sf.m, sf.n1, sf.n2, sf.n3, sf.aa, sf.bb, sf.mm, sf.nn1, sf.nn2, sf.nn3);
   });
 
