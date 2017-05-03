@@ -201,9 +201,9 @@ function onLoad(framework) {
   var mesh = new THREE.Mesh(geo, redLambert);
   //scene.add(mesh);
 
-  var smesh = new THREE.Mesh(s.geometry, material);
+  // var smesh = new THREE.Mesh(s.geometry, material);
 
-  //var smesh = new THREE.Mesh(s.geometry, new THREE.MeshBasicMaterial( { vertexColors: THREE.FaceColors } ));
+  var smesh = new THREE.Mesh(s.geometry, new THREE.MeshBasicMaterial( { vertexColors: THREE.FaceColors, side: THREE.DoubleSide } ));
   //smesh.scale.set(100, 100, 100);
   scene.add(smesh);
   //s.geometry.scale(10, 10, 10);

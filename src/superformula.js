@@ -105,6 +105,12 @@ export default function superformula() {
 			}
 		}
 
+		// Seam on barrel
+		for (var j = 0; j < this.maxj - 1; j++) {
+			this.geometry.faces.push(new THREE.Face3(this.getidx(0, j), this.getidx(this.maxi - 1, j + 1), this.getidx(0, j + 1)));
+			this.geometry.faces.push(new THREE.Face3(this.getidx(0, j), this.getidx(this.maxi - 1, j), this.getidx(this.maxi - 1, j + 1)));
+		}
+
 		// "Top" and "Bottom" Cap
 		for(var i = 0; i < this.maxi - 1; i++) {
 			this.geometry.faces.push(new THREE.Face3(this.getidx(0, 0), this.getidx(i, 0), this.getidx(i + 1, 0)));
@@ -155,8 +161,8 @@ export default function superformula() {
 		// this.geometry.scale(10, 10, 10);
 		this.geometry.verticesNeedUpdate = true;
 		this.geometry.normalsNeedUpdate = true;	
-		this.geometry.computeFaceNormals();
-		this.geometry.computeVertexNormals(); 	
+		// this.geometry.computeFaceNormals();
+		// this.geometry.computeVertexNormals(); 	
 	}
 
 	// TODO: Lerp between old and new state, it will look NIICEEEE.
