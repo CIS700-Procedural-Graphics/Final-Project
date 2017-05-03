@@ -32,20 +32,25 @@ export default function generateMelody( scaleNote, randomVar ) {
 	// 	finalNotes.push( notes[i] );
 	// }
 
-	console.log(tonal.scale.get('major', 'C4'))
+	// console.log(tonal.scale.get('major', 'C4'))
 
-	var s = tonal.scale.get('minor', scaleNote);
+	var s = tonal.scale.get('major', scaleNote);
 	// s = tonal.chord.get('Maj7', scaleNote);
 	var anchors = createAnchors( scaleNote, 15 );
 	var finalNotes = insertHook1( anchors.melody, s );
 	// finalNotes = insertFlairs( finalNotes, s, anchors.high, anchors.low );
 
+	finalNotes = [];
+	finalNotes.push( {note: tonal.note.midi( s[0] ), time: 16, type: 1} );
+	finalNotes.push( {note: tonal.note.midi( s[5] ), time: 16, type: 1} );
+	finalNotes.push( {note: tonal.note.midi( s[4] ), time: 16, type: 1} );
+
 	// Remove any nulls
-	for ( var i = 0; i < finalNotes.length; i++ ) {
-		if ( finalNotes[i].note == null ) {
-			finalNotes.splice( i, 1 );
-		}
-	}
+	// for ( var i = 0; i < finalNotes.length; i++ ) {
+	// 	if ( finalNotes[i].note == null ) {
+	// 		finalNotes.splice( i, 1 );
+	// 	}
+	// }
 
 
 	// Print final note sequence

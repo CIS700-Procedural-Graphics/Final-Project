@@ -21,7 +21,7 @@ export default class MusicBox {
 	// Private functions
 	_init() {
 		this.instruments = [null,null,null];
-		this.noise = [0.8, 0.6, 0.5];
+		this.noise = [0.6, 0.8, 0.6];
 	}
 
 	_setInstrument( instrumentName, ac, type ) {
@@ -169,7 +169,7 @@ export default class MusicBox {
 	}
 
 	playMelody( time, callback ) {
-		// this._playMusic( 0, time, callback );
+		this._playMusic( 0, time, callback );
 	}
 
 	// Make full music

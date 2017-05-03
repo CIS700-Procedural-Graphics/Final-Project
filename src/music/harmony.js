@@ -1,6 +1,6 @@
 var tonal = require('tonal')
 
-var harmonyPat = [ [0, 1, 2], [0, 2, 1, 2, ], [0, 1, 2, 1],
+var harmonyPat = [ [0, 1, 2, 2], [0, 2, 1, 2], [0, 1, 2, 1],
 				   [0, 1, 0, 1], [0, 1, 2, 3], [0, 2, 1, 3], 
 				   [0, 3, 1, 3], [1, 0, 3, 1], [1, 3, 2, 1, 0],
 				   [2, 2, 3, 4, 0] ]
@@ -21,10 +21,10 @@ export default function generateHarmony( melody, interval ) {
 
 	// Get note at current interval
 	var n = tonal.note.fromMidi( melody[0].note );
-	var sn = tonal.note.fromMidi( melody[0].note - 12 );
+	var sn = tonal.note.fromMidi( melody[0].note + 12 );
 
 	// Find chord with this at the top
-	var s = tonal.scale.get( 'minor', sn );
+	var s = tonal.scale.get( 'major', sn );
 	var c;
 	for ( var j = 0; j < s.length; j++ ) {
 		c = tonal.chord.get( 'm', s[j] );
@@ -50,7 +50,7 @@ export default function generateHarmony( melody, interval ) {
 						harmonic.push( {note: tonal.note.midi( s[pat1[i]] ), time: t} );
 					}
 				}
-				harmonic.push( {note: -1, time: t} );
+				harmonic.push( {note: -1, time: t * 2} );
 			}
 			for ( var k = 0; k < rep1; k++ ) {
 				for ( var i = 0; i < pat2.length; i++ ) {
@@ -58,30 +58,40 @@ export default function generateHarmony( melody, interval ) {
 						harmonic.push( {note: tonal.note.midi( s[pat2[i]] ), time: t} );
 					}
 				}
-				harmonic.push( {note: -1, time: t} );
+				harmonic.push( {note: -1, time: t * 2} );
 			}
 
 			// Variations
 			var trans1 = Math.random() > 0.2 ? true : false;
 			var trans2 = Math.random() > 0.2 ? true : false;
-			var short = Math.random() > 0.2 ? true : false;
+			var short  = Math.random() > 0.2 ? true : false;
 			var total = harmonic;
 			if ( trans1 ) {
 				var p = [];
-				for ( var k = 0; k < rep2; k++ ) {
+				pat1 = harmonyPat[ Math.floor( Math.random() * harmonyPat.length ) ];
+				pat2 = harmonyPat[ Math.floor( Math.random() * harmonyPat.length ) ];
+				// for ( var k = 0; k < rep2; k++ ) {
 					for ( var i = 0; i < pat1.length; i++ ) {
 						p.push( {note: tonal.note.midi( s[pat1[i]] ) + 12, time: t} );
 					}
+				// }
+				for ( var i = 0; i < pat2.length; i++ ) {
+					p.push( {note: tonal.note.midi( s[pat2[i]] ) + 12, time: t} );
 				}
 				total = total.concat( p );
 			}
 
 			if ( trans2 ) {
 				var p = [];
-				for ( var k = 0; k < rep2; k++ ) {
+				pat1 = harmonyPat[ Math.floor( Math.random() * harmonyPat.length ) ];
+				pat2 = harmonyPat[ Math.floor( Math.random() * harmonyPat.length ) ];
+				// for ( var k = 0; k < rep2; k++ ) {
 					for ( var i = 0; i < pat1.length; i++ ) {
 						p.push( {note: tonal.note.midi( s[pat1[i]] ) + 5, time: t} );
 					}
+				// }
+				for ( var i = 0; i < pat2.length; i++ ) {
+					p.push( {note: tonal.note.midi( s[pat2[i]] ) + 5, time: t} );
 				}
 				if ( total.length > harmonic.length ) { total = total.concat( harmonic ); }
 				total = total.concat( p );
@@ -89,7 +99,8 @@ export default function generateHarmony( melody, interval ) {
 
 			if ( short ) {
 				var p = [];
-				for ( var k = 0; k < rep2; k++ ) {
+				pat1 = harmonyPat[ Math.floor( Math.random() * harmonyPat.length ) ];
+				for ( var k = 0; k < rep2 * 2; k++ ) {
 					for ( var i = 0; i < pat1.length; i++ ) {
 						p.push( {note: tonal.note.midi( s[pat1[i]] ), time: t / 2} );
 					}
@@ -97,7 +108,7 @@ export default function generateHarmony( melody, interval ) {
 				if ( total.length > harmonic.length ) { total = total.concat( harmonic ); }
 				total = total.concat( p );
 			}
-			console.log( total );
+			// console.log( total );
 			harmonic = total;
 
 			break;
@@ -113,7 +124,7 @@ export default function generateHarmony( melody, interval ) {
 			break;
 	}
 	
-	// console.log(harmonic)
+	console.log(harmonic)
 
 	return harmonic;
 }
