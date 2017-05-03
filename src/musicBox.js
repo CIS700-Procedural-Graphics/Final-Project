@@ -1,4 +1,5 @@
 import Soundfont from 'soundfont-player'
+var tonal = require('tonal')
 
 // Local imports
 import euclid from './utils/euclid.js'
@@ -7,7 +8,7 @@ import {patternedMelody,
 		createMainTheme,
 		createMelody} from './music/musicMotifs.js'
 
-import generateMelody from './music/melody.js'
+import generateMelody from './music/melodyCopy.js'
 import generateBass from './music/bass.js'
 import generateHarmony from './music/harmony.js'
 
@@ -20,13 +21,13 @@ export default class MusicBox {
 	// Private functions
 	_init() {
 		this.instruments = [null,null,null];
-		this.noise = [1, 0.35, 0.75];
+		this.noise = [0.8, 0.5, 0.75];
 	}
 
 	_setInstrument( instrumentName, ac, type ) {
-		var instrument = Soundfont.instrument(ac, instrumentName, { soundfont: 'fuildR3',
+		var instrument = Soundfont.instrument(ac, instrumentName, { soundfont: 'MusyngKite',
 																	gain: 1,
-																	adsr: [0, 0, 0, 0.2] });
+																	adsr: [0, 0.3, 0.6, 0.2] });
 		var detailedInstrument = {
 			'instrument': instrument,
 			'ac' 		: ac,
@@ -123,7 +124,7 @@ export default class MusicBox {
 	// Public functions
 	setMelodicInstrument( instrumentName, ac ) {
 		this._setInstrument( instrumentName, ac, 0 );
-		this.instruments[0].noteLength = 1/4;
+		this.instruments[0].noteLength = 1/8;
 	}
 
 	setHarmonicInstrument( instrumentName, ac ) {
@@ -152,8 +153,8 @@ export default class MusicBox {
 	createHarmonyLine() {
 		this._clearGeneratedMusic( 1 );
 		this.instruments[1].notes.push(generateHarmony( this.instruments[0].notes[0], 0 ));
-		this.instruments[1].notes.push(generateHarmony( this.instruments[0].notes[0], 1 ));
-		this.instruments[1].notes.push(generateHarmony( this.instruments[0].notes[0], 2 ));
+		// this.instruments[1].notes.push(generateHarmony( this.instruments[0].notes[0], 1 ));
+		// this.instruments[1].notes.push(generateHarmony( this.instruments[0].notes[0], 2 ));
 	}
 
 	playHarmony( time, callback ) {
@@ -163,7 +164,9 @@ export default class MusicBox {
 	// Functions for the melody
 	createMelodyLine() {
 		this._clearGeneratedMusic( 0 );
-		this.instruments[0].notes.push(generateMelody( 'C3', 1 ));
+		// this.instruments[0].notes.push(generateMelody( 'C3', 1 ));
+		// this.instruments[0].notes.push(generateMelody( 'F3', 4 ));
+		this.instruments[0].notes = generateMelody( 'C3', 1 )
 	}
 
 	playMelody( time, callback ) {

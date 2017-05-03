@@ -355,7 +355,7 @@ function onLoad(framework) {
 
 	// Initialize music instruments
 	musicPlayer.setMelodicInstrument( 'acoustic_grand_piano', ac );
-	musicPlayer.setHarmonicInstrument( 'acoustic_grand_piano', ac );
+	musicPlayer.setHarmonicInstrument( 'electric_piano_1', ac );
 	musicPlayer.setBassInstrument( 'acoustic_bass', ac );
 
 	// Initialize music

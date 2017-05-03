@@ -180,12 +180,12 @@ function createChord(note) {
 	return [midiNote, third, fifth];
 }
 
-function MorseThueSingle(base, multi, n, scale) {
+export function MorseThueSingle(base, multi, n, scale) {
 	var val = n * multi;
 	val = baseConversion(val, base);
-	val = sumDigits(val) % scale.length;
+	val = sumDigits(val);// % scale.length;
 	// console.log(n + " val: " + val)
-	return scale[val];
+	return val;
 }
 
 // http://stackoverflow.com/questions/9138064/sum-of-the-digits-of-a-number-javascript

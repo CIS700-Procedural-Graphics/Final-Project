@@ -32,11 +32,13 @@ export default function generateMelody( scaleNote, randomVar ) {
 	// 	finalNotes.push( notes[i] );
 	// }
 
-	var s = tonal.scale.get('minor pentatonic', scaleNote);
+	console.log(tonal.scale.get('major', 'C4'))
+
+	var s = tonal.scale.get('minor', scaleNote);
 	// s = tonal.chord.get('Maj7', scaleNote);
-	var anchors = createAnchors( scaleNote, 10 );
-	var finalNotes = insertHook1( anchors.melody, s );
-	// finalNotes = insertFlairs( finalNotes, s, anchors.high, anchors.low );
+	var anchors = createAnchors( scaleNote, 15 );
+	var finalNotes = insertHook( anchors.melody, s );
+	finalNotes = insertFlairs( finalNotes, s, anchors.high, anchors.low );
 
 	// Remove any nulls
 	for ( var i = 0; i < finalNotes.length; i++ ) {
@@ -187,7 +189,7 @@ console.log(newMelody)
 
 function insertHook(melody, scale) {
 
-	var pattern = [true, true, true, false, false, true, false];
+	var pattern = [true, true];
 	var newMelody = [];
 
 	var hook = [];
@@ -203,9 +205,9 @@ function insertHook(melody, scale) {
 		if (pattern[i%pattern.length]) {
 			if (hook.length == 0) {
 				var totalBeats = note1.time + note2.time;
-				var numBeats = note1.time + 1; // CHANGE THIS
+				var numBeats = totalBeats + 12; // CHANGE THIS
 				var leftoverBeats = totalBeats - numBeats;
-				var times = generateRhythm(numBeats);
+				// var times = generateRhythm(numBeats);
 
 				// for (var j = 0; j < times.length; j++) {
 				// 	var note = -1;
@@ -225,10 +227,11 @@ function insertHook(melody, scale) {
 				// }
 
 				var singleFlair = createFlair( note1, scale, numBeats );
-				singleFlair[singleFlair.length - 1].note = note2.note;
+				// singleFlair[singleFlair.length - 1].note = note2.note;
 				for ( var j = 0; j < singleFlair.length; j++ ) {
 					hook.push( singleFlair[j] );
 				}
+				// console.log( " made hook " )
 
 			}
 
@@ -241,6 +244,8 @@ function insertHook(melody, scale) {
 					time: hook[j].time,
 					type: noteType.hook,
 				});
+
+				// console.log( hook[j].note )
 			}
 
 			if (leftoverBeats > 0) {
@@ -262,7 +267,7 @@ function insertHook(melody, scale) {
 function insertFlairs( melody, scale, highAnchor, lowAnchor ) {
 	// Create flairs for the different anchors
 	var lowFlairs = [], highFlairs = [];
-	var numTotal = 2;
+	var numTotal = 3;
 	for ( var i = 0; i < numTotal; i++ ) {
 		lowFlairs.push( createFlair( lowAnchor, scale ) );
 		highFlairs.push( createFlair( highAnchor, scale ) );
@@ -273,7 +278,7 @@ function insertFlairs( melody, scale, highAnchor, lowAnchor ) {
 	for ( var i = 0; i < melody.length; i++ ) {
 		if ( melody[i].type == noteType.anchor ) {
 			var r = Math.random(), flair;
-			if ( r > 0.5 ) {
+			if ( melody[i].note == lowAnchor.note ) {
 				flair = lowFlairs[Math.floor( Math.random() * numTotal )];
 			} else {
 				flair = highFlairs[Math.floor( Math.random() * numTotal )];
@@ -300,21 +305,58 @@ var tempStuff = [
 function createFlair( anchor, scale, length = 8 ) {
 	var beats = createFlairBeatAssignment( length );
 	var pattern = createMelodicContour( 2, scale.length );
+	var notePoints = [];
+	var patternCounter = 0;
+	for ( var i = 0; i < beats.length; i++ ) {
+		notePoints.push( pattern[i] );
+		patternCounter++;
+	}
+	console.log(beats)
 
-	// pattern = tempStuff[Math.floor( Math.random() * 4 )];
+	var flair = [];
+	// for ( var i = 0; i < notePoints.length; i++ ) {
+	// 	var currNote = notePoints[i];
+	// 	var thisMeasure = beats[i];
+	// 	// Case of last note
+	// 	if ( i == notePoints.length - 1 ) {
+	// 		for ( var j = 0; j < thisMeasure.length - 1; j++ ) {
+	// 			var tn = tonal.note.midi( scale[currNote + Math.floor(Math.random() * 5 ) - 2] );
+	// 			flair.push( {note: tn, time: thisMeasure[j], type: noteType.flair} );	
+	// 			console.log( tn )
+	// 		}
+	// 		flair.push( {note: tonal.note.midi( scale[currNote] ), 
+	// 					 time: thisMeasure[thisMeasure.length-1], 
+	// 					 type: noteType.flair} );
+	// 		console.log( tonal.note.midi( scale[currNote] ) )
+	// 		console.log('Final measure')
+	// 	} else {
+	// 		flair.push( {note: tonal.note.midi( scale[currNote] ), time: thisMeasure[0], type: noteType.flair} );
+	// 		console.log( tonal.note.midi( scale[currNote] ) )
 
+	// 		var nextNote = notePoints[i+1];
+	// 		for ( var j = 1; j < thisMeasure.length; j++ ) {
+	// 			var tn = tonal.note.midi( scale[(nextNote + Math.floor(Math.random() * 4 ) - 1) % scale.length] );
+	// 			flair.push( {note: tn, time: thisMeasure[j], type: noteType.flair} );	
+	// 			console.log( tn )
+	// 		}
+	// 	} 
+	// }
+	// console.log( flair.slice() );
+
+	pattern = tempStuff[Math.floor( Math.random() * 4 )];
 	var flair = [{note: anchor.note, time: beats[0], type: noteType.flair}];
 	for ( var i = 1; i < beats.length; i++ ) {
-		flair.push( {note: tonal.note.midi( scale[pattern[i]] ), time: beats[i], type: noteType.flair} );
+		flair.push( {note: tonal.note.midi( scale[pattern[i]] ), time: beats[1], type: noteType.flair} );
 	}
 
+	console.log( flair )
 	return flair;
 }
 
 function createFlairBeatAssignment( numBeats ) {
 	// Set max number of long beats
 	var usedLong = false;
-	var maxShort = 4;
+	var maxShort = 3;
 	var beats = [], sum = 0, r, b;
 	var l = Math.random() > 0 ? 4 : 6;
 	var remainingBeats = numBeats - maxShort - l;
@@ -322,6 +364,26 @@ function createFlairBeatAssignment( numBeats ) {
 	beats.push( l );
 	for ( var i = 0; i < maxShort; i++ ) { beats.push( 1 ); }
 	for ( var i = 0; i < remainingBeats; i+=2 ) { beats.push( 2 ); }
+	
+	// Assume number of beats is divisible by 4
+	// var beats = [];
+	// for ( var i = 0; i < numBeats / 4; i++) {
+	// 	var r1 = Math.random(), r2 = Math.random(), r3 = Math.random();
+	// 	var group = [];
+	// 	if ( r1 > 0.5 && r2 > 0.5 ) {
+	// 		group.push( r2 > r3 ? 3 : 1 );
+	// 		group.push( r2 > r3 ? 1 : 3 );
+	// 	} else if ( r1 < 0.5 && r2 < 0.5 ) {
+	// 		group.push( 1 );
+	// 		group.push( 1 );
+	// 		group.push( 1 );
+	// 		group.push( 1 );
+	// 	} else {
+	// 		group = shuffle( [1, 2, 2] );
+	// 	}
+
+	// 	beats.push( group );
+	// }
 
 	return shuffle( beats );
 }
@@ -344,7 +406,6 @@ function createAnchors( baseNote, length ) {
 	return {melody: anchor, high: anchor[0], low: anchor[1]};
 }
 
-
 function createMelodicContour( seed, range ) {
 
 	// Either create a music contour from a smooth noise function
@@ -352,9 +413,9 @@ function createMelodicContour( seed, range ) {
 	//
 	if (seed % 2 == 0) {
 		// Subsample a smoothed contour
-		var contour = Smooth1DNoise( Math.round( range * 0.8 ) , 0.01, 200 );
+		var contour = Smooth1DNoise( Math.round( range * 0.8 ) , Math.random() * 0.1, 200 );
 		var subsampledContour = [];
-		for ( var i = 0; i < contour.length; i+=10 ) {
+		for ( var i = 0; i < contour.length; i+=4 ) {
 			subsampledContour.push(Math.floor( contour[i] ));
 		}
 
