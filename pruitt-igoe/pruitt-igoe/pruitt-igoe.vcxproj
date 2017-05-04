@@ -1,0 +1,232 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{AAFA31CE-6BB8-43CF-AABF-882D7FA36AD3}</ProjectGuid>
+    <RootNamespace>pruittigoe</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory)\..\..\dependencies\SFML-2.4.2\include;$(MSBuildProjectDirectory)\..\..\dependencies\glew-2.0.0\include;$(MSBuildProjectDirectory)\..\..\dependencies\glm-0.9.8.4;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(MSBuildProjectDirectory)\..\..\dependencies\glew-2.0.0\lib\Release\Win32;$(MSBuildProjectDirectory)\..\..\dependencies\SFML-2.4.2\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glew32s.lib;opengl32.lib;glu32.lib;sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;sfml-audio-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory)\..\..\dependencies\SFML-2.4.2\include;$(MSBuildProjectDirectory)\..\..\dependencies\glew-2.0.0\include;$(MSBuildProjectDirectory)\..\..\dependencies\glm-0.9.8.4;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <AdditionalLibraryDirectories>$(MSBuildProjectDirectory)\..\..\dependencies\glew-2.0.0\lib\Release\Win32;$(MSBuildProjectDirectory)\..\..\dependencies\SFML-2.4.2\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glew32s.lib;opengl32.lib;glu32.lib;sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;sfml-audio-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Full</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory)\..\..\dependencies\SFML-2.4.2\include;$(MSBuildProjectDirectory)\..\..\dependencies\glew-2.0.0\include;$(MSBuildProjectDirectory)\..\..\dependencies\glm-0.9.8.4;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>$(MSBuildProjectDirectory)\..\..\dependencies\glew-2.0.0\lib\Release\Win32;$(MSBuildProjectDirectory)\..\..\dependencies\SFML-2.4.2\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glew32s.lib;opengl32.lib;glu32.lib;winmm.lib;gdi32.lib;freetype.lib;jpeg.lib;openal32.lib;flac.lib;vorbisenc.lib;vorbisfile.lib;vorbis.lib;ogg.lib;sfml-graphics-s.lib;sfml-window-s.lib;sfml-system-s.lib;sfml-audio-s.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Full</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>$(MSBuildProjectDirectory)\..\..\dependencies\SFML-2.4.2\include;$(MSBuildProjectDirectory)\..\..\dependencies\glew-2.0.0\include;$(MSBuildProjectDirectory)\..\..\dependencies\glm-0.9.8.4;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+    </ClCompile>
+    <Link>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>$(MSBuildProjectDirectory)\..\..\dependencies\glew-2.0.0\lib\Release\Win32;$(MSBuildProjectDirectory)\..\..\dependencies\SFML-2.4.2\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glew32s.lib;opengl32.lib;glu32.lib;winmm.lib;gdi32.lib;freetype.lib;jpeg.lib;openal32.lib;flac.lib;vorbisenc.lib;vorbisfile.lib;vorbis.lib;ogg.lib;sfml-graphics-s.lib;sfml-window-s.lib;sfml-system-s.lib;sfml-audio-s.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="core\assets\asset.cpp" />
+    <ClCompile Include="core\assets\assetdatabase.cpp" />
+    <ClCompile Include="core\assets\mesh.cpp" />
+    <ClCompile Include="core\assets\meshfactory.cpp" />
+    <ClCompile Include="core\assets\shader.cpp" />
+    <ClCompile Include="core\assets\texture.cpp" />
+    <ClCompile Include="core\component.cpp" />
+    <ClCompile Include="core\components\camera.cpp" />
+    <ClCompile Include="core\components\renderer.cpp" />
+    <ClCompile Include="core\engine.cpp" />
+    <ClCompile Include="core\gameobject.cpp" />
+    <ClCompile Include="core\input.cpp" />
+    <ClCompile Include="core\log.cpp" />
+    <ClCompile Include="core\material.cpp" />
+    <ClCompile Include="core\ShaderPass.cpp" />
+    <ClCompile Include="core\transform.cpp" />
+    <ClCompile Include="core\ui\uicomponent.cpp" />
+    <ClCompile Include="core\ui\uiimage.cpp" />
+    <ClCompile Include="core\ui\uitext.cpp" />
+    <ClCompile Include="core\components\FPSCounter.cpp" />
+    <ClCompile Include="demo\DemoController.cpp" />
+    <ClCompile Include="demo\DemoCameraController.cpp" />
+    <ClCompile Include="demo\generator\TerrainGenerator.cpp" />
+    <ClCompile Include="demo\UnderworldTerrain.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="core\components\ShaderReloader.cpp" />
+    <ClCompile Include="demo\Terrain.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="common.h" />
+    <ClInclude Include="core\assets\asset.h" />
+    <ClInclude Include="core\assets\assetdatabase.h" />
+    <ClInclude Include="core\assets\mesh.h" />
+    <ClInclude Include="core\assets\meshfactory.h" />
+    <ClInclude Include="core\assets\shader.h" />
+    <ClInclude Include="core\assets\texture.h" />
+    <ClInclude Include="core\component.h" />
+    <ClInclude Include="core\components\camera.h" />
+    <ClInclude Include="core\components\renderer.h" />
+    <ClInclude Include="core\engine.h" />
+    <ClInclude Include="core\gameobject.h" />
+    <ClInclude Include="core\engine_common.h" />
+    <ClInclude Include="core\input.h" />
+    <ClInclude Include="core\log.h" />
+    <ClInclude Include="core\material.h" />
+    <ClInclude Include="core\ShaderPass.h" />
+    <ClInclude Include="core\transform.h" />
+    <ClInclude Include="core\ui\uicomponent.h" />
+    <ClInclude Include="core\ui\uiimage.h" />
+    <ClInclude Include="core\ui\uitext.h" />
+    <ClInclude Include="core\components\FPSCounter.h" />
+    <ClInclude Include="demo\DemoController.h" />
+    <ClInclude Include="demo\DemoCameraController.h" />
+    <ClInclude Include="core\components\ShaderReloader.h" />
+    <ClInclude Include="demo\generator\TerrainGenerator.h" />
+    <ClInclude Include="demo\Terrain.h" />
+    <ClInclude Include="demo\UnderworldTerrain.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="resources\font.png" />
+    <Image Include="resources\title.png" />
+    <Image Include="test.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="glsl\diffuse.frag.glsl" />
+    <None Include="glsl\diffuse.vert.glsl" />
+    <None Include="glsl\flat.frag.glsl" />
+    <None Include="glsl\flat.vert.glsl" />
+    <None Include="glsl\glitch.frag.glsl" />
+    <None Include="glsl\glitch.vert.glsl" />
+    <None Include="glsl\library\Raymarching.glsl" />
+    <None Include="glsl\minion.vert.glsl" />
+    <None Include="glsl\minion.frag.glsl" />
+    <None Include="glsl\minKernel.frag.glsl" />
+    <None Include="glsl\minKernel.vert.glsl" />
+    <None Include="glsl\pass_passthrough.frag.glsl" />
+    <None Include="glsl\pass_passthrough.vert.glsl" />
+    <None Include="glsl\pennFlag.frag.glsl" />
+    <None Include="glsl\pennFlag.vert.glsl" />
+    <None Include="glsl\raymarched\light_pillar.frag.glsl" />
+    <None Include="glsl\raymarched\light_pillar.vert.glsl" />
+    <None Include="glsl\raymarched\water.frag.glsl" />
+    <None Include="glsl\raymarched\water.vert.glsl" />
+    <None Include="glsl\shadingPass.frag.glsl" />
+    <None Include="glsl\shadingPass.vert.glsl" />
+    <None Include="glsl\terrain.frag.glsl" />
+    <None Include="glsl\terrain.vert.glsl" />
+    <None Include="glsl\terrain\underworld.frag.glsl" />
+    <None Include="glsl\terrain\underworld.vert.glsl" />
+    <None Include="glsl\terrain\wireframe.frag.glsl" />
+    <None Include="glsl\terrain\wireframe.vert.glsl" />
+    <None Include="glsl\terrain\terrain_envelope.frag.glsl" />
+    <None Include="glsl\terrain\terrain_envelope.vert.glsl" />
+    <None Include="glsl\ui.frag.glsl" />
+    <None Include="glsl\ui.vert.glsl" />
+    <None Include="glsl\vignette.frag.glsl" />
+    <None Include="glsl\vignette.vert.glsl" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
