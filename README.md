@@ -2,8 +2,11 @@
 
 This project is inspired by [Panoramical][1], a musical landscape with highly abstracted and colorful environments. 
 
-Press "V" for viewpoint change.
+[Youtube][6]
 
+[Realtime Demo][7]
+
+Press "V" for viewpoint change.
 Press "P" to pause;
 
 ## Results
@@ -125,3 +128,5 @@ Since this project achieves all effects without light, an ambient occlusion post
 [3]: http://www.iquilezles.org/www/articles/multiresaocc/multiresaocc.htm
 [4]: http://webstaff.itn.liu.se/~stegu/simplexnoise/simplexnoise.pdf
 [5]: http://www.iquilezles.org/www/articles/morenoise/morenoise.htm
+[6]: https://youtu.be/EERHSx24fss
+[7]: http://www.sarahforcier.com/Final-Project/
