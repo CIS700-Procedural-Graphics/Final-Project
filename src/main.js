@@ -138,7 +138,7 @@ function onLoad(framework) {
   restart(framework);
 
   // global ambient audio
-  audioLoader.load( '../sounds/ambient.mp3', function( buffer ) {
+  audioLoader.load( './sounds/ambient.mp3', function( buffer ) {
     backgroundMusic.setBuffer( buffer );
     backgroundMusic.setLoop(true);
     backgroundMusic.setVolume(1.0);

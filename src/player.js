@@ -4,7 +4,7 @@ var listener = new THREE.AudioListener();
 var audioLoader = new THREE.AudioLoader();
 var thudSound = new THREE.Audio(listener);
 // global ambient audio
-audioLoader.load( '../sounds/book.mp3', function( buffer ) {
+audioLoader.load( './sounds/book.mp3', function( buffer ) {
     thudSound.setBuffer( buffer );
     thudSound.setVolume(1.0);
 });
