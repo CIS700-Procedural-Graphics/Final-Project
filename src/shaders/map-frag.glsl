@@ -65,7 +65,7 @@ vec3 getBiomeColor(float elevation, float moisture) {
       if (moisture <= 0.00)   return vec3(0.431, 0.654, 0.372);
       if (moisture <= 0.33)   return vec3(0.431, 0.654, 0.372);
       if (moisture <= 0.66)   return vec3(0.596, 0.709, 0.427);
-      if (moisture <= 1.00)      return vec3(0.913, 0.866, 0.776);
+      if (moisture <= 1.00)   return vec3(0.913, 0.866, 0.776);
     }
 
     if (elevation <= 0.50) {
