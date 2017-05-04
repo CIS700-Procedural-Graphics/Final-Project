@@ -66,7 +66,7 @@ function palette(colors) {
     colors.push(new THREE.Color(
     a.x + b.x*Math.cos( 6.28318*(c.x*t+d.x) ), 
     a.y + b.y*Math.cos( 6.28318*(c.y*t+d.y) ), 
-    a.z + b.z*Math.cos( 6.28318*(c.z*t+d.z) )));
+    a.z + b.z*Math.cos( 6.28318*(c.z*t+d.z) )).offsetHSL(0, -0.2, 0));
   }
   
 }
@@ -194,7 +194,7 @@ function restart(framework) {
       var cellMaterials = [ 
           new THREE.MeshBasicMaterial({color: 0x606060}),
           new THREE.MeshBasicMaterial({color: 0x606060}), 
-          new THREE.MeshLambertMaterial({color: grid.gridArray[x][z].color}),
+          new THREE.MeshBasicMaterial({color: grid.gridArray[x][z].color}),
           new THREE.MeshBasicMaterial({color: 0x383838}), 
           new THREE.MeshBasicMaterial({color: 0x808080}), 
           new THREE.MeshBasicMaterial({color: 0x808080}) 
@@ -376,7 +376,7 @@ function onUpdate(framework) {
       var cellMaterials = [ 
           new THREE.MeshBasicMaterial({color: 0x606060}),
           new THREE.MeshBasicMaterial({color: 0x606060}), 
-          new THREE.MeshLambertMaterial({color: 0xffffff}),
+          new THREE.MeshBasicMaterial({color: 0xeeeeee}),
           new THREE.MeshBasicMaterial({color: 0x383838}), 
           new THREE.MeshBasicMaterial({color: 0x808080}), 
           new THREE.MeshBasicMaterial({color: 0x808080}) 
