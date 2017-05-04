@@ -1,0 +1,26 @@
+const THREE = require('three');
+
+export default class Node {
+  constructor(x, y, id) {
+    this.id = id;
+    this.x = x;
+    this.y = y;
+    this.pos = new THREE.Vector3(x, y, 0);
+    this.neighbors = [];
+    this.cells = [];
+  }
+
+  getLowestNeighbor() {
+    var lowestNeighbor;
+    var lowestElevation = Infinity;
+
+    this.neighbors.forEach(function(neighbor) {
+      if (neighbor.elevation <= lowestElevation) {
+        lowestElevation = neighbor.elevation;
+        lowestNeighbor = neighbor;
+      }
+    });
+
+    return lowestNeighbor;
+  }
+}
