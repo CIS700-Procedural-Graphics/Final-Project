@@ -27,15 +27,15 @@ function init(callback, update) {
     var scene = new THREE.Scene();
     var camera = new THREE.OrthographicCamera( window.innerWidth / -2, window.innerWidth / 2, window.innerHeight / 2, window.innerHeight / -2, -500, 1000 );
     //var camera = new THREE.PerspectiveCamera( 75, window.innerWidth/window.innerHeight, 0.1, 50000 );
-    var renderer = new THREE.WebGLRenderer( { antialias: true } );
+    var renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
     renderer.setPixelRatio(window.devicePixelRatio);
     renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setClearColor(0x216EB2, 1);
+    //renderer.setClearColor(0x216EB2, 1);
 
     var controls = new OrbitControls(camera, renderer.domElement);
     controls.enableDamping = true;
-    controls.enableRotate = false;
-    controls.enableZoom = true;
+    controls.enableRotate = true;
+    controls.enableZoom = false;
     controls.target.set(0, 0, 0);
     controls.rotateSpeed = 0.3;
     controls.zoomSpeed = 1.0;

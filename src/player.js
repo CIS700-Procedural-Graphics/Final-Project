@@ -1,5 +1,14 @@
 const THREE = require('three')
 
+var listener = new THREE.AudioListener();
+var audioLoader = new THREE.AudioLoader();
+var thudSound = new THREE.Audio(listener);
+// global ambient audio
+audioLoader.load( '../sounds/book.mp3', function( buffer ) {
+    thudSound.setBuffer( buffer );
+    thudSound.setVolume(1.0);
+});
+
 //bias function for more realistic animation
 function bias(b, t) {
     return Math.pow(t, Math.log(b) / Math.log(0.5));
@@ -145,6 +154,9 @@ export default class Player {
     animate() {
 
         if (this.t >= 1.0) {
+
+            thudSound.play();
+
             this.isAnimating = false;
             this.t = 0.0;
             switch(this.animateType) {

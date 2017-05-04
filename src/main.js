@@ -13,17 +13,28 @@ var fw; //framework for restart
 var mouse = {x: -1, y: 1}; //set the mouse at the top left corner of screen
 var isectObj = null; //the object in the scene currently closest to the camera 
 var isectPrevMaterial;
+var moved = false;
 
-/*
-var Sliders = function() {
-  this.anglefactor = 1.0;
-};
-var sliders = new Sliders();
-*/
+//sound
+var listener = new THREE.AudioListener();
+var audioLoader = new THREE.AudioLoader();
+var backgroundMusic = new THREE.Audio(listener);
 
 //http://www.iquilezles.org/www/articles/palettes/palettes.htm
-function palette(t, option) {
+//http://dev.thi.ng/gradients/
+//three variables to change: 
+
+//d for RED
+//everything else is set
+function palette(colors) {
   var a, b, c, d;
+
+  a = new THREE.Vector3(0.55+Math.random()*0.1, 0.25+Math.random()*0.05, 0.1+Math.random()*0.05); //RED and GREEN ranges
+  b = new THREE.Vector3(0.3, 0.25, 0.0); //everything remains same
+  c = new THREE.Vector3(0.5, 0.5, 0.0);
+  d = new THREE.Vector3(-0.05+Math.random()*0.1, 0.0, 0.0); //RED ranges
+
+  /*
   switch(option) {
     case 0:
         a = new THREE.Vector3(0.5, 0.5, 0.5);
@@ -44,17 +55,22 @@ function palette(t, option) {
         d = new THREE.Vector3(0.1, 0.1, 0.0);
         break;
     default:
-        a = new THREE.Vector3(0.5, 0.5, 0.5);
-        b = new THREE.Vector3(0.3, 0.3, 0.3);
-        c = new THREE.Vector3(1.0, 1.0, 1.0);
-        d = new THREE.Vector3(0.0, 0.1, 0.2);
+        a = new THREE.Vector3(0.5, 0.5, 0.5); //stay the same
+        b = new THREE.Vector3(0.3, 0.3, 0.3); //stay the same
+        c = new THREE.Vector3(1.0, 1.0, 1.0); //stay the same
+        d = new THREE.Vector3(0.3, 0.2, 0.2);
   }
+  */
 
-  return new THREE.Color(
+  for (var t = 0; t <= 1.0; t += 0.2) {
+    colors.push(new THREE.Color(
     a.x + b.x*Math.cos( 6.28318*(c.x*t+d.x) ), 
     a.y + b.y*Math.cos( 6.28318*(c.y*t+d.y) ), 
-    a.z + b.z*Math.cos( 6.28318*(c.z*t+d.z) ));
+    a.z + b.z*Math.cos( 6.28318*(c.z*t+d.z) )));
+  }
+  
 }
+
 
 // called after the scene loads
 function onLoad(framework) {
@@ -87,31 +103,48 @@ function onLoad(framework) {
   renderer.shadowMapHeight = 2048;
   */
 
+  //https://threejs.org/examples/?q=out#webgl_postprocessing_outline
+  //prevents click from counting as a move when user is rotating camera
+  controls.addEventListener( 'change', function() { moved = true; } );
+  document.addEventListener( 'mousedown', function () { moved = false; }, false );
+  document.addEventListener( 'mouseup', function() {
+    if(!moved)
+      //console.log("up");
+      checkClick(framework);
+  });
+
   // when the mouse moves, call the given function
   document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 
+  //FINISH LINE CUBE
+  var cellMaterials = [ 
+      new THREE.MeshBasicMaterial({color: 0xee6b5e}),
+      new THREE.MeshBasicMaterial({color: 0xee6b5e}), 
+      new THREE.MeshBasicMaterial({color: 0xfaee9e}),
+      new THREE.MeshBasicMaterial({color: 0xfaee9e}), 
+      new THREE.MeshBasicMaterial({color: 0xfaaf5b}), 
+      new THREE.MeshBasicMaterial({color: 0xfaaf5b}) 
+  ]; 
+  var cellMaterial = new THREE.MeshFaceMaterial(cellMaterials);
+  var cell = new THREE.Mesh( new THREE.BoxGeometry(1,1,1), cellMaterial);
+  cell.position.x = 0.5;
+  cell.position.y = 0.5;
+  cell.position.z = 0.5;
+  cell.scale.x = 0.25;
+  cell.scale.y = 0.25;
+  cell.scale.z = 0.25;
+  //cell.receiveShadow = true;
+  framework.scene.add(cell);
   restart(framework);
 
-  /*
-  gui.add(camera, 'fov', 0, 180).onChange(function(newVal) {
-    camera.updateProjectionMatrix();
+  // global ambient audio
+  audioLoader.load( '../sounds/ambient.mp3', function( buffer ) {
+    backgroundMusic.setBuffer( buffer );
+    backgroundMusic.setLoop(true);
+    backgroundMusic.setVolume(1.0);
+    backgroundMusic.play();
   });
 
-  gui.add(lsys, 'axiom').onChange(function(newVal) {
-    lsys.UpdateAxiom(newVal);
-    doLsystem(lsys, lsys.iterations, turtle, sliders.anglefactor);
-  });
-
-  gui.add(lsys, 'iterations', 0, 5).step(1).onChange(function(newVal) {
-    clearScene(turtle);
-    doLsystem(lsys, newVal, turtle, sliders.anglefactor);
-  });
-
-  gui.add(sliders, 'anglefactor', 0.5, 1.5).step(0.05).onChange(function(newVal) {
-    clearScene(turtle);
-    doLsystem(lsys, lsys.iterations, turtle, sliders.anglefactor);
-  });
-  */
 }
 
 
@@ -135,18 +168,21 @@ function restart(framework) {
   framework.camera.position.set(2.0*gridDimension, 1.5*gridDimension, 2.0*gridDimension);
   framework.camera.lookAt(new THREE.Vector3(gridDimension/2.0, 0.0, gridDimension/2.0));
   framework.controls.target.set(gridDimension/2.0, 0.0, gridDimension/2.0);
-  framework.camera.zoom = 500/gridDimension;
+  framework.camera.zoom = 450/gridDimension;
   framework.camera.updateProjectionMatrix(); //must be called after updating camera parameters
 
   //randomly pick a color pallette
   var colorOption = Math.floor(Math.random()*3.0);
   var colors = [];
-  colors.push(palette(0.0, colorOption));
-  colors.push(palette(0.167, colorOption));
-  colors.push(palette(0.333, colorOption));
-  colors.push(palette(0.5, colorOption));
-  colors.push(palette(0.666, colorOption));
-  colors.push(palette(0.833, colorOption));
+  palette(colors);
+  /*
+  colors.push(palette(0.00, colorOption));
+  colors.push(palette(0.20, colorOption));
+  colors.push(palette(0.40, colorOption));
+  colors.push(palette(0.60, colorOption));
+  colors.push(palette(0.80, colorOption));
+  colors.push(palette(1.00, colorOption));
+  */
   //[ palette(0.0), palette(0.167), palette(0.333), palette(0.5), palette(0.666), palette(0.833) ];
 
   //GRID AND LEVEL GENERATION
@@ -157,11 +193,11 @@ function restart(framework) {
 
       var cellMaterials = [ 
           new THREE.MeshBasicMaterial({color: 0x606060}),
-          new THREE.MeshBasicMaterial({color: 0xffffff}), 
+          new THREE.MeshBasicMaterial({color: 0x606060}), 
           new THREE.MeshLambertMaterial({color: grid.gridArray[x][z].color}),
-          new THREE.MeshBasicMaterial({color: 0xffffff}), 
+          new THREE.MeshBasicMaterial({color: 0x383838}), 
           new THREE.MeshBasicMaterial({color: 0x808080}), 
-          new THREE.MeshBasicMaterial({color: 0xffffff}) 
+          new THREE.MeshBasicMaterial({color: 0x808080}) 
       ]; 
       var cellMaterial = new THREE.MeshFaceMaterial(cellMaterials);
       var cell = new THREE.Mesh( new THREE.BoxGeometry(1,1,1), cellMaterial);
@@ -188,6 +224,63 @@ function restart(framework) {
   allMeshes.add(player.cube);
 }
 
+function checkClick(framework) {
+
+  //create ray with origin at the mouse position, direction as camera direction
+  var vector = new THREE.Vector3(mouse.x, mouse.y, -1); //z = -1 IMPORTANT!
+  vector.unproject(framework.camera);
+  var direction = new THREE.Vector3(0, 0, -1).transformDirection(framework.camera.matrixWorld);
+  var raycaster = new THREE.Raycaster();
+  raycaster.set(vector, direction);
+
+  // create an array containing all objects in the scene with which the ray intersects
+  var intersects = raycaster.intersectObjects(framework.scene.children);
+
+  if (intersects.length > 0 && intersects[0].object != player.cube)
+  {
+    isectObj = intersects[0].object;
+    var keyCode = '0';
+    if (isectObj.position.x == player.position.x+0.5-1 && isectObj.position.z == player.position.z+0.5) 
+    {
+      keyCode = '38';
+    }
+    else if (isectObj.position.x == player.position.x+0.5+1 && isectObj.position.z == player.position.z+0.5) {
+      keyCode = '40';
+    }
+    else if (isectObj.position.x == player.position.x+0.5 && isectObj.position.z == player.position.z+0.5+1) {
+      keyCode = '37';
+    }
+    else if (isectObj.position.x == player.position.x+0.5 && isectObj.position.z == player.position.z+0.5-1) {
+      keyCode = '39';
+    }
+
+    if (keyCode == '38') {
+      // up arrow
+      if (player.position.x - 1 >= 0 && player.faceXNegative.equals(grid.gridArray[player.position.x - 1][player.position.z].color)) {
+        player.rotateZCounter();
+      }
+    }
+    else if (keyCode == '40') {
+      // down arrow
+      if (player.position.x + 1 < gridDimension && player.faceXPositive.equals(grid.gridArray[player.position.x + 1][player.position.z].color)) {
+        player.rotateZClockwise();
+      }
+    }
+    else if (keyCode == '37') {
+      // left arrow
+      if (player.position.z + 1 < gridDimension && player.faceZPositive.equals(grid.gridArray[player.position.x][player.position.z + 1].color)) {
+        player.rotateXCounter();
+      }
+    }
+    else if (keyCode == '39') {
+       // right arrow
+      if (player.position.z - 1 >= 0 && player.faceZNegative.equals(grid.gridArray[player.position.x][player.position.z - 1].color)) {
+        player.rotateXClockwise();
+      }
+    }
+
+  } 
+}
 
 document.onkeydown = checkKey;
 function checkKey(e) {
@@ -269,7 +362,7 @@ function onUpdate(framework) {
   if (intersects.length > 0)
   {
     //if the closest object isectObj is not the currently stored intersection object
-    if (intersects[0].object != isectObj) 
+    if (intersects[0].object != player.cube && intersects[0].object != isectObj) 
     {
       //restore previous intersection object (if it exists) to its original color
       if (isectObj) {
@@ -280,8 +373,16 @@ function onUpdate(framework) {
       //store color of closest object (for later restoration)
       isectPrevMaterial = isectObj.material;
       //set a new color for closest object
-      isectObj.material = new THREE.MeshLambertMaterial({color: 0xffffff});
-      
+      var cellMaterials = [ 
+          new THREE.MeshBasicMaterial({color: 0x606060}),
+          new THREE.MeshBasicMaterial({color: 0x606060}), 
+          new THREE.MeshLambertMaterial({color: 0xffffff}),
+          new THREE.MeshBasicMaterial({color: 0x383838}), 
+          new THREE.MeshBasicMaterial({color: 0x808080}), 
+          new THREE.MeshBasicMaterial({color: 0x808080}) 
+      ]; 
+      var cellMaterial = new THREE.MeshFaceMaterial(cellMaterials);
+      isectObj.material = cellMaterial;
     }
   } 
   else
