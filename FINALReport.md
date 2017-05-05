@@ -65,7 +65,7 @@ This project interprets the wave file data of four particular songs and emits pa
   ![](./images/PicOfFileSetup.png)
 
 - #### Timeline:
-  * Milestone 1
+  * (1) Milestone 1
     - positioning of spots where balls shoot out
     - gui to pick which music to play [for now just have it as a pause and play button for playing one set of music]
     - have all the shader materials set up for everything but the balls [balls will have gpu manipulations based on time so for now leave as default]
@@ -73,14 +73,14 @@ This project interprets the wave file data of four particular songs and emits pa
     - add box to maintain repeat for song or not
     - make so the loaded song plays out the speakers with the right timing [ie using same timer as gl]
 
-  * Milestone 2
+  * (2) Milestone 2
     - set up using of music data for particles being shot out from particular location - by indexing from 0 - 7 [later to be implemented that the frequency will convert to fill the 0-7 indexing bins once i have the proper way to interpret the wave file data]
     - add noise to the movement of the balls
     - particles disappear when theyre farther than a specific distance from the center of the region
     - set up Particles manipulation class and proper connections between framework and data held within the class so can easily create / add / manipulate all at once
     - rebuilt skybox with proper coloring
 
-  * Milestone 3 [ready for submission]
+  * (3) Milestone 3 [ready for submission]
     - display time in secs and in proper minutes per the amount remaining in the song
     - readjust bin allocation for which bits being used from the wave file data
     - set up restart button for the music
