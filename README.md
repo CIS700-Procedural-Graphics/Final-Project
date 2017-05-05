@@ -7,9 +7,7 @@ Hannah Bollar. PennKey: hbollar.
 
 ## View the Project
 
-Turn volume on and possibly wear headphones to hear the sound.
-
-###### [Click Here to View the Current Project](https://hanbollar.github.io/Final-Project/)
+Turn volume on and possibly wear headphones to hear the sound. #### Click [HERE](https://hanbollar.github.io/Final-Project/) to View the Current Project
 
 ### About the Look of the Project
 
