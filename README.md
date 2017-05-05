@@ -39,11 +39,13 @@ Milestone 1:
 
 Milestone 2:
 
-* User input to trigger musical and visual effect
-* Implement 2 additional scenes
-* Implement post effects to change tone/mood of scenes
-* Work on transitions between scenes
-* Integrate with the music to match the tone/mood
+* [Brian] Experimented with music generation using alternating notes as anchor points (inspired by: https://www.youtube.com/watch?v=UYU5POqHdeA). We were having trouble making music sound not random. One idea we had was to have the music 'reset' itself by returning to a common note(s). We thought that starting with two alternating notes, we could then build up a song by filling in the space between them using known patterns or other methods.
+* [Brian] Implement lake scene
+
+Final Demo:
+
+* [Brian] Implemented loop based music gen method
+* [Brian] Polish lake scene
 
 ### Inspiration
 ![inspiration](http://i.imgur.com/qFGr4vh.png)
@@ -79,7 +81,8 @@ Inspiration from [Panoramical](http://panoramic.al/) and [Proteus](http://twiste
 #### 5/3 Final presentations (3-5 pm, Siglab), final reports due
 * Final Report
 * [Xiaomao] Have cool player input screen
-* [Brian] Implement 1 scene + polish
+* [Brian] Polish scene
+* [Brian] Implemented loop based music gen method
 
 ### Demo
 [Link](https://xnieamo.github.io/Final-Project/)
