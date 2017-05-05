@@ -29,18 +29,15 @@ This project interprets the wave file data of four particular songs and emits pa
 
 ## Updated Design Doc
 
-- #### Introduction
-  ###### What motivates this project?
+- #### Introduction - What motivates this project?
 
   * I've worked with learning a lot of different procedural techniques throughout this past semester now I want to see if I can combine parts of them with my interest in particle simulations.
 
-- #### Goal
-  ###### What do you intend to achieve with this project?
+- #### Goal - What do you intend to achieve with this project?
 
   * Creating a functioning music visualizer that not only has manipulations based on coloring/shader information but also noise and time manipulations to create the piece altogether. Main idea - take what i learned this semester and using artistic choices decide how to incorporate them all together to build a final cohesive project.
 
-- #### Inspiration/reference: 
-  ###### Attach some materials, visual or otherwise you intend as reference
+- #### Inspiration/reference - Attach some materials, visual or otherwise you intend as reference
 
   * Inspirational youtube videos
   https://www.youtube.com/watch?v=fpViZkhpPHk&list=PL_2OwBBRw9hDSXyaIPrCeKUCNnCrHAHEn
@@ -49,21 +46,17 @@ This project interprets the wave file data of four particular songs and emits pa
   * Working with Wave file data 
   https://blogs.msdn.microsoft.com/dawate/2009/06/23/intro-to-audio-programming-part-2-demystifying-the-wav-format/
 
-- #### Specification:
-  ###### Outline the main features of your project
+- #### Specification - Outline the main features of your project
 
-// still to do !!!
-- #### Techniques:
-- ###### (1) Not really using algorithms - instead using a binning technique for particular bits as explained in the above 'About the Look of the Project' section.
-- ###### (2) RGB interpolation based on eye location in reference to viewer for coloring
-- ###### (3) Working on shader manipulations for texture and coloring
+- ###### (1) RGB interpolation based on eye location in reference to viewer for coloring
+- ###### (2) Working on shader manipulations for texture and coloring
   -  the plane uses a blue based opacity
   -  the balls are rendered with an opacity and a coloring such that the green and purple remain in the same locations relative to the eye position for the object to give the ringed effect
-- ###### (4) Update and timers
+- ###### (3) Update and timers
   - timing the update functions to properly maintain the movement of the particles and the reloading of particular pieces when each song plays
-- ###### (5) Noise function that affects the music particles position in space with increasing amplitude the farther the particles get from their source
+- ###### (4) Noise function that affects the music particles position in space with increasing amplitude the farther the particles get from their source
   - Note that the noise function is entirely position based so all points that come from each ball will follow the same noise based path [looked better this way -with the lines- than not having the lines since it more easily shows a pause in the level of power of in the music]
-- ###### (6) using THREE.js sound manipulation tools
+- ###### (5) using THREE.js sound manipulation tools
   - interpretation of wave file data
   - allow for the playing of multiple pieces of music
 
