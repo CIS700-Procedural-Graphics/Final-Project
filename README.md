@@ -1,9 +1,9 @@
 Hannah Bollar. PennKey: hbollar.
 ======================
 
-## FOR GRADING: CLICK [HERE](https://github.com/hanbollar/Final-Project/blob/master/FINALReport.md) TO VIEW THE FINAL REPORT 
-
 **University of Pennsylvania, CIS 700: Procedural Graphics, Final Project**
+
+## FOR GRADING: CLICK [HERE](https://github.com/hanbollar/Final-Project/blob/master/FINALReport.md) TO VIEW THE FINAL REPORT 
 
 ## View the Project
 

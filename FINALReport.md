@@ -60,10 +60,7 @@ This project interprets the wave file data of four particular songs and emits pa
     - allow for the playing of multiple pieces of music [including restarting, playing, pausing etc in sequence]
 
 - #### Design:
-  ###### How will your program fit together? Make a simple free-body diagram illustrating the pieces.
-  ![](./images/PicOfFileSetup.png)
-
-  // still to do 
+  ![programDesign][plan]
 
 - #### Timeline of how the work was carried out
 
@@ -117,3 +114,4 @@ This project interprets the wave file data of four particular songs and emits pa
 
 [imgP]: ./images/pCandGui.png "ImageP"
 [imgW]: ./images/windW.png "ImageW"
+[plan]: ./images/pDesign.png "programDesign"
