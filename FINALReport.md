@@ -48,17 +48,17 @@ This project interprets the wave file data of four particular songs and emits pa
 
 - #### Specification - Outline the main features of your project
 
-- ###### (1) RGB interpolation based on eye location in reference to viewer for coloring
-- ###### (2) Working on shader manipulations for texture and coloring
-  -  the plane uses a blue based opacity
-  -  the balls are rendered with an opacity and a coloring such that the green and purple remain in the same locations relative to the eye position for the object to give the ringed effect
-- ###### (3) Update and timers
-  - timing the update functions to properly maintain the movement of the particles and the reloading of particular pieces when each song plays
-- ###### (4) Noise function that affects the music particles position in space with increasing amplitude the farther the particles get from their source
-  - Note that the noise function is entirely position based so all points that come from each ball will follow the same noise based path [looked better this way -with the lines- than not having the lines since it more easily shows a pause in the level of power of in the music]
-- ###### (5) using THREE.js sound manipulation tools
-  - interpretation of wave file data
-  - allow for the playing of multiple pieces of music
+###### (1) RGB interpolation based on eye location in reference to viewer for coloring
+###### (2) Working on shader manipulations for texture and coloring
+  #######  the plane uses a blue based opacity
+  #######  the balls are rendered with an opacity and a coloring such that the green and purple remain in the same locations relative to the eye position for the object to give the ringed effect
+###### (3) Update and timers
+  ####### timing the update functions to properly maintain the movement of the particles and the reloading of particular pieces when each song plays
+###### (4) Noise function that affects the music particles position in space with increasing amplitude the farther the particles get from their source
+  ####### Note that the noise function is entirely position based so all points that come from each ball will follow the same noise based path [looked better this way -with the lines- than not having the lines since it more easily shows a pause in the level of power of in the music]
+###### (5) using THREE.js sound manipulation tools
+  ####### interpretation of wave file data
+  ####### allow for the playing of multiple pieces of music
 
 - #### Design:
   ###### How will your program fit together? Make a simple free-body diagram illustrating the pieces.
