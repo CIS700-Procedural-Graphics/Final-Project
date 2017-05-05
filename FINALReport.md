@@ -3,17 +3,17 @@ Hannah Bollar. PennKey: hbollar.
 
 **University of Pennsylvania, CIS 700: Procedural Graphics, Final Project**
 
-## Final Report
+# Final Report
 
 Turn volume on and possibly wear headphones to hear the sound.
 
 ###### [Click Here to View the Current Project](https://hanbollar.github.io/Final-Project/)
 
-# About the Look of the Project **
+### About the Look of the Project
 
 This project interprets the wave file data of four particular songs and emits particles from six balls that each correspond to a particular set of binned bits of the wave file data. If the value of the bits for a bin are above a particular threshold then that bin's ball will emit a particle. The coloring of the particle then depends on how much the actual value is greater than the tested threshold value. The colors begin at white then as the difference between the two values becomes larger the colors shift to yellow, orange, red, and finally pink. As the particles are emitted, there is a bit of noise affecting their movement as they shift through space that increases the further the particles are from the center ball. A particle dies and is removed once it is too far from the center ball. As explained in the 'The Audio' section, this visualizer works well for vibrant songs that have varying output in terms of strong tones but are constantly changing distribution in regards to which tones have more importance during particular moments of the song.
 
-# The Audio
+### The Audio
 
 - #### Legend of Zelda - Wind Waker's Main Theme [Source Video](https://www.youtube.com/watch?v=gEoU70DXr90)
   ###### Demonstration of a vibrant song. Its output varies between even tones [mostly whites] and strong tones [pinks and reds] while also allowing for a consistently changing number of balls from which particles are being emitted. The most interesting version of song to be used for this visualizer.
