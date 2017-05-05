@@ -119,4 +119,4 @@ This project interprets the wave file data of four particular songs and emits pa
     - Adam - advice on what type of file to use - originally went with midi file then had trouble finding the particular sources I wanted so discussed again and decided to work with wave files instead.
 
 [imgP]: ./images/pCandGui.png "ImageP"
-[imgW]: ./images/pCandGui.png "ImageW"
+[imgW]: ./images/windW.png "ImageW"
