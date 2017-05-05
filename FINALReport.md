@@ -7,7 +7,7 @@ Hannah Bollar. PennKey: hbollar.
 
 Turn volume on and possibly wear headphones to hear the sound. Note: depending on what time of computer you have it might take a few seconds for the music to load.
 #### Click [HERE](https://hanbollar.github.io/Final-Project/) to View the Current Project
-#### [Youtube Video Version](https://hanbollar.github.io/Final-Project/)
+#### [Youtube Video Version](https://youtu.be/DNM_q79UeYg)
 #### [LINK](https://cis700-procedural-graphics.github.io/assignments/final-project/) to class website
 
 ### About the Look of the Project
