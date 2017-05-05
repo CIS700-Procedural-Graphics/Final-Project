@@ -11,11 +11,11 @@ Turn volume on and possibly wear headphones to hear the sound.
 
 ###### [Click Here to View the Current Project](https://hanbollar.github.io/Final-Project/)
 
-## About the Look of the Project
+### About the Look of the Project
 
 This project interprets the wave file data of four particular songs and emits particles from six balls that each correspond to a particular set of binned bits of the wave file data. If the value of the bits for a bin are above a particular threshold then that bin's ball will emit a particle. The coloring of the particle then depends on how much the actual value is greater than the tested threshold value. The colors begin at white then as the difference between the two values becomes larger the colors shift to yellow, orange, red, and finally pink. As the particles are emitted, there is a bit of noise affecting their movement as they shift through space that increases the further the particles are from the center ball. A particle dies and is removed once it is too far from the same center ball. As explained in the 'The Audio' section, this visualizer works well for vibrant songs that have varying output in terms of strong tones but are constantly changing distribution in regards to which tones have more importance during particular moments of the song.
 
-## Controls
+### Controls
 
 * Zooming - zoom in and out the same way you would scroll up and down on a webpage.
 * Rotate - click and drag on a point on the screen to move the overall point of view of the scene
@@ -37,8 +37,7 @@ This project interprets the wave file data of four particular songs and emits pa
 
 ## The Project
 
-Project: Music Visualizer
-------------
+### Project: Music Visualizer
 - #### Main Techniques:
   * (1) Working on shader manipulations for texture and coloring
       *  the plane uses a blue based opacity
@@ -51,8 +50,7 @@ Project: Music Visualizer
       * interpretation of wave file data
       * allow for the playing of multiple pieces of music
 
-Timeline for Workflow
-------------
+### Timeline for Workflow
 - #### Milestone 1
   * positioning of spots where balls shoot out
   * gui to pick which music to play [for now just have it as a pause and play button for playing one set of music]
