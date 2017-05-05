@@ -1,7 +1,7 @@
 Hannah Bollar. PennKey: hbollar.
 ======================
 
-NOTE THE FINAL WRITE [and final report] ARE NOT COMPLETED YET FOR THIS ASSIGNMENT - WILL BE COMPLETED BY THE DEADLINE OF FRIDAY MAY 5TH AT MIDNIGHT
+## FOR GRADING: CLICK [HERE](https://github.com/hanbollar/Final-Project/blob/master/FINALReport.md) TO VIEW THE FINAL REPORT 
 
 **University of Pennsylvania, CIS 700: Procedural Graphics, Final Project**
 
