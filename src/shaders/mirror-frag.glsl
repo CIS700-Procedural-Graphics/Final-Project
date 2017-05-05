@@ -12,8 +12,12 @@ float blendOverlay(float base, float blend) {
 
 void main() {
 
+  vec4 rippleCoord = vec4(mirrorCoord.x + 0.1 * sin(0.1 * time + mirrorCoord.y),
+                          mirrorCoord.y + 0.2 * sin(1.0 * time + mirrorCoord.x),
+                          mirrorCoord.z,
+                          mirrorCoord.w);
 
-  vec4 color = texture2DProj(mirrorSampler, mirrorCoord);
+  vec4 color = texture2DProj(mirrorSampler, rippleCoord);
   color = vec4(blendOverlay(mirrorColor.r, color.r), blendOverlay(mirrorColor.g, color.g), blendOverlay(mirrorColor.b, color.b), 1.0);
 
   float dist = 1000.0;
