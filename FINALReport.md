@@ -3,19 +3,17 @@ Hannah Bollar. PennKey: hbollar.
 
 **University of Pennsylvania, CIS 700: Procedural Graphics, Final Project**
 
-**Final Report**
-
-## View the Project
+##Final Report
 
 Turn volume on and possibly wear headphones to hear the sound.
 
 ###### [Click Here to View the Current Project](https://hanbollar.github.io/Final-Project/)
 
-## About the Look of the Project
+** About the Look of the Project **
 
-This project interprets the wave file data of four particular songs and emits particles from six balls that each correspond to a particular set of binned bits of the wave file data. If the value of the bits for a bin are above a particular threshold then that bin's ball will emit a particle. The coloring of the particle then depends on how much the actual value is greater than the tested threshold value. The colors begin at white then as the difference between the two values becomes larger the colors shift to yellow, orange, red, and finally pink. As the particles are emitted, there is a bit of noise affecting their movement as they shift through space that increases the further the particles are from the center ball. A particle dies and is removed once it is too far from that same center ball. As explained in the 'The Audio' section, this visualizer works well for vibrant songs that have varying output in terms of strong tones but are constantly changing distribution in regards to which tones have more importance during particular moments of the song.
+This project interprets the wave file data of four particular songs and emits particles from six balls that each correspond to a particular set of binned bits of the wave file data. If the value of the bits for a bin are above a particular threshold then that bin's ball will emit a particle. The coloring of the particle then depends on how much the actual value is greater than the tested threshold value. The colors begin at white then as the difference between the two values becomes larger the colors shift to yellow, orange, red, and finally pink. As the particles are emitted, there is a bit of noise affecting their movement as they shift through space that increases the further the particles are from the center ball. A particle dies and is removed once it is too far from the center ball. As explained in the 'The Audio' section, this visualizer works well for vibrant songs that have varying output in terms of strong tones but are constantly changing distribution in regards to which tones have more importance during particular moments of the song.
 
-## The Audio
+** The Audio
 
 - #### Legend of Zelda - Wind Waker's Main Theme
   ###### [Click Here to View the Source Video](https://www.youtube.com/watch?v=gEoU70DXr90)
@@ -33,7 +31,7 @@ This project interprets the wave file data of four particular songs and emits pa
   ###### [Click Here to View the Source Video](https://www.youtube.com/watch?v=27mB8verLK8)
   * Demonstration of a strong and powerful song using this music visualizer. Shows strong color variation from the particles and particles almost consistently come out of each ball.
 
-**Updated Design Doc**
+##Updated Design Doc
 
 - #### Introduction
   ###### What motivates this project?
@@ -106,20 +104,20 @@ This project interprets the wave file data of four particular songs and emits pa
   * [if time] add ability for user to manipulate [ie click somewhere and the particles react - but only for clicking - could act as an attractor or a repellor
   * [if time] make it so users can input a midi file and that i can load from it [ ie can load the visualizer for any given file ] - set timer so that song loops continuously
 
-**Results**
+##Results
     </br></t>Pirates of the Caribbean: very colorful uses most balls throughout the duration of the song.
     </br></t>Also demonstrates how the gui looks
     ![PCaribbean][imgP]
     </br></t>Wind Waker: less colorful at the beginning and shows the cuts demonstrating particular balls bins not getting above their set outputs
     ![WWaker][imgW]
 
-**Evaluation**
+##Evaluation
     How well did you do? What parameters did you tune along the way? Include some WIP shots that compare intermediate results to your final. Explain why you made the decisions you did.
 
-**Future Work**
+##Future Work
     Given more time, what would you add/improve
 
-**Acknowledgements**
+##Acknowledgements
     Music:
 
     Cite EVERYTHING . Implemented a paper? Used some royalty-free music? Talked to classmates / a professor in a way that influenced your project? Attribute everything!
