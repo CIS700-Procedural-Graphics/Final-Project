@@ -29,13 +29,7 @@ Milestone 1:
 * Handles basic user inputs
 * Framework code for moving camera
 * Framework code for triggering scene changes
-* Implemented 2 scenes:
-
-![scene 1](http://i.imgur.com/2ZfjrG1.png)
-
-![scene 2](http://i.imgur.com/vTInVNX.png)
-
-![scene 3](https://i.imgur.com/ke9A7gN.png)
+* Implemented 2 scenes
 
 Milestone 2:
 
@@ -43,7 +37,7 @@ Milestone 2:
 * [Brian] Implement lake scene
 
 Final Demo:
-
+![scenes](https://i.imgur.com/0uDxvwA.png)
 * [Brian] Implemented loop based music gen method
 * [Brian] Polish lake scene
 
