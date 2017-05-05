@@ -40,11 +40,11 @@ This project interprets the wave file data of four particular songs and emits pa
 - #### Inspiration/reference - Attach some materials, visual or otherwise you intend as reference
 
   * Inspirational youtube videos
-  https://www.youtube.com/watch?v=fpViZkhpPHk&list=PL_2OwBBRw9hDSXyaIPrCeKUCNnCrHAHEn
-  https://www.youtube.com/watch?v=KiRLdhnDKwc&list=PL_2OwBBRw9hDSXyaIPrCeKUCNnCrHAHEn&index=14
-  https://www.youtube.com/watch?v=82Q6DRqf9H4&list=PL_2OwBBRw9hDKSZvusG6aBFh6bx32E9i5
+    - [Clip 1](https://www.youtube.com/watch?v=fpViZkhpPHk&list=PL_2OwBBRw9hDSXyaIPrCeKUCNnCrHAHEn)
+    - [Clip 2](https://www.youtube.com/watch?v=KiRLdhnDKwc&list=PL_2OwBBRw9hDSXyaIPrCeKUCNnCrHAHEn&index=14)
+    - [Clip 3](https://www.youtube.com/watch?v=82Q6DRqf9H4&list=PL_2OwBBRw9hDKSZvusG6aBFh6bx32E9i5)
   * Working with Wave file data 
-  https://blogs.msdn.microsoft.com/dawate/2009/06/23/intro-to-audio-programming-part-2-demystifying-the-wav-format/
+    - [Wave File Data Formatting](https://blogs.msdn.microsoft.com/dawate/2009/06/23/intro-to-audio-programming-part-2-demystifying-the-wav-format/)
 
 - #### Specification - Outline the main features of your project
 
@@ -63,6 +63,8 @@ This project interprets the wave file data of four particular songs and emits pa
 - #### Design:
   ###### How will your program fit together? Make a simple free-body diagram illustrating the pieces.
   ![](./images/PicOfFileSetup.png)
+
+  // still to do 
 
 - #### Timeline
 
@@ -92,24 +94,29 @@ This project interprets the wave file data of four particular songs and emits pa
     - when loading a new song - if currently paused on prev song, this song starts as paused
 
 ## Results
-    </br></t>Pirates of the Caribbean: very colorful uses most balls throughout the duration of the song.
-    </br></t>Also demonstrates how the gui looks
-    ![PCaribbean][imgP]
-    </br></t>Wind Waker: less colorful at the beginning and shows the cuts demonstrating particular balls bins not getting above their set outputs
-    ![WWaker][imgW]
+  * Pirates of the Caribbean
+    - very colorful uses most balls throughout the duration of the song.
+    - Also demonstrates how the gui looks
+  ![PCaribbean][imgP]
+  * Wind Waker
+    - less colorful at the beginning and shows the cuts demonstrating particular balls bins not getting above their set outputs
+  ![WWaker][imgW]
 
 ## Evaluation
     How well did you do? What parameters did you tune along the way? Include some WIP shots that compare intermediate results to your final. Explain why you made the decisions you did.
 
+    // still to do 
+
 ## Future Work
     Given more time, what would you add/improve
 
+    // still to do 
+
 ## Acknowledgements
-    Music:
-
-    Cite EVERYTHING . Implemented a paper? Used some royalty-free music? Talked to classmates / a professor in a way that influenced your project? Attribute everything!
-
-
+  * Music
+    - Check back at 'The Audio Section'
+  * People
+    - Adam - advice on what type of file to use - originally went with midi file then had trouble finding the particular sources I wanted so discussed again and decided to work with wave files instead.
 
 [imgP]: ./images/pCandGui.png "ImageP"
 [imgW]: ./images/pCandGui.png "ImageW"
