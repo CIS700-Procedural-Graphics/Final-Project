@@ -46,13 +46,29 @@ Our goal for the final project of CIS 700-006 is to procedurally generate an int
 ..* Allows for user to control the number of areas generated, as well as some other factors
 
 ## Results
+
+### Example snow biome area
 ![Example snow biome area](./ss1.png)
+
+### Biome specific terrain
 ![Biome specific terrain](./ss2.png)
+
+### Transition between an area and a route
 ![Transition between an area and a route](./ss3.png)
+
+### Example sand biome route with pokemon
 ![Example sand biome route with pokemon](./ss4.png)
+
+### Example water biome route transitioning to grass biome area
 ![Example water biome route transitioning to grass biome area](./ss5.png)
+
+### Example grass biome area with a doodad
 ![Example grass biome area with a doodad](./ss6.png)
+
+### Example snow biome route
 ![Example snow biome route](./ss7.png)
+
+### Example water biome area
 ![Example water biome area](./ss8.png)
 
 ## Evaluation
