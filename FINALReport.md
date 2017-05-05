@@ -65,32 +65,32 @@ This project interprets the wave file data of four particular songs and emits pa
   ![](./images/PicOfFileSetup.png)
 
 - #### Timeline:
-- ### Milestone 1
-  * positioning of spots where balls shoot out
-  * gui to pick which music to play [for now just have it as a pause and play button for playing one set of music]
-  * have all the shader materials set up for everything but the balls [balls will have gpu manipulations based on time so for now leave as default]
-  * add box to pause and play
-  * add box to maintain repeat for song or not
-  * make so the loaded song plays out the speakers with the right timing [ie using same timer as gl]
+  * Milestone 1
+    - positioning of spots where balls shoot out
+    - gui to pick which music to play [for now just have it as a pause and play button for playing one set of music]
+    - have all the shader materials set up for everything but the balls [balls will have gpu manipulations based on time so for now leave as default]
+    - add box to pause and play
+    - add box to maintain repeat for song or not
+    - make so the loaded song plays out the speakers with the right timing [ie using same timer as gl]
 
-- ### Milestone 2
-  * set up using of music data for particles being shot out from particular location - by indexing from 0 - 7 [later to be implemented that the frequency will convert to fill the 0-7 indexing bins once i have the proper way to interpret the wave file data]
-  * add noise to the movement of the balls
-  * particles disappear when theyre farther than a specific distance from the center of the region
-  * set up Particles manipulation class and proper connections between framework and data held within the class so can easily create / add / manipulate all at once
-  * rebuilt skybox with proper coloring
+  * Milestone 2
+    - set up using of music data for particles being shot out from particular location - by indexing from 0 - 7 [later to be implemented that the frequency will convert to fill the 0-7 indexing bins once i have the proper way to interpret the wave file data]
+    - add noise to the movement of the balls
+    - particles disappear when theyre farther than a specific distance from the center of the region
+    - set up Particles manipulation class and proper connections between framework and data held within the class so can easily create / add / manipulate all at once
+    - rebuilt skybox with proper coloring
 
-- ### Milestone 3 [ready for submission]
-  * display time in secs and in proper minutes per the amount remaining in the song
-  * readjust bin allocation for which bits being used from the wave file data
-  * set up restart button for the music
-  * add color val based on being specific amounts above the particle show up threshold
-  * add actual music interpretation of the wave data
-  * allow for loading of different music [used large variation in song type to demonstrate how my visualizer performs for each kind]
-  * noise affecting the points more by distance
-  * change the music selection so done in a drop down menu and not a slider
-  * set up gui element for which song is currently playing
-  * when loading a new song - if currently paused on prev song, this song starts as paused
+  * Milestone 3 [ready for submission]
+    - display time in secs and in proper minutes per the amount remaining in the song
+    - readjust bin allocation for which bits being used from the wave file data
+    - set up restart button for the music
+    - add color val based on being specific amounts above the particle show up threshold
+    - add actual music interpretation of the wave data
+    - allow for loading of different music [used large variation in song type to demonstrate how my visualizer performs for each kind]
+    - noise affecting the points more by distance
+    - change the music selection so done in a drop down menu and not a slider
+    - set up gui element for which song is currently playing
+    - when loading a new song - if currently paused on prev song, this song starts as paused
 
 ## Results
     </br></t>Pirates of the Caribbean: very colorful uses most balls throughout the duration of the song.
