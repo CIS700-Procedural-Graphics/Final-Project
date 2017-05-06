@@ -13,7 +13,6 @@ var finishCube;
 var player, playerPromise;
 var grid, gridDimension = 4.0;
 var allMeshes = new Set();
-var fw; //framework for nextLevel
 
 //falling animation
 var prevCell;
@@ -27,7 +26,7 @@ class FallingMesh {
 }
 
 //raymarching
-var mouse = {x: -1, y: 1}; //set the mouse at the top left corner of screen
+var mouse = {x: -1, y: 1}; //set the mouse at the top left corner of screen or else buggy when loading
 var isectObj = null; //the object in the scene currently closest to the camera 
 var isectPrevMaterial;
 var moved = false;
@@ -41,14 +40,12 @@ var thudSound = new THREE.Audio(listener);
 
 //http://www.iquilezles.org/www/articles/palettes/palettes.htm
 //http://dev.thi.ng/gradients/
-//three variables to change: 
-//everything else is set
 function palette(colors) {
   var a, b, c, d;
-  a = new THREE.Vector3(0.55+Math.random()*0.1, 0.25+Math.random()*0.05, 0.1+Math.random()*0.05); //RED and GREEN ranges
-  b = new THREE.Vector3(0.3, 0.25, 0.0); //everything remains same
-  c = new THREE.Vector3(0.5, 0.5, 0.0);
-  d = new THREE.Vector3(-0.05+Math.random()*0.1, 0.0, 0.0); //RED ranges
+  a = new THREE.Vector3(0.55+Math.random()*0.1, 0.25+Math.random()*0.05, 0.1+Math.random()*0.05); //RED >> GREEN >> BLUE
+  b = new THREE.Vector3(0.3, 0.25, 0.05); //everything remains same
+  c = new THREE.Vector3(0.5, 0.5, 0.5); //frequency remains same
+  d = new THREE.Vector3(-0.05+Math.random()*0.1, 0.0, 0.0); //shift red phase a little away from green to make yellow
 
   /*
   a = new THREE.Vector3(0.5, 0.5, 0.5);
@@ -69,7 +66,6 @@ function palette(colors) {
 
 // called after the scene loads
 function onLoad(framework) {
-  fw = framework;
   var scene = framework.scene;
   var camera = framework.camera;
   var renderer = framework.renderer;
@@ -307,7 +303,7 @@ function checkClick(framework) {
     {
       //equivalent to up arrow
       player.rotateZCounter();
-      dropCellAnimation(prevCell);
+      dropCellAnimation(prevCell, framework);
       prevCell = isectObj;
     }
     else if (isectObj.position.x == player.position.x+0.5+1 && isectObj.position.z == player.position.z+0.5 &&
@@ -315,7 +311,7 @@ function checkClick(framework) {
         intersects[0].object.geometry.type == "PlaneGeometry")) {
       //equivalent to down arrow
       player.rotateZClockwise();
-      dropCellAnimation(prevCell);
+      dropCellAnimation(prevCell, framework);
       prevCell = isectObj;
     }
     else if (isectObj.position.x == player.position.x+0.5 && isectObj.position.z == player.position.z+0.5+1 && 
@@ -323,7 +319,7 @@ function checkClick(framework) {
         intersects[0].object.geometry.type == "PlaneGeometry")) {
       //equivalent to left arrow
       player.rotateXCounter();
-      dropCellAnimation(prevCell);
+      dropCellAnimation(prevCell, framework);
       prevCell = isectObj;
     }
     else if (isectObj.position.x == player.position.x+0.5 && isectObj.position.z == player.position.z+0.5-1 &&
@@ -331,14 +327,14 @@ function checkClick(framework) {
       intersects[0].object.geometry.type == "PlaneGeometry")) {
       //equivalent to right arrow
       player.rotateXClockwise();
-      dropCellAnimation(prevCell);
+      dropCellAnimation(prevCell, framework);
       prevCell = isectObj;
     }
   } 
 
 }
 
-function dropCellAnimation(prevCell) {
+function dropCellAnimation(prevCell, framework) {
   var planeGeometry = new THREE.PlaneGeometry( 1, 1, 1, 1);
   var planeMaterial = new THREE.MeshBasicMaterial({color: 0xffffff, transparent:true, opacity:0.0});
   var plane = new THREE.Mesh( planeGeometry, planeMaterial );
@@ -346,7 +342,7 @@ function dropCellAnimation(prevCell) {
   var mat4 = new THREE.Matrix4().makeRotationFromQuaternion(quat);
   mat4.premultiply(new THREE.Matrix4().makeTranslation(prevCell.position.x, 0, prevCell.position.z));
   plane.applyMatrix(mat4);
-  fw.scene.add(plane);
+  framework.scene.add(plane);
   allMeshes.add(plane);
 
   grid.gridArray[prevCell.position.x-0.5][prevCell.position.z-0.5].hasFell = true;
@@ -378,7 +374,7 @@ function onUpdate(framework) {
 
     //nextLevel the game
     if (player.position.x == 0 && player.position.z == 0)
-      nextLevel(fw);
+      nextLevel(framework);
 
     if (player.isAnimating) {
 
