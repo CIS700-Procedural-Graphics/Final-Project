@@ -94,7 +94,7 @@ var config = {
     sampleSong : function() {
         
         var client = new XMLHttpRequest();
-        client.open('GET', '/sample/Insane.lrc');
+        client.open('GET', 'sample/Insane.lrc');
         client.onreadystatechange = function() {
             
           if (client.readyState == 4 && client.status == 200)
@@ -111,9 +111,9 @@ var config = {
         client.send();
         
         if ("undefined" === typeof audio) {
-            audio = new Audio('/sample/Insane.mp3');
+            audio = new Audio('sample/Insane.mp3');
         } else {
-            audio.src = '/sample/Insane.mp3';
+            audio.src = 'sample/Insane.mp3';
         }
         //initPlayer();
         config.object = 0;
