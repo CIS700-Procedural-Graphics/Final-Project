@@ -1,5 +1,5 @@
 ### CIS700 Procedural Graphics: Final Project
-# Procedural Terrain
+# Procedural Terrain using Cesium
 #### By: Rudraksha Shah and Rishabh Shah
 -----
 
