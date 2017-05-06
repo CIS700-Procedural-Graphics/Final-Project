@@ -3,7 +3,11 @@
 
 ## Design Documentation
 ### Introduction
-My motivation for this project is to create an environment that I can keep adding to. I wanted to take small achievable steps to create something.
+My motivation for this project is to create an environment that I can keep adding to. I wanted to take small achievable steps to create something. This project was originally developed for CIS 700 Special Topics Seminar on Procedural Graphics at the University of Pennsylvania
+
+### Demo
+- [Live Demo](https://eldu.github.io/Final-Project/)
+- [Video](https://vimeo.com/216259878)
 
 ### Goal
 I intend to achieve a beautiful looking pond scene which is also animated and interactive.
@@ -69,14 +73,43 @@ I intend to achieve a beautiful looking pond scene which is also animated and in
 - Computed waves and moved vertices in vertex shader.
 - Referenced [Effective Water Simulation From Physical Models by Mark Finch and Cyan Worlds](http://http.developer.nvidia.com/GPUGems/gpugems_ch01.html)
 
+### Design
+
+
+### Results
+- [Live Demo](https://eldu.github.io/Final-Project/)
+- [Video](https://vimeo.com/216259878)
+By the final presentation, I was able to present working individual tidbits for creating a pond. I created a vertex shader for water in which used cosine waves. I made it such that I could extend it and add in more waves which I will do later to create a noiser and more natural pond water scene. I also created rocks in which are different on each reload of the page. THey started out a point cloud, then a convex hull is created around that and then is subdivided to create a smoother rock. I also used the superformula to create a flower.
+
+
+### Evaluation
+I think that I have a great start to create a pond. I started off this project to create a bunch of little things to rearrange into a pond. Unfortunately, I have yet to actually rearrange it in such a way it doesn't look plain and uninteresting. In addition, I have yet to bring in my L-Systems homework. I think at this moment I have created enought tools to make an okay pond. The next real step is to arrange it as so.
+
+
+### Future Work
+Actually, I do plan on continuing to work on this project. I'm planning on finishing this up before the end of the month because I really do want to have a finished piece. Here are the things that I would like to work on.
+- Flowers
+  - Rearrange
+  - Animation
+    - Gliding/Rotating
+    - Lerping between flower forms
+- Water
+  - Reflectivity
+  - More noisy wave pattern
+- Terrain
+  - Cover up exposed water edges with some sort of terrain. Grass?
+- Camera
+  - Fixed angle
+- Interactivity
+  - Create waves with mouse
+- Trees
+  - Import and use the L-Systems homework
+
 ### TODO
 - Make the shape of the water more bloby
 - Change the position of the rocks since they are still on a uniform circle
 - Make the water reflective (so that you'd see a green box and the rocks in the water)
 - Vegetation
-
-### Live Demo
-- [here](https://eldu.github.io/Final-Project/)
 
 ### References
 - [Effective Water Simulation From Physical Models by Mark Finch and Cyan Worlds](http://http.developer.nvidia.com/GPUGems/gpugems_ch01.html)
@@ -91,8 +124,10 @@ I intend to achieve a beautiful looking pond scene which is also animated and in
 
 ### Timeline
 - 4/11: Codebase organization, Sketch End Goal, Work on Terrain Generation: Water Plane, and rock formation
+  - Completed water vertex shader, rock shapes
 - 4/18: Finish terrain generation, Water animation shader, Extra: Waterfall
 - 4/25: Vegetation: Lotus, lotus pads, grass? Extra: Trees, shrubs
+  - Completed flower, TODO: Generated many flowers and artist friendly tools
 - 5/2: Polish: Fog, Interactive: Make water move on mose click, 
 - 5/3: Final Presentation: Indepth ReadMe, Presentation, Video, Live Demo
 

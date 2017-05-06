@@ -19,7 +19,7 @@ import SubdivisionModifier from '../node_modules/three/examples/js/modifiers/Sub
 const INFINITY = 1.7976931348623157E+10308;
 const PI = 3.14159265358979323;
 
-// Basic Material
+// Basic Materials
 var material = new THREE.MeshLambertMaterial({color: 0xffffff});
 var redLambert = new THREE.MeshLambertMaterial({color: 0xff0000, wireframe: true});
 
@@ -316,57 +316,54 @@ if (!HIDE) {
     camera.updateProjectionMatrix();
   });
 
-  var fsuper = gui.addFolder('SuperFormula');
-  fsuper.add(sf, 'a', 0.1, 2.0).onChange(function(newVal) {
+  var fsuper = gui.addFolder('Flower');
+  fsuper.add(sf, 'a', 0.1, 2.0).name("Decrease Radius").onChange(function(newVal) {
     s.setState(sf.a, sf.b, sf.m, sf.n1, sf.n2, sf.n3, sf.aa, sf.bb, sf.mm, sf.nn1, sf.nn2, sf.nn3);
   });
   
-  fsuper.add(sf, 'b', 0.1, 2.0).onChange(function(newVal) {
+  fsuper.add(sf, 'b', 0.1, 2.0).name("Round Petals").onChange(function(newVal) {
     s.setState(sf.a, sf.b, sf.m, sf.n1, sf.n2, sf.n3, sf.aa, sf.bb, sf.mm, sf.nn1, sf.nn2, sf.nn3);
   });
 
-  fsuper.add(sf, 'm', 0, 50).onChange(function(newVal) {
+  fsuper.add(sf, 'm', 0, 50).name("Number of Petals").onChange(function(newVal) {
     s.setState(sf.a, sf.b, sf.m, sf.n1, sf.n2, sf.n3, sf.aa, sf.bb, sf.mm, sf.nn1, sf.nn2, sf.nn3);
   });
 
-  fsuper.add(sf, 'n1', 1, 20).onChange(function(newVal) {
+  fsuper.add(sf, 'n1', 1, 20).name("Petal width").onChange(function(newVal) {
     s.setState(sf.a, sf.b, sf.m, sf.n1, sf.n2, sf.n3, sf.aa, sf.bb, sf.mm, sf.nn1, sf.nn2, sf.nn3);
   });
 
-  fsuper.add(sf, 'n2', -10, 10).onChange(function(newVal) {
+  fsuper.add(sf, 'n2', -10, 10).name("Petal shape").onChange(function(newVal) {
     s.setState(sf.a, sf.b, sf.m, sf.n1, sf.n2, sf.n3, sf.aa, sf.bb, sf.mm, sf.nn1, sf.nn2, sf.nn3);
   });
 
-  fsuper.add(sf, 'n3', -10, 10).onChange(function(newVal) {
+  fsuper.add(sf, 'n3', -10, 10).name("Pointed Petals").onChange(function(newVal) {
     s.setState(sf.a, sf.b, sf.m, sf.n1, sf.n2, sf.n3, sf.aa, sf.bb, sf.mm, sf.nn1, sf.nn2, sf.nn3);
   });
 
-  fsuper.add(sf, 'aa', 0.1, 2).onChange(function(newVal) {
+  fsuper.add(sf, 'aa', 0.1, 2).name("Scale").onChange(function(newVal) {
     s.setState(sf.a, sf.b, sf.m, sf.n1, sf.n2, sf.n3, sf.aa, sf.bb, sf.mm, sf.nn1, sf.nn2, sf.nn3);
   });
   
-  fsuper.add(sf, 'bb', 0.1, 2).onChange(function(newVal) {
+  fsuper.add(sf, 'bb', 0.1, 2).name("Round Petals").onChange(function(newVal) {
     s.setState(sf.a, sf.b, sf.m, sf.n1, sf.n2, sf.n3, sf.aa, sf.bb, sf.mm, sf.nn1, sf.nn2, sf.nn3);
   });
 
-  fsuper.add(sf, 'mm', 0, 50).onChange(function(newVal) {
+  fsuper.add(sf, 'mm', 0, 50).name("Levels of Petals").onChange(function(newVal) {
     s.setState(sf.a, sf.b, sf.m, sf.n1, sf.n2, sf.n3, sf.aa, sf.bb, sf.mm, sf.nn1, sf.nn2, sf.nn3);
   });
 
-  fsuper.add(sf, 'nn1', 1, 20).onChange(function(newVal) {
+  fsuper.add(sf, 'nn1', 1, 20).name("Outward petal shape").onChange(function(newVal) {
     s.setState(sf.a, sf.b, sf.m, sf.n1, sf.n2, sf.n3, sf.aa, sf.bb, sf.mm, sf.nn1, sf.nn2, sf.nn3);
   });
 
-  fsuper.add(sf, 'nn2', -10, 10).onChange(function(newVal) {
+  fsuper.add(sf, 'nn2', -10, 10).name("Size from base").onChange(function(newVal) {
     s.setState(sf.a, sf.b, sf.m, sf.n1, sf.n2, sf.n3, sf.aa, sf.bb, sf.mm, sf.nn1, sf.nn2, sf.nn3);
   });
 
-  fsuper.add(sf, 'nn3', -10, 10).onChange(function(newVal) {
+  fsuper.add(sf, 'nn3', -10, 10).name("Petal spread").onChange(function(newVal) {
     s.setState(sf.a, sf.b, sf.m, sf.n1, sf.n2, sf.n3, sf.aa, sf.bb, sf.mm, sf.nn1, sf.nn2, sf.nn3);
   });
-
-
-
 }
 
 // Stone making helper function
