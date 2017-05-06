@@ -1,112 +1,93 @@
-# CIS700 Procedural Graphics: Final Project
+# Procedural Pokemon
+[Demo](https://davlia.github.io/procedural-pokemon)
 
-Time to show off your new bag of procedural tricks by creating one polished final project. For this assignment you will have four weeks to create and document a portfolio piece that demonstrates your mastery of procedural thinking and implementation. You may work in groups of up to three (working alone is fine too). You may use any language / platform you choose for this assignment (given our approval if it’s not JavaScript/WebGL or C++/OpenGL).
-
-As usual with this class, we want to encourage you to take this opportunity to explore and experiment. To get you started, however, we’ve provided a few open-ended prompts below. Interesting and complex visuals are the goal in all of these prompts, but they encourage focus on different aspects of proceduralism.
-
-## Prompts:
-
-- ### A classic 4k demo
-  * In the spirit of the demo scene, create an animation that fits into a 4k executable that runs in real-time. Feel free to take inspiration from the many existing demos. Focus on efficiency and elegance in your implementation.
-  * Examples: [cdak by Quite & orange](https://www.youtube.com/watch?v=RCh3Q08HMfs&list=PLA5E2FF8E143DA58C)
-
-- ### A forgery
-  * Taking inspiration from a particular natural phenomenon or distinctive set of visuals, implement a detailed, procedural recreation of that aesthetic. This includes modeling, texturing and object placement within your scene. Does not need to be real-time. Focus on detail and visual accuracy in your implementation.
-  * Examples:
-    - [Snail](https://www.shadertoy.com/view/ld3Gz2), [Journey](https://www.shadertoy.com/view/ldlcRf), Big Hero 6 Wormhole: [Image 1](http://2.bp.blogspot.com/-R-6AN2cWjwg/VTyIzIQSQfI/AAAAAAAABLA/GC0yzzz4wHw/s1600/big-hero-6-disneyscreencaps.com-10092.jpg) , [Image 2](https://i.stack.imgur.com/a9RGL.jpg)
-
-- ### A game level
-  * Like generations of game makers before us, create a game which generates an  navigable environment (eg. a roguelike dungeon, platforms) and some sort of goal or conflict (eg. enemy agents to avoid or items to collect). Must run in real-time. Aim to create an experience that will challenge players and vary noticeably in different playthroughs, whether that means complex dungeon generation, careful resource management or a sophisticated AI model. Focus on designing a system that will generate complex challenges and goals.
-  * Examples: Spore, Dwarf Fortress, Minecraft, Rogue
-
-- ### An animated environment / music visualizer
-  * Create an environment full of interactive procedural animation. The goal of this project is to create an environment that feels responsive and alive. Whether or not animations are musically-driven, sound should be an important component. Focus on user interactions, motion design and experimental interfaces.
-  * Examples: [Panoramical](https://www.youtube.com/watch?v=gBTTMNFXHTk), [Bound](https://www.youtube.com/watch?v=aE37l6RvF-c)
-- ### Own proposal
-  * You are of course **welcome to propose your own topic**. Regardless of what you choose, you and your team must research your topic and relevant techniques and come up with a detailed plan of execution. You will meet with some subset of the procedural staff before starting implementation for approval. 
-
-**Final grading will be individual** and will be based on both the final product and how well you were able to achieve your intended effect according to your execution plan. Plans change of course, and we don’t expect you to follow your execution plan to a T, but if your final project looks pretty good, but you cut corners and only did 30% of what you outlined in your design doc, you will be penalized.
-
-But overall, have fun! This is your opportunity to work on whatever procedural project inspires you. The best way to ensure a good result is to pick something you’re passionate about. :)
-
-## Timeline
-
-- 4/08	Design doc due / Have met with procedural staff
-- 4/18	Milestone 1 (short write-up + demo)
-- 4/25	Milestone 2 (short write-up + demo)
-- 5/3	Final presentations (3-5 pm, Siglab), final reports due
-
-## Design Doc
-
-Your design doc should follow the following template. Note, each section can be pretty short, but cover them all! This will serve as valuable documentation when showing this project off in the future AND doing a good job will make it much easier for you to succeed, so please take this seriously.
-
-### Design Doc Template:
-
-- #### Introduction
-  * What motivates this project?
-- #### Goal
-  * What do you intend to achieve with this project?
-- #### Inspiration/reference: 
-  * Attach some materials, visual or otherwise you intend as reference
-- #### Specification:
-  * Outline the main features of your project
-- #### Techniques:
-  * What are the main technical/algorithmic tools you’ll be using? Give an overview, citing  specific papers/articles
-- #### Design:
-  * How will your program fit together? Make a simple free-body diagram illustrating the pieces.
-- #### Timeline:
-  * Create a week-by-week set of milestones for each person in your group.
-
-
-Along with your final project demo, you will submit a final report, in which you will update correct your original design doc as needed and add a few post-mortem items.
-
-## Milestones
-
-To keep you honest / on-track, we will be checking on your progress at weekly intervals, according to milestones you’ll define at the outset (pending our approval). For each of the two milestones prior to the final submission, you will submit a short write up explaining whether or not you individually achieved your goals (specifying the files where the work happened), along with a link to a demo / images. These don’t have to be super polished -- we just want to see that you’re getting things done.
-
-Example:
-
-“Milestone 1:
-	Adam:
-Made some procedural terrain code in src/terrain.js. Implemented 3D simplex noise to do it. Also applied coloring via custom shader based on this cool paper X (see src/shaders/dirt.glsl). IMAGE
-
-Austin: 
-I managed to set up my voronoi diagram shader (see src/shaders/voronoi.glsl). 
-Experimented with different scattering techniques. It’s working with the euclidean distance metric. I’m using it in src/main.js to color stones. IMAGE
-
-Rachel:
-I tried really hard to make my toon shader work (src/shaders/toon.glsl), but I still have a bug! T_T BUGGY IMAGE. DEMO LINK”
+[Video](https://clips.twitch.tv/VibrantEasyDiscMcaT)
 
 ## Final Report
+### David 
+- Implemented logic for populating an area with buildings, roads, doodads, etc. based on a biome
+- Implemented logic for populating a vertical route with bushes, trees, ledges based on a biome
+- Updated the player sprite to face the correct direction when moved
+- Added in ability for an area to regenerate (based on some random probability) once a user leaves that area
+- Implemented the minimap! :D
+- Networking things
 
-In addition to your demo, you will create a final report documenting your project overall. This document should be clear enough to explain the value and details of your project to a random computer graphics person with no knowledge of this class.
+### Joseph
+- Removed previous algorithm for area generation (Minimum spanning tree based algorithm), and reimplemented area generation and connection using a probabilistic DFS method with specific rules so we don't accidentally generate new areas over old areas
+- Implemented logic for definding specific area bounds and attributes (entry/exit points based on where routes intersect an area, etc.) and generating believable terrain borders in non-playable areas
+- Added in ability to change the number of areas generated (must not have anyone else in the map with you, otherwise the server gets sad)
+- Adapted David's vertical route logic to work with horizontal routes
 
-### Final Report Template:
+### Both
+- Updated sprite sheets
+- Many, many, many refactors
 
-- #### Updated design doc: 
-  * All the sections of your original design doc, corrected if necessary
-- #### Results:
-  * Provide images of your finished project
-- #### Evaluation (this is a big one!):
-  * How well did you do? What parameters did you tune along the way? Include some WIP shots that compare intermediate results to your final. Explain why you made the decisions you did.
-- #### Future work:
-  * Given more time, what would you add/improve
-- #### Acknowledgements:
-  * Cite _EVERYTHING_. Implemented a paper? Used some royalty-free music? Talked to classmates / a professor in a way that influenced your project? Attribute everything!
+## Design Document
 
-## Logistics
+### Goal
+Our goal for the final project of CIS 700-006 is to procedurally generate an interactive 2D Pokemon map that contains a number of 'Pokemon-Go' like features. The 2D world will be a grid-based map, where each 'block' of the grid corresponds to an explorable area. The blocks will each be themed to a specific biome, and the twist of this game is that when a player leaves a certain block and returns to that same block, the block will have changed its terrain based on some rule (currently, planning to cycle through the biomes in a random order). In addition, each biome will feature the original sprites for grass, trees, dirt, snow, etc., in order to recapture the authentic feel of the beloved Pokemon universe. Finally, we plan to rip off the original 150 Pokemon sprites from a 'trusted' resource, and randomly spawn these pokemon in 'wild pokemon areas' of the blocks (randomly determined in each block), where the pokemon available for spawn are determined by the specific biome (e.g. we will not spawn a water pokemon in the desert biome.)
 
-Like every prior project, your code will be submitted via github. Fork the empty final project repo and start your code base from there. Take this as an opportunity to practice using git properly in a team setting if you’re a new user.  For each weekly submission, provide a link to your pull request. Your repo will contain all the code and documentation associated with your project. The readme for your repo will eventually be your final report. At the top level, include a folder called “documentation”, where you’ll put your design doc and milestone write-ups.
+### Milestones
+- Milestone 1 - Develop framework with traversable and interactive grid. Grid should have basic placeholders for randomly generated terrain
+- Milestone 2 - Add in textures/sprites, updated algorithm for generating terrain and different biomes
+- Milestone 3 - Polish up the project, stitching together the different blocks so we can walk between them
 
-Don’t wait to merge your code! Seriously, there be dragons. Try to have a working version including all your code so that compatibility and merge issues don’t sneak up on you near the end.
+### End Product Summary
+- Traversable terrain
+	- Player controleld entity can move and naviagate around on a map
+- Proper terrain interaction
+	- Properly defined playable and non-playable areas will be implemented (can't walk through a mountain, trees, etc.)
+- Procedurally generated map
+	- Mimic original pokemon's style of maps
+	- Use various terrain objects (grass, roads, cliffs, mountains, water bodies, etc.)
+- Real-time generation
+	- Map generation is dynamic and will allow for playthrough with changing terrain
+- Map stiching
+	- Depending on implementation, the modularity of maps will allow for larger contiguous segments to be connected
+- Parameterized map generation
+	- Allows for user to control the number of areas generated, as well as some other factors
 
-## Grading
+## Results
 
-- 15% Design Doc (graded as a group)
-- 15% Milestone 1 (graded as a group)
-- 15% Milestone 2 (graded as a group)
-- 55% Final demo + report (graded individually)
+### Example snow biome area
+![Example snow biome area](./ss1.png)
 
-NOTE: We’ve been pretty lax about our late policy throughout the semester, but our margins on the final project are tight, therefore late submissions will NOT be accepted. If you have a significant reason for being unable to complete your goals, talk to us, and we’ll discuss getting you an incomplete and figure out an adjusted work plan with your group.
+### Biome specific terrain
+![Biome specific terrain](./ss2.png)
 
+### Transition between an area and a route
+![Transition between an area and a route](./ss3.png)
 
+### Example sand biome route with pokemon
+![Example sand biome route with pokemon](./ss4.png)
+
+### Example water biome route transitioning to grass biome area
+![Example water biome route transitioning to grass biome area](./ss5.png)
+
+### Example grass biome area with a doodad
+![Example grass biome area with a doodad](./ss6.png)
+
+### Example snow biome route
+![Example snow biome route](./ss7.png)
+
+### Example water biome area
+![Example water biome area](./ss8.png)
+
+## Evaluation
+With regards to the milestones, our group successfully completed all the points promised in each one. Based off of our end product summary, our group completed all of the promised points except for a few granular details we did not have time to polish up. More specifically, our team fell short on two features we had hoped to have working. The first is proper terrain interaction. While certain non-traversable terrain objects properly deny an agent attempting to walk over it, other terrain objects allow a player to ghost right through it (we're looking at you, evergreen trees in each grass and snow route). The reason for this was not because we couldn't figure out how to make a tree non-traversable (this is in fact just a boolean flag that we set when instantiating a new Tile object, which is a base building block of our map), but in fact due to the unforeseen complications that would arise when generating the tree objects for a route. The algorithm employed for populating a route with a believable amount of trees and grass is essentially two sin curves with amplitude noise carving out a walkable path for an agent, based off of some route attributes randomly assigned by the master process before render time. However, due to the random nature of the path carving, as we call it, sometimes the walkable route would only be one way, meaning a certain patch of land that was supposed to go both ways was blocked off by a ledge. We attempted to tweak our random seed, adding in certain rules so ledges can't be a certain length, among other strategies, but ultimately nothing came out that was satisfactory enough for the team, so we decided to allow an agent to ghost through a route region more as a proof of concept that the region was correctly generated, which also freed up time for us to go focus on other issues and bugs. In addition, we also fell short on the ability to alter more than one factor for the terrain generation. In the end, we were only able to allow a user to alter the number of areas generated by our engine, but denied users the ability to alter anything else. This was also a design decision that ultimately boiled down to us realizing certain parameters worked better than others, and tweaking even just one of these parameters wrong would cause the engine to either render a map very slowly, or not render at all due to the web browser crashing. We decided to allow for users to modify the number of areas generated because it was safe enough given the fact that an acceptable random seed and other parameters were set properly. Some examples of these 'other' parameters include, but are not limited to: average distance between areas (route length), average area size, average area density, and average area padding. All these attributes can be found in the `World.js` file.
+
+In summary, our team managed to complete 95% of the work promised, witht the other 5% being smaller features that we would love to iron out in the future. Unfortunately, our team did not capture any screenshots of our WIP or intermediate stages, and the screenshots you see in the above section is ultimately our final result. However, for those who did see our milestone demonstrations, (Adam, Rachel, Sally), you guys will know that we have come a long way from the black and while tree agent walking over a grass plane!
+
+## Future Work
+- Properly implement traversable and non-traversable terrain
+- Animate the walking/running behavior
+- Implement ability to actually enter the buildings spawn in an area
+- More cohesive terrain, so it's not just buildings randomly plopped down in an area
+- Build out the rest of the game, such as a pokemon battle and trading platform, items, etc.
+
+## Acknowledgements
+We would like to thank these sources for graciously providing the sprites we used!
+- [Terrain](http://fanart.pokefans.net/ressourcen/tilesets/tileset-wesley.png)
+- [More terrain](http://files.pokefans.net/images/fanart/mapping/ressourcen_neu/tileset-pokemon_dawn.png)
+- [Pokemon](https://veekun.com/dex/downloads)
+- [Players](http://img.photobucket.com/albums/v249/VaRuAs/DPsprites.png)
