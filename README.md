@@ -1,112 +1,91 @@
-# CIS700 Procedural Graphics: Final Project
+![Header](/images/header.png)
 
-Time to show off your new bag of procedural tricks by creating one polished final project. For this assignment you will have four weeks to create and document a portfolio piece that demonstrates your mastery of procedural thinking and implementation. You may work in groups of up to three (working alone is fine too). You may use any language / platform you choose for this assignment (given our approval if it’s not JavaScript/WebGL or C++/OpenGL).
+# Pruitt Igoe
 
-As usual with this class, we want to encourage you to take this opportunity to explore and experiment. To get you started, however, we’ve provided a few open-ended prompts below. Interesting and complex visuals are the goal in all of these prompts, but they encourage focus on different aspects of proceduralism.
+This report builds upon the design document uploaded.
 
-## Prompts:
+## Results:
 
-- ### A classic 4k demo
-  * In the spirit of the demo scene, create an animation that fits into a 4k executable that runs in real-time. Feel free to take inspiration from the many existing demos. Focus on efficiency and elegance in your implementation.
-  * Examples: [cdak by Quite & orange](https://www.youtube.com/watch?v=RCh3Q08HMfs&list=PLA5E2FF8E143DA58C)
+You can see the demo running 
+### [HERE](https://www.youtube.com/watch?v=D61TlRlmYOQ)
 
-- ### A forgery
-  * Taking inspiration from a particular natural phenomenon or distinctive set of visuals, implement a detailed, procedural recreation of that aesthetic. This includes modeling, texturing and object placement within your scene. Does not need to be real-time. Focus on detail and visual accuracy in your implementation.
-  * Examples:
-    - [Snail](https://www.shadertoy.com/view/ld3Gz2), [Journey](https://www.shadertoy.com/view/ldlcRf), Big Hero 6 Wormhole: [Image 1](http://2.bp.blogspot.com/-R-6AN2cWjwg/VTyIzIQSQfI/AAAAAAAABLA/GC0yzzz4wHw/s1600/big-hero-6-disneyscreencaps.com-10092.jpg) , [Image 2](https://i.stack.imgur.com/a9RGL.jpg)
+![Header](/images/proc1.png)
 
-- ### A game level
-  * Like generations of game makers before us, create a game which generates an  navigable environment (eg. a roguelike dungeon, platforms) and some sort of goal or conflict (eg. enemy agents to avoid or items to collect). Must run in real-time. Aim to create an experience that will challenge players and vary noticeably in different playthroughs, whether that means complex dungeon generation, careful resource management or a sophisticated AI model. Focus on designing a system that will generate complex challenges and goals.
-  * Examples: Spore, Dwarf Fortress, Minecraft, Rogue
+![Header](/images/proc2.png)
 
-- ### An animated environment / music visualizer
-  * Create an environment full of interactive procedural animation. The goal of this project is to create an environment that feels responsive and alive. Whether or not animations are musically-driven, sound should be an important component. Focus on user interactions, motion design and experimental interfaces.
-  * Examples: [Panoramical](https://www.youtube.com/watch?v=gBTTMNFXHTk), [Bound](https://www.youtube.com/watch?v=aE37l6RvF-c)
-- ### Own proposal
-  * You are of course **welcome to propose your own topic**. Regardless of what you choose, you and your team must research your topic and relevant techniques and come up with a detailed plan of execution. You will meet with some subset of the procedural staff before starting implementation for approval. 
+## Evaluation
 
-**Final grading will be individual** and will be based on both the final product and how well you were able to achieve your intended effect according to your execution plan. Plans change of course, and we don’t expect you to follow your execution plan to a T, but if your final project looks pretty good, but you cut corners and only did 30% of what you outlined in your design doc, you will be penalized.
+Because of time constraints, different design decisions were taken when completing the project:
 
-But overall, have fun! This is your opportunity to work on whatever procedural project inspires you. The best way to ensure a good result is to pick something you’re passionate about. :)
+### Concept/Choreography
 
-## Timeline
-
-- 4/08	Design doc due / Have met with procedural staff
-- 4/18	Milestone 1 (short write-up + demo)
-- 4/25	Milestone 2 (short write-up + demo)
-- 5/3	Final presentations (3-5 pm, Siglab), final reports due
-
-## Design Doc
-
-Your design doc should follow the following template. Note, each section can be pretty short, but cover them all! This will serve as valuable documentation when showing this project off in the future AND doing a good job will make it much easier for you to succeed, so please take this seriously.
-
-### Design Doc Template:
-
-- #### Introduction
-  * What motivates this project?
-- #### Goal
-  * What do you intend to achieve with this project?
-- #### Inspiration/reference: 
-  * Attach some materials, visual or otherwise you intend as reference
-- #### Specification:
-  * Outline the main features of your project
-- #### Techniques:
-  * What are the main technical/algorithmic tools you’ll be using? Give an overview, citing  specific papers/articles
-- #### Design:
-  * How will your program fit together? Make a simple free-body diagram illustrating the pieces.
-- #### Timeline:
-  * Create a week-by-week set of milestones for each person in your group.
+* The song selected changed, and Bayt Lahm, by Anamog, was picked. This is because it is shorter and captures the same claustrophobic feeling that the original song has. However, the buildup that Pruitt-Igoe has is lost.
 
 
-Along with your final project demo, you will submit a final report, in which you will update correct your original design doc as needed and add a few post-mortem items.
+* Given this new song, a new choreography was designed, such that it followed the first piano key with a water droplet and small waves. 
 
-## Milestones
+* Also, instead of just moving through terrains, the camera also enters a portal to an Underworld, following the song for choreography.
 
-To keep you honest / on-track, we will be checking on your progress at weekly intervals, according to milestones you’ll define at the outset (pending our approval). For each of the two milestones prior to the final submission, you will submit a short write up explaining whether or not you individually achieved your goals (specifying the files where the work happened), along with a link to a demo / images. These don’t have to be super polished -- we just want to see that you’re getting things done.
+* The light pillar is already fired, and although it is volumetric and animates, it is simplified from its original concept.
 
-Example:
+### Technical
 
-“Milestone 1:
-	Adam:
-Made some procedural terrain code in src/terrain.js. Implemented 3D simplex noise to do it. Also applied coloring via custom shader based on this cool paper X (see src/shaders/dirt.glsl). IMAGE
+* The terrain uses a rasterized raymarching that is inspired by Michael Mroz's Master thesis. It builds a 4k heightmap texture and a low resolution envelope mesh, and the shader raymarches from the collision point onwards.
 
-Austin: 
-I managed to set up my voronoi diagram shader (see src/shaders/voronoi.glsl). 
-Experimented with different scattering techniques. It’s working with the euclidean distance metric. I’m using it in src/main.js to color stones. IMAGE
+* The iterative raymarching approach I wanted to test does work but needs to be formalized for a generalization to exist. Because of this (and time), it is disabled in the result demo.
 
-Rachel:
-I tried really hard to make my toon shader work (src/shaders/toon.glsl), but I still have a bug! T_T BUGGY IMAGE. DEMO LINK”
+* I built an entire interactive application engine that uses an entity-component architecture and offers various OpenGL features: framebuffer objects (FBOs), floating point textures with mipmaps, stencil operations, and a set of useful material features. Also, shaders are recompiled in runtime if the source files change, which greatly simplify development.
 
-## Final Report
+* This framework also offers a very simple approach to building shader passes. In the end, these were not used.
 
-In addition to your demo, you will create a final report documenting your project overall. This document should be clear enough to explain the value and details of your project to a random computer graphics person with no knowledge of this class.
+* Originally, I wanted to use deferred rendering, but in the end I decided it didn't really add anything useful to the demo except extraneous complexity, as few lights are needed.
 
-### Final Report Template:
+* The application is compiled with static libraries, so only an executable is needed, along with it resource images/shader files. Ideally, these should be compressed with a packaging algorithm in the executable.
 
-- #### Updated design doc: 
-  * All the sections of your original design doc, corrected if necessary
-- #### Results:
-  * Provide images of your finished project
-- #### Evaluation (this is a big one!):
-  * How well did you do? What parameters did you tune along the way? Include some WIP shots that compare intermediate results to your final. Explain why you made the decisions you did.
-- #### Future work:
-  * Given more time, what would you add/improve
-- #### Acknowledgements:
-  * Cite _EVERYTHING_. Implemented a paper? Used some royalty-free music? Talked to classmates / a professor in a way that influenced your project? Attribute everything!
+* Camera choreography is built with a set of camera controllers managed by a state machine.
 
-## Logistics
+* Terrain is built with a fractal noise generator based on Perlin noise with iq's derivative feedback approach. However, I also added my own tweaks, in particular: a) terracing, b) erosion inspired riges and c) frequency/amplitude ratios dependent on derivatives. I think the results are interesting but are not useful unless there's enough interactivity for the user to develop it. It also interpolates between ridged and billow noise based on the derivative.
 
-Like every prior project, your code will be submitted via github. Fork the empty final project repo and start your code base from there. Take this as an opportunity to practice using git properly in a team setting if you’re a new user.  For each weekly submission, provide a link to your pull request. Your repo will contain all the code and documentation associated with your project. The readme for your repo will eventually be your final report. At the top level, include a folder called “documentation”, where you’ll put your design doc and milestone write-ups.
+* I built a small GLSL library compilation feature that can append GLSL files to reuse code. Because of this, all the raymarched elements in the scene reuse the library Raymarching.glsl, which offers a lot of useful functions through defines and also has the main function of the shader. A user of the library only needs to define the scene() and shade() functions, and the shader will already work.
 
-Don’t wait to merge your code! Seriously, there be dragons. Try to have a working version including all your code so that compatibility and merge issues don’t sneak up on you near the end.
+* The raymarching library handles intersection, shadows, volumetric rendering and reflections.
 
-## Grading
-
-- 15% Design Doc (graded as a group)
-- 15% Milestone 1 (graded as a group)
-- 15% Milestone 2 (graded as a group)
-- 55% Final demo + report (graded individually)
-
-NOTE: We’ve been pretty lax about our late policy throughout the semester, but our margins on the final project are tight, therefore late submissions will NOT be accepted. If you have a significant reason for being unable to complete your goals, talk to us, and we’ll discuss getting you an incomplete and figure out an adjusted work plan with your group.
+* The raymarched water is probably the most interesting shader, as it modifies the normal on the fly to generate the droplet wave.
 
 
+![Header](/images/proc3.png)
+
+### Technical problems
+* The heightmap generation is not optimized and takes some time. There are various ways to improve this: a) multithreading the code or b) building the heightmap and the envelope mesh on a compute shader. b) is the most optimized approach, and I will implement this as a side project.
+
+* The heightmap generator is very chaotic in the hard formal sense: it is very hard to find parameters that result into good terrains. I wanted to implement an erosion filter, but the only algorithms available are either very slow or need to be implemented on GPU.
+
+* The volumetric rendering of the light pillar works, but the alpha blending of the material diminishes the effect. Lack of time for tweaking this effect is the reason, and I expect this to be can be vastly improved.
+
+* OpenGL features are always hard to implement and debug, so a lot of time was spent in the framework.
+
+![Header](/images/proc4.png)
+
+### Personal evaluation
+While I think that this project is technically good, I'm not completely pleased with the result, mostly because of the lack of terrain color variation, the naïveness of the underworld pillar/mountain (and lack of buildup for the pillar).
+
+I do, however, like the overall shot composition and animation, and the feelings that it communicates.
+
+### Future work
+
+I want to continue this work and think it is a good proof of concept. I do not know if it is convenient to switch back to the old music, but it is worth reviewing it.
+
+* The iterative raymarching approach is an interesting and useful algorithm and I plan on implementing a generalized approach.
+
+* Implementing the terrain generation in a compute shader would be interesting.
+
+* Implementing a natural erosion filter would be ideal, as I think this is the *key* in realistic terrain generation.
+
+* Clouds and scattering would be a nice to have feature.
+
+### References
+
+* iq's approaches are vastly used here. In particular, his derivative noise generator and his Hell demo, seen on shadertoy.
+* Perlin's original noise algorithm is reused here, without much modification.
+* Michael Mroz's rasterized raymarching
+* Bayt Lahm, by Anamog is the song playing.
