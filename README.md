@@ -17,7 +17,7 @@
 
     ![](./images/ref2.jpg)
 
-    * Dancing Line 
+    * Skyward 
     
     ![](./images/ref3.jpg)
 
@@ -46,7 +46,7 @@
     * Fixed cube rotation by using quaternions instead of mesh.rotation. Found out that it is because there is a local rotation and world rotation for each THREE.Mesh that can be easily mixed up. Better to just use matricies in a scene graph style. Adjusted camera placement so that it is centered at the grid center, no matter what the dimensions of the grid is. Made multiple checks so that the cube can only flip if the color of the cube face that is going to face down matches the grid cell color. Added levels, where after crossing the finish cell, a new level appears with an increase in grid dimension. Realized that the plain Depth First Search level generation is too simple because on the edge of the grid, there is a 50 percent chance that it remains on the edge of the grid. Often the level generated has a easy path to the finish along the edge. Added a Gaussian Distribution Function to weigh the grid cells closer to the center more, so that the Depth First Search generator tends to go toward the center, making the level more complicated.
 
   - ### Milestone 3
-    * Added a finish cell cube, or else a new player of the game doesn't know where the finish line is. Realized that the Depth First Search and Gaussian Distribution function level generator still does not work quite as expected. Now the level generator tends to go in a snake path, toward the center of the grid, then toward the edge, then toward the center again. Added a "throughput" that starts off as 1.0 and slowly decreases to 0.0 the more often the generator walks straight. This makes the paths generated more twisty and complicated. Added animation so that, to the player, it makes sense how the cube is flipping. Used a gain function to make the animation more realistic and lively. Added sound effects so that when the cube impacts on the ground, there is a "thump," and also added dream-like background music. Used raytracing so that the user no longer has to use arrow keys to move the cube. Instead, the user can use his or her mouse to select the grid cell to move to. Used cosine waves to procedurally generate the color for each level.
+    * Added a finish cell cube, or else a new player of the game doesn't know where the finish line is. Realized that the Depth First Search and Gaussian Distribution function level generator still does not work quite as expected. Now the level generator tends to go in a snake path, toward the center of the grid, then toward the edge, then toward the center again. Added a "throughput" that starts off as 1.0 and slowly decreases to 0.0 the more often the generator walks straight. This makes the paths generated more twisty and complicated. Added animation so that, to the player, it makes sense how the cube is flipping. Used a gain function to make the animation more realistic and lively. Added sound effects so that when the cube impacts on the ground, there is a "thump," and also added dream-like background music. Used raymarching so that the user no longer has to use arrow keys to move the cube. Instead, the user can use his or her mouse to select the grid cell to move to. Used cosine waves to procedurally generate the color for each level.
 
   - ### Final Tweaks
     * Changed the color of the raymarching grid cell selection depending if it is a movable grid cell or not. Realized that the game is too easy because the player can always move back if he makes a mistake, and there is no game over case. Made it so that once the user steps off a grid cell, the grid cell falls into an abyss. No more take-back-sies. If the user is stuck, he or she must take his or her own life by jumping into the abyss. Then it is game over. Added a start menu and game over screen so that there actually is a clear/definite start and end to the game. Made it so that not only does the grid dimension increase as the levels get harder, but also adjusted the throughput value so that the level generated paths are more twisty as the levels get harder. Changed the camera from orthographic to perspective in order to give depth to the grid cells falling.
@@ -68,7 +68,7 @@
 
     ![](./images/ref2.jpg)
 
-    * Dancing Line 
+    * Skyward
     
     ![](./images/ref3.jpg)
 
@@ -94,7 +94,7 @@
 
     * Animation: In order for the cube rotations to make sense in the eyes of the viewer, there should be animation. The cube shouldn't "jump" from grid cell to grid cell. Rather, there should be some smooth transition. I originally thought of LERPing the start and final positions of the cube flip, and SLURPing the start and final quaternion rotations of the cube flip. To my surprise, the cube center does not remain at the same height when flipped, thus LERPing the start and final positions (which are at the same y height) would not work. 
 
-    ![](./images/ref7.png)
+    ≈
 
     SLURPing the start and final quaternions does work for rotation, but SLURPING at an axis of rotation that is not the cube center (but a cube edge) requires extra translation transformation. I decided to manually use a T*R*T matrix transformation every time onUpdate is called, where the R matrix is a SLURP of the two quaternions. After getting the animation to work, I felt as though something was missing. The cube did not have character. I decided to add a Toolbox Function I learned, the gain function, to distort the speed at which the cube rotates given a certain t value between 0 and 1. The first GIF is an animation of a cube WITHOUT the gain function applied, and the second GIF is an animation of a cube WITH the gain function.
 
@@ -102,7 +102,9 @@
 
     ![](./images/ref9.gif)
 
-    * Raymarching: My good pal Adam suggested to use ray marching 
+    * Raymarching: Originally I thought fixing the camera rotation to a specific angle and allowing the user to view the back faces of the cube by hovering over the cube with a mouse was a good idea. That way, the arrow keys can stay in the same orientation. My good ol' pal Adam suggested to use ray marching to select a grid cell to move the cube instead. Then the user can rotate the grid to his or her discretion, while viewing all sides of the cube. That was a great idea. Thanks Adam! In the onUpdate function, I raymarch a ray originating at the mouse with a direction of the camera forward vector to find the closest intersected object. If the intersected object is a grid cell, then I highlight the top face light gray or dark gray, depending on if it is a valid move or not.
+
+    ![](./images/raymarch.gif)
 
   - ### Structure
     * Player Class: Class containing the state of the player, including the six faces and the direction the cube is facing.
@@ -115,25 +117,46 @@
     * May 3, 2017: Polishing up the project. Fixing bugs, adding sound effects and animation, adjusting color pallette and aesthetics.
 
   - ### Results:
-    * Provide images of your finished project
 
-  - ### Evaluation (this is a big one!):
-    * How well did you do? What parameters did you tune along the way? Include some WIP shots that compare intermediate results to your final. Explain why you made the decisions you did.
+    ![](./images/result1.png)
+
+    ![](./images/result2.png)
+
+    ![](./images/result3.png)
+
+  - ### Evaluation:
+    * Overall, I feel like I have come a long way. I started this project thinking it will be almost impossible to generate the types of levels I imagined, but I took clever approaches and applied a lot of what I learned to solve difficult situations, such as keeping track of which face color is facing which direction in the world without the need of a rotation matrix but only 6 variables, fixing the unwanted emergent behavior of the Depth First Search level generator, and applying color and toolbox functions to make the game more aesthetically pleasing. 
+
+    There were many tweaks that had to be made throughout the process. I changed the camera from orthographic to perspective in order to give depth to the grid cells falling, added a finish cell cube, or else a new player of the game doesn't know where the finish line is, used raymarching so that the user no longer has to use arrow keys to move the cube, used cosine waves to procedurally generate the color for each level, and changed the color of the raymarching grid cell selection depending if it is a movable grid cell or not. I also realized that the game is too easy because the player can always move back if he makes a mistake, and there is no game over case. I then made it so that once the user steps off a grid cell, the grid cell falls into an abyss. No more take-back-sies. If the user is stuck, he or she must take his or her own life by jumping into the abyss. Then it is game over. I also added a start menu and game over screen so that there actually is a clear/definite start and end to the game. Lastly, I modified the game design so that not only does the grid dimension increase as the levels get harder, but throughput factor decreases so that the level generated paths are more twisty as the levels get harder. 
+
+    ![](./images/WIP1.png)
+
+    ![](./images/WIP2.png)
 
   - ### Future work:
-    * Given more time, what would you add/improve
+    * Given more time, I would add more complexity to the game, such as not only making the level a 2D grid. Instead, the cube can walk on walls and ceilings, as long as the cube face colors are matching both surfaces at the corner of the wall. In addition, I would want to add a way for users to keep track of their thought process, such as being able to add "flags" on the grid surface, similar to Mineweeper. This would keep the interest of the players rather than having them give up when the grid dimension becomes too big.
 
   - ### Acknowledgements:
     * Special thanks to Rachel Hwang, Adam Mally, Sally Kong, Trung Le, and Austin Eng for being so supportive throughout the semester, and especially throughout this project!
 
     * Gaussian Distribution
-      ** https://en.wikipedia.org/wiki/Gaussian_function#Two-dimensional_Gaussian_function
-      ** https://en.wikipedia.org/wiki/Normal_distribution#/media/File:Empirical_Rule.PNG
+      * * https://en.wikipedia.org/wiki/Gaussian_function#Two-dimensional_Gaussian_function
+      * * https://en.wikipedia.org/wiki/Normal_distribution#/media/File:Empirical_Rule.PNG
 
     * Colors
-      ** http://www.iquilezles.org/www/articles/palettes/palettes.htm
-      ** http://dev.thi.ng/gradients/
+      * * http://www.iquilezles.org/www/articles/palettes/palettes.htm
+      * * http://dev.thi.ng/gradients/
 
+    * Raymarching
+      * * https://stemkoski.github.io/Three.js/Mouse-Over.html
+      * * https://github.com/mrdoob/three.js/issues/5587
+      * * http://stackoverflow.com/questions/20361776/orthographic-camera-and-pickingray
+
+    * Mouse Detection
+      * * https://threejs.org/examples/?q=out#webgl_postprocessing_outline
+
+    * Camera Orbit Controls
+      * * https://searchcode.com/codesearch/view/58375664/
 
 
 
