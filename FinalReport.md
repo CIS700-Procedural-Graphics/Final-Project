@@ -82,6 +82,8 @@ As stated before, Cesium obtains tiles from the server. We will be creating a we
 
 ## Results
 
+[YouTube video](https://www.youtube.com/watch?v=qH6zrUEBTnE)
+
 Terrain (gif):
 
 ![](images/report/increase_detail.gif)

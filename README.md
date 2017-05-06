@@ -1,6 +1,9 @@
 ### CIS700 Procedural Graphics: Final Project
 # Procedural Terrain using Cesium
 #### By: Rudraksha Shah and Rishabh Shah
+
+[Youtube Video](https://www.youtube.com/watch?v=qH6zrUEBTnE)
+
 -----
 
 ![](./images/dd_img1.jpg)
