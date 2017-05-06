@@ -35,7 +35,7 @@ export default class Player {
           new THREE.MeshBasicMaterial({color:colors[0]}),
           new THREE.MeshBasicMaterial({color:colors[1]}), 
           new THREE.MeshBasicMaterial({color:colors[2]}),
-          new THREE.MeshBasicMaterial({color:colors[3]}), 
+          new THREE.MeshBasicMaterial({color:colors[3]}),  
           new THREE.MeshBasicMaterial({color:colors[4]}), 
           new THREE.MeshBasicMaterial({color:colors[5]}) 
         ]; 

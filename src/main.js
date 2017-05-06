@@ -168,6 +168,7 @@ function addGameOver(framework) {
   gameOverMesh = new THREE.Mesh( gameOverGeometry, gameOverMaterial );
 
   gridDimension = 4.0;
+  throughputFactor = 0.9;
   atGameOver = true;
   framework.camera.add(gameOverMesh);
   framework.scene.add(framework.camera);
