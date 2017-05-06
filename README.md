@@ -73,23 +73,18 @@ I intend to achieve a beautiful looking pond scene which is also animated and in
 - Computed waves and moved vertices in vertex shader.
 - Referenced [Effective Water Simulation From Physical Models by Mark Finch and Cyan Worlds](http://http.developer.nvidia.com/GPUGems/gpugems_ch01.html)
 
-### Design
-
-
 ### Results
 - [Live Demo](https://eldu.github.io/Final-Project/)
 - [Video](https://vimeo.com/216259878)
 By the final presentation, I was able to present working individual tidbits for creating a pond. I created a vertex shader for water in which used cosine waves. I made it such that I could extend it and add in more waves which I will do later to create a noiser and more natural pond water scene. I also created rocks in which are different on each reload of the page. THey started out a point cloud, then a convex hull is created around that and then is subdivided to create a smoother rock. I also used the superformula to create a flower.
 
-
 ### Evaluation
 I think that I have a great start to create a pond. I started off this project to create a bunch of little things to rearrange into a pond. Unfortunately, I have yet to actually rearrange it in such a way it doesn't look plain and uninteresting. In addition, I have yet to bring in my L-Systems homework. I think at this moment I have created enought tools to make an okay pond. The next real step is to arrange it as so.
-
 
 ### Future Work
 Actually, I do plan on continuing to work on this project. I'm planning on finishing this up before the end of the month because I really do want to have a finished piece. Here are the things that I would like to work on.
 - Flowers
-  - Rearrange
+  - Rearranged
   - Animation
     - Gliding/Rotating
     - Lerping between flower forms
