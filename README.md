@@ -58,18 +58,21 @@ Because of time constraints, different design decisions were taken when completi
 * OpenGL features are always hard to implement and debug, so a lot of time was spent in the framework.
 
 ### Personal evaluation
-While I think that this project is technically good, I'm not completely pleased with the resulting choreography, mostly because of the lack of terrain color variation, the naïveness of the underworld pillar/mountain (and lack of buildup for the pillar).
+While I think that this project is technically good, I'm not completely pleased with the result, mostly because of the lack of terrain color variation, the naïveness of the underworld pillar/mountain (and lack of buildup for the pillar).
 
-I do, however, like the overall shot composition and animation, and the feelings that communicates.
-
+I do, however, like the overall shot composition and animation, and the feelings that it communicates.
 
 ### Future work
 
 I want to continue this work and think it is a good proof of concept. I do not know if it is convenient to switch back to the old music, but it is worth reviewing it.
 
-* The iterative raymarching approach 
+* The iterative raymarching approach is an interesting and useful algorithm and I plan on implementing a generalized approach.
 
+* Implementing the terrain generation in a compute shader would be interesting.
 
+* Implementing a natural erosion filter would be ideal, as I think this is the *key* in realistic terrain generation.
+
+* Clouds and scattering would be a nice to have feature.
 
 ### References
 
