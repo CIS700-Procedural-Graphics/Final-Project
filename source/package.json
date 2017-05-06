@@ -1,0 +1,22 @@
+{
+  "scripts": {
+    "start": "nodemon server.js --ignore example/",
+    "serve": "node server.js",
+    "postinstall": "cd cesium && npm install",
+    "build": "cd cesium && npm run release"
+  },
+  "dependencies": {
+    "3d-tiles-tools": "^0.1.2",
+    "cesium": "^1.32.1",
+    "compression": "^1.6.2",
+    "express": "^4.15.2",
+    "gltf-pipeline": "0.1.0-alpha11",
+    "morgan": "^1.8.1",
+    "three": "^0.85.2",
+    "yargs": "^7.0.2"
+  },
+  "devDependencies": {
+    "gh-pages-deploy": "^0.4.2",
+    "nodemon": "^1.11.0"
+  }
+}
