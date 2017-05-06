@@ -33,16 +33,16 @@ Our goal for the final project of CIS 700-006 is to procedurally generate an int
 
 ### End Product Summary
 - Traversable terrain
-	Player controleld entity can move and naviagate around on a map
+	- Player controleld entity can move and naviagate around on a map
 - Proper terrain interaction
-	Properly defined playable and non-playable areas will be implemented (can't walk through a mountain, trees, etc.)
+	- Properly defined playable and non-playable areas will be implemented (can't walk through a mountain, trees, etc.)
 - Procedurally generated map
-	Mimic original pokemon's style of maps
-	Use various terrain objects (grass, roads, cliffs, mountains, water bodies, etc.)
+	- Mimic original pokemon's style of maps
+	- Use various terrain objects (grass, roads, cliffs, mountains, water bodies, etc.)
 - Real-time generation
-	Map generation is dynamic and will allow for playthrough with changing terrain
+	- Map generation is dynamic and will allow for playthrough with changing terrain
 - Map stiching
-	Depending on implementation, the modularity of maps will allow for larger contiguous segments to be connected
+	- Depending on implementation, the modularity of maps will allow for larger contiguous segments to be connected
 - Parameterized map generation
 * Allows for user to control the number of areas generated, as well as some other factors
 
