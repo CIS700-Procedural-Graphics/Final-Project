@@ -55,7 +55,7 @@ class MoveOption {
 		var gridRadius = gridDimension/2.0 - 0.5;
 		//solve for variance
 		//https://en.wikipedia.org/wiki/Normal_distribution#/media/File:Empirical_Rule.PNG
-		var variance2 = (gridDimension / 4.0) * (gridDimension / 4.0);
+		var variance2 = (gridDimension / 2.0) * (gridDimension / 2.0);
 		var x2 = (cPos.x - gridRadius) * (cPos.x - gridRadius);
         var z2 = (cPos.z - gridRadius) * (cPos.z - gridRadius);
         this.probability = Math.pow(2.71828, -(x2 + z2)/(2.0*variance2));
@@ -159,7 +159,7 @@ class FakePlayer {
 
 export default class Grid {
 
-	constructor(scene, gridDimension, start, colors) {
+	constructor(scene, gridDimension, start, colors, throughputFactor) {
 		
 		this.gridArray = [];
 		//initialize grid
@@ -258,7 +258,7 @@ export default class Grid {
 				//checks if fake player moves in the same direction
 				//if so, lessen the probability of doing so the next move
 				if (newVelocity.equals(fakePlayer.velocity)) {
-					fakePlayer.throughput *= 0.5;
+					fakePlayer.throughput *= throughputFactor;
 				}
 				else {
 					fakePlayer.throughput = 1.0;

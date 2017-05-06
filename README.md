@@ -76,35 +76,39 @@
     * This procedurally-generated puzzle game has a simple objective: flip a cube from grid cell to grid cell until you reach the finish cell. Each grid cell can be one of six colors corresponding to the six distinct face colors of the cube. What makes this game challenging is that the current grid cell the cube is on must have the same color as the bottom face of the cube. Once the cube lands on a grid cell, the previous grid cell falls into an abyss and the player cannot go back. The player must plan his or her moves accordingly. In essence, this game is a maze without walls. 
 
   - ### Techniques
-    * Level Generation: Started off with a Depth First Search level generation algorithm where a simulated cube walks on a random path until all its neighboring grid cells are visited. Then the cube takes a step back, and checks if there are any neighboring grid cells that are not visited. If so, the cube walks on a random path again. This repeats until the simulated cube reaches its starting position. An emergent behavior that came out of this algorithm was that very frequently, a generated path would continue along the edge of the grid. This is because on an edge of a grid, there are only two possible directions the simulated cube can move: along the edge again, or toward the center of the grid. Since I weighed both choices equally, a grid-edge path was very common. In order to fix this, I tried using a Gaussian Distribution Function to weigh the choices of the simulated cube unequally; the grid cells near the center of the grid will have higher probability of being chosen. I picked the variance based on the empirical rule of the normal distribution, where the grid dimensions span from (mean-2sigma) to (mean+2sigma).
+    * Level Generation: 
+      * Started off with a Depth First Search level generation algorithm where a simulated cube walks on a random path until all its neighboring grid cells are visited. Then the cube takes a step back, and checks if there are any neighboring grid cells that are not visited. If so, the cube walks on a random path again. This repeats until the simulated cube reaches its starting position. An emergent behavior that came out of this algorithm was that very frequently, a generated path would continue along the edge of the grid. This is because on an edge of a grid, there are only two possible directions the simulated cube can move: along the edge again, or toward the center of the grid. Since I weighed both choices equally, a grid-edge path was very common. In order to fix this, I tried using a Gaussian Distribution Function to weigh the choices of the simulated cube unequally; the grid cells near the center of the grid will have higher probability of being chosen. I picked the variance based on the empirical rule of the normal distribution, where the grid dimensions span from (mean-2sigma) to (mean+2sigma).
 
-    ![](./images/ref4.png)
+      ![](./images/ref4.png)
 
-    ![](./images/ref5.png)
+      ![](./images/ref5.png)
 
-    I ran into another problem with this modification of the Depth First Search level generation algorithm. Because I picked such a large variance, the probability of the center grid cells is significantly higher than the edge grid cells. This ended up causing my simulated cube to walk straight toward the center of the grid, then around the center of the grid until there are no more unvisited grid cells, then along the grid edges. Again, grid-edge paths became very common. I decided to pick a smaller variance and this fixed the problem. 
+      * I ran into another problem with this modification of the Depth First Search level generation algorithm. Because I picked such a large variance, the probability of the center grid cells is significantly higher than the edge grid cells. This ended up causing my simulated cube to walk straight toward the center of the grid, then around the center of the grid until there are no more unvisited grid cells, then along the grid edges. Again, grid-edge paths became very common. I decided to pick a smaller variance and this fixed the problem. 
 
-    The next emergent behavior I noticed was that the paths generated were too straight. I applied what I learned in Advanced Computer Graphics of a throughput variable that starts off at 1.0 and decreases over time to 0.0. Now, every time the simulated cube walks in the same direction as the previous step, the throughput variable is decreased by a factor of 0.5 and then multipled to the probability of the upcoming same-direction grid cell choice. In other words, the more consecutive straightforward steps the simulated cube takes, the least likely the next straightforward step will be. I later realized that depending on the throughput factor, the paths can be more or less twisty. I decided to have a smaller throughput factor at the start of the game and slowly increase it in each proceeding level.
+      * The next emergent behavior I noticed was that the paths generated were too straight. I applied what I learned in Advanced Computer Graphics of a throughput variable that starts off at 1.0 and decreases over time to 0.0. Now, every time the simulated cube walks in the same direction as the previous step, the throughput variable is decreased by a factor of 0.5 and then multipled to the probability of the upcoming same-direction grid cell choice. In other words, the more consecutive straightforward steps the simulated cube takes, the least likely the next straightforward step will be. I later realized that depending on the throughput factor, the paths can be more or less twisty. I decided to have a smaller throughput factor at the start of the game and slowly increase it in each proceeding level.
 
-    My original worry of making sure the player cannot cross though "walls" between generated paths quickly disappeared after I realized that even though the player can cross through "walls," it is very unlikely for the player to continue along the crossed path because the cube must be in a certain orientation/rotation. What I mean by this is that the bottom face of the cube may match with the grid cell after crossing through a "wall," but there are 4 possible ways the cube can be orientated, and only one orientation can allow the player to continue to move along the crossed path. And even if the player can move along the crossed path, the crossed path does not necessairly lead to the finish cell. As a result, I chose to ignore this case because it actually benefits my game by adding an extra layer of complexity: 3 out of the 4 times the player is able to cross through a "wall" will lead to a dead end due to the incorrect orientation of the cube.
+      * My original worry of making sure the player cannot cross though "walls" between generated paths quickly disappeared after I realized that even though the player can cross through "walls," it is very unlikely for the player to continue along the crossed path because the cube must be in a certain orientation/rotation. What I mean by this is that the bottom face of the cube may match with the grid cell after crossing through a "wall," but there are 4 possible ways the cube can be orientated, and only one orientation can allow the player to continue to move along the crossed path. And even if the player can move along the crossed path, the crossed path does not necessairly lead to the finish cell. As a result, I chose to ignore this case because it actually benefits my game by adding an extra layer of complexity: 3 out of the 4 times the player is able to cross through a "wall" will lead to a dead end due to the incorrect orientation of the cube.
 
-    * Color: Originally, I was hand-picking color gradients using IQ's idea of a color palette based on three cosine functions corresponding to R, G, and B. However, this limited the possibilities of color to a finite, hand-picked amount. I thought to myself, since R, G, and B are represented as cosine functions anyway, why not generate the color procedurally? I first decided what general color the procedurally generated gradients should be. Basing my decision on the computer graphics concept of a yellow key light (from sun), and a blue fill light (from sky), I wanted the grid colors to have a general red to yellow gradient since the background was nice shade of blue already. Playing around with the equations, I noticed that the R and G cosine functions should be similar, but not equivalent in phase to produce a yellow shade. The R and G cosine functions should have high amplitude so that there is a visible change in color gradient, or else the 6 face colors of the cube will be too similar in hue. The B cosine function should generally be close to 0.1 because when B is too high, it causes the red to turn purple and yellow to turn brown, and when B is 0, the shades of red and yellow do not seem realistic enough (there is no such thing as perfectly red/green with no blue in real life). I also made sure that the R, G, and B functions do not get exceed the 0 to 1 range given the y-displacement and amplitude because this will cause some section of the color gradient to receive a consistent contribution of R, G, or B, making the gradient sections less distinctive for the 6 face colors. Here is a visualization of how my procedural color gradient generator looks like:
+    * Color: 
+      * Originally, I was hand-picking color gradients using IQ's idea of a color palette based on three cosine functions corresponding to R, G, and B. However, this limited the possibilities of color to a finite, hand-picked amount. I thought to myself, since R, G, and B are represented as cosine functions anyway, why not generate the color procedurally? I first decided what general color the procedurally generated gradients should be. Basing my decision on the computer graphics concept of a yellow key light (from sun), and a blue fill light (from sky), I wanted the grid colors to have a general red to yellow gradient since the background was nice shade of blue already. Playing around with the equations, I noticed that the R and G cosine functions should be similar, but not equivalent in phase to produce a yellow shade. The R and G cosine functions should have high amplitude so that there is a visible change in color gradient, or else the 6 face colors of the cube will be too similar in hue. The B cosine function should generally be close to 0.1 because when B is too high, it causes the red to turn purple and yellow to turn brown, and when B is 0, the shades of red and yellow do not seem realistic enough (there is no such thing as perfectly red/green with no blue in real life). I also made sure that the R, G, and B functions do not get exceed the 0 to 1 range given the y-displacement and amplitude because this will cause some section of the color gradient to receive a consistent contribution of R, G, or B, making the gradient sections less distinctive for the 6 face colors. Here is a visualization of how my procedural color gradient generator looks like:
 
-    ![](./images/ref6.png)
+      ![](./images/ref6.png)
 
-    * Animation: In order for the cube rotations to make sense in the eyes of the viewer, there should be animation. The cube shouldn't "jump" from grid cell to grid cell. Rather, there should be some smooth transition. I originally thought of LERPing the start and final positions of the cube flip, and SLURPing the start and final quaternion rotations of the cube flip. To my surprise, the cube center does not remain at the same height when flipped, thus LERPing the start and final positions (which are at the same y height) would not work. 
+    * Animation: 
+      * In order for the cube rotations to make sense in the eyes of the viewer, there should be animation. The cube shouldn't "jump" from grid cell to grid cell. Rather, there should be some smooth transition. I originally thought of LERPing the start and final positions of the cube flip, and SLURPing the start and final quaternion rotations of the cube flip. To my surprise, the cube center does not remain at the same height when flipped, thus LERPing the start and final positions (which are at the same y height) would not work. 
 
-    ≈
+      ![](./images/ref7.png)
 
-    SLURPing the start and final quaternions does work for rotation, but SLURPING at an axis of rotation that is not the cube center (but a cube edge) requires extra translation transformation. I decided to manually use a T*R*T matrix transformation every time onUpdate is called, where the R matrix is a SLURP of the two quaternions. After getting the animation to work, I felt as though something was missing. The cube did not have character. I decided to add a Toolbox Function I learned, the gain function, to distort the speed at which the cube rotates given a certain t value between 0 and 1. The first GIF is an animation of a cube WITHOUT the gain function applied, and the second GIF is an animation of a cube WITH the gain function.
+      * SLURPing the start and final quaternions does work for rotation, but SLURPING at an axis of rotation that is not the cube center (but a cube edge) requires extra translation transformation. I decided to manually use a T*R*T matrix transformation every time onUpdate is called, where the R matrix is a SLURP of the two quaternions. After getting the animation to work, I felt as though something was missing. The cube did not have character. I decided to add a Toolbox Function I learned, the gain function, to distort the speed at which the cube rotates given a certain t value between 0 and 1. The first GIF is an animation of a cube WITHOUT the gain function applied, and the second GIF is an animation of a cube WITH the gain function.
 
-    ![](./images/ref8.gif)
+      ![](./images/ref8.gif)
 
-    ![](./images/ref9.gif)
+      ![](./images/ref9.gif)
 
-    * Raymarching: Originally I thought fixing the camera rotation to a specific angle and allowing the user to view the back faces of the cube by hovering over the cube with a mouse was a good idea. That way, the arrow keys can stay in the same orientation. My good ol' pal Adam suggested to use ray marching to select a grid cell to move the cube instead. Then the user can rotate the grid to his or her discretion, while viewing all sides of the cube. That was a great idea. Thanks Adam! In the onUpdate function, I raymarch a ray originating at the mouse with a direction of the camera forward vector to find the closest intersected object. If the intersected object is a grid cell, then I highlight the top face light gray or dark gray, depending on if it is a valid move or not.
+    * Raymarching: 
+      * Originally I thought fixing the camera rotation to a specific angle and allowing the user to view the back faces of the cube by hovering over the cube with a mouse was a good idea. That way, the arrow keys can stay in the same orientation. My good ol' pal Adam suggested to use ray marching to select a grid cell to move the cube instead. Then the user can rotate the grid to his or her discretion, while viewing all sides of the cube. That was a great idea. Thanks Adam! In the onUpdate function, I raymarch a ray originating at the mouse with a direction of the camera forward vector to find the closest intersected object. If the intersected object is a grid cell, then I highlight the top face light gray or dark gray, depending on if it is a valid move or not.
 
-    ![](./images/raymarch.gif)
+      ![](./images/raymarch.gif)
 
   - ### Structure
     * Player Class: Class containing the state of the player, including the six faces and the direction the cube is facing.
@@ -140,23 +144,23 @@
     * Special thanks to Rachel Hwang, Adam Mally, Sally Kong, Trung Le, and Austin Eng for being so supportive throughout the semester, and especially throughout this project!
 
     * Gaussian Distribution
-      * * https://en.wikipedia.org/wiki/Gaussian_function#Two-dimensional_Gaussian_function
-      * * https://en.wikipedia.org/wiki/Normal_distribution#/media/File:Empirical_Rule.PNG
+      * https://en.wikipedia.org/wiki/Gaussian_function#Two-dimensional_Gaussian_function
+      * https://en.wikipedia.org/wiki/Normal_distribution#/media/File:Empirical_Rule.PNG
 
     * Colors
-      * * http://www.iquilezles.org/www/articles/palettes/palettes.htm
-      * * http://dev.thi.ng/gradients/
+      * http://www.iquilezles.org/www/articles/palettes/palettes.htm
+      * http://dev.thi.ng/gradients/
 
     * Raymarching
-      * * https://stemkoski.github.io/Three.js/Mouse-Over.html
-      * * https://github.com/mrdoob/three.js/issues/5587
-      * * http://stackoverflow.com/questions/20361776/orthographic-camera-and-pickingray
+      * https://stemkoski.github.io/Three.js/Mouse-Over.html
+      * https://github.com/mrdoob/three.js/issues/5587
+      * http://stackoverflow.com/questions/20361776/orthographic-camera-and-pickingray
 
     * Mouse Detection
-      * * https://threejs.org/examples/?q=out#webgl_postprocessing_outline
+      * https://threejs.org/examples/?q=out#webgl_postprocessing_outline
 
     * Camera Orbit Controls
-      * * https://searchcode.com/codesearch/view/58375664/
+      * https://searchcode.com/codesearch/view/58375664/
 
 
 

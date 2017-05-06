@@ -13,6 +13,7 @@ var finishCube;
 var player, playerPromise;
 var grid, gridDimension = 4.0;
 var allMeshes = new Set();
+var throughputFactor = 0.9;
 
 //falling animation
 var prevCell;
@@ -186,6 +187,7 @@ function nextLevel(framework) {
   //MUST TO THIS AT THE BEGINNING AND NOT END OF nextLevel, 
   //key press event uses gridDimension for checks
   gridDimension++;
+  throughputFactor = Math.max(throughputFactor - 0.1, 0.4);
 
   //disposes all meshses in scene
   for (var mesh of allMeshes) {
@@ -226,7 +228,7 @@ function nextLevel(framework) {
   palette(colors);
 
   //GRID AND LEVEL GENERATION
-  grid = new Grid(framework.scene, gridDimension, new THREE.Vector3(gridDimension-1, 0, gridDimension-1), colors);
+  grid = new Grid(framework.scene, gridDimension, new THREE.Vector3(gridDimension-1, 0, gridDimension-1), colors, throughputFactor);
   //add planes to scene
   for (var x = 0.0; x < gridDimension; x += 1) {
     for (var z = 0.0; z < gridDimension; z += 1) {
