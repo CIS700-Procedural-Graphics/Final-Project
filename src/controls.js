@@ -1,66 +1,135 @@
-export default function Controls(canvas, cam) { 
-       
-    this.drag = 0;
-    this.yRot = 0;
-    this.xRot = 0;
-    this.xOffs = 0;
-    this.yOffs = 0;
-    this.pi180 = 180/Math.PI,
-
-    this.drag = 0;
-    this.yRot = 0;
-    this.xRot = 0;
-    this.xOffs = 0;
-    this.yOffs = 0;
-    this.totalX = 90;
-    this.camera = cam;
-
-    canvas.addEventListener('DOMMouseScroll', this.wheelHandler, false);
-    canvas.addEventListener('mousewheel', this.wheelHandler, false);
-    canvas.addEventListener('mousedown', this.mymousedown, false);
-    canvas.addEventListener('mouseup', this.mymouseup, false);
-    canvas.addEventListener('mousemove', this.mymousemove, false);
+function mouseDown(event, controls){
+    controls.drag  = 1;
+    controls.xOffset = event.clientX;  
+    controls.yOffset = event.clientY; 
+    
+    //debug(event, controls);
 }
 
+function debug(event, controls) {
+    
+     var ndcX = (( controls.xOffset - canvas.offsetLeft ) / canvas.clientWidth) * 2 - 1;
+    var ndcY = (1 - (( controls.yOffset - canvas.offsetTop ) / canvas.clientHeight)) * 2 - 1;
+    var worldPoint = glm.inverse(controls.camera.getViewProj())['*'](glm.vec4(ndcX,ndcY,1.0,1.0))['*'](controls.camera.farClip-1);    
+    console.log("ndc: [" + ndcX + ", " + ndcY + "]");
+    
+    //worldPoint = worldPoint['/'](worldPoint.w);
+    console.log("world point :" + worldPoint);
+    
+    var dir = controls.camera.eye['-'](glm.vec3(worldPoint.x,worldPoint.y,worldPoint.z));
+    dir = glm.normalize(dir);
+    console.log("Direction: " + dir);
+    
+    var point = controls.camera.eye;
 
+    while (Math.abs(point.z) > 2.0 && Math.abs(point.z) < 500.0) {
+        point = point['-'](dir);
+    }
+    
+    console.log("Point: " + point);
 
-Controls.prototype.mouseDown = function(event){
-    this.drag  = 1;
-    this.xOffs = event.clientX;  
-    this.yOffs = event.clientY; 
+    
+//    var pixelSpace = controls.camera.getViewProj().mul(worldPoint);
+//    
+//    console.log("pixel space :" + pixelSpace);
 }
 
-Controls.prototype.mouseUp = function (event){
-    this.drag  = 0;
+function mouseUp(event, controls){
+    controls.drag  = 0;
 }
 
-Controls.prototype.mouseMove = function (event){
-
-    if (this.drag == 0 ) {
-        this.xOffs = event.clientX;   
-        this.yOffs = event.clientY;
+function mouseMove(event, controls){
+    if (controls.drag == 0 ) {
+        controls.xOffset = event.clientX;   
+        controls.yOffset = event.clientY;
         return;
     }
   
-    var yRot = -this.xOffs + event.clientX;  
-    var xRot = -this.yOffs + event.clientY; 
+    var yRotation = -controls.xOffset + event.clientX;  
+    var xRotation = -controls.yOffset + event.clientY; 
 
-    this.xOffs = event.clientX;  
-    this.yOffs = event.clientY;
+    controls.xOffset = event.clientX;  
+    controls.yOffset = event.clientY;
+    
+    if (!controls.camera.active)
+        return;
 
-    this.camera.rotateAboutUp(yRot);
-    this.camera.rotateAboutRight(xRot);
+    controls.camera.rotateAboutUp(yRotation);
+    controls.camera.rotateAboutRight(xRotation);
 }
 
 
-Controls.prototype.scroll = function (event) {
-
-    var translation;
+function scroll(event, controls) {
+    if (!controls.camera.active)
+        return;
+    
     if ((event.detail || event.wheelDelta) > 0) {     
-        this.camera.translateAlongLook(0.1);
+        controls.camera.translateAlongLook(0.1);
     } else {
-        this.camera.translateAlongLook(-0.1);
+        controls.camera.translateAlongLook(-0.1);
     } 
 
     event.preventDefault();
+}
+
+function pan(event, controls) {
+    if (!controls.camera.active)
+        return;
+    
+    console.log("pan");
+    event = event || window.event;
+
+    if (event.keyCode == '38') {
+        //up
+        controls.camera.translateAlongUp(0.1);
+    }
+    else if (event.keyCode == '40') {
+        // down
+        controls.camera.translateAlongUp(-0.1);
+    }
+    else if (event.keyCode == '37') {
+       // left
+        controls.camera.translateAlongRight(-0.1);
+    }
+    else if (event.keyCode == '39') {
+       // right
+        controls.camera.translateAlongRight(0.1);
+    }
+    
+}
+
+
+export default function Controls(canvas, cam) { 
+       
+    var controls = {
+        drag: 0,
+        yRotation: 0,
+        xRotation: 0,
+        xOffset: 0,
+        yOffset: 0,
+        totalX: 90,
+        camera: cam
+    };
+
+    canvas.setAttribute("tabindex", 0);
+    canvas.addEventListener('DOMMouseScroll', function(e) { 
+        scroll(e, controls);
+    } , false);
+    canvas.addEventListener('mousewheel', function(e) { 
+        scroll(e, controls);
+    }, false);
+    canvas.addEventListener('mousedown', function(e) {
+        mouseDown(e, controls);
+    }, false);
+    canvas.addEventListener('mouseup', function(e) {      
+        mouseUp(e, controls);
+    }, false);
+    canvas.addEventListener('mousemove', function(e) {
+        mouseMove(e, controls);
+    }, false);
+//    canvas.addEventListener('keydown', function(e) {
+//        pan(e, controls);
+//    });
+    
+    return controls;
 }

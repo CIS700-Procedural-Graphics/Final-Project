@@ -9,15 +9,36 @@ export default function Camera(canvas) {
     this.up = glm.vec3(0,1,0);
     this.world_up = glm.vec3(0,1,0);
     this.right = glm.vec3(1,0,0);
-    this.eye = glm.vec3(0,0,10);
+    this.eye = glm.vec3(0,0,50);
     this.ref = glm.vec3(0,0,0);
 
     this.fovy =45;
     this.aspectRatio = canvas.width / canvas.height;
     this.nearClip = 0.1;
-    this.farClip = 1001;
+    this.farClip = 1000;
 
     this.totalX = 90;
+    this.totalY = 0;
+    this.rotationYDir = 1;
+    this.active = false;
+}
+
+Camera.prototype.reset = function() {
+    this.model = glm.mat4();
+    this.projection = glm.mat4();
+    this.view = glm.mat4();
+    this.projectionView;
+    this.look = glm.vec3(0,0,-1);
+    this.up = glm.vec3(0,1,0);
+    this.world_up = glm.vec3(0,1,0);
+    this.right = glm.vec3(1,0,0);
+    this.eye = glm.vec3(0,0,50);
+    this.ref = glm.vec3(0,0,0);
+
+    this.totalX = 90;
+    this.totalY = 0;
+    this.rotationYDir = 1;
+    this.active = false;
 }
 
 Camera.prototype.getModel = function() {
@@ -52,6 +73,7 @@ Camera.prototype.rotateAboutUp = function(upRot) {
     
     var rotation = glm.rotate(glm.mat4(1.0), glm.radians(-upRot), this.up);
     this.eye = glm.vec3(rotation.mul(glm.vec4(this.eye, 1.0))); 
+    this.totalY += upRot;
     this.updateAttributes();
 }
 
@@ -73,6 +95,20 @@ Camera.prototype.rotateAboutRight = function(rightRot) {
 Camera.prototype.translateAlongLook = function(trans) {
     
     var translation = this.eye.mul(trans);
+    this.eye = this.eye['+'](translation);    
+}
+
+Camera.prototype.translateAlongRight = function(trans) {
+    
+    var translation = this.right.mul(trans);
     this.eye = this.eye['+'](translation);
+    this.ref = this.ref['+'](translation);
+}
+
+Camera.prototype.translateAlongUp = function(trans) {
+    
+    var translation = this.up.mul(trans);
+    this.eye = this.eye['+'](translation);
+    this.ref = this.ref['+'](translation);
     
 }

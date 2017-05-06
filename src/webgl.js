@@ -65,6 +65,16 @@ export default function WebGL2() {
         return program.attributeLocations;
     }
     
+    this.setAttributeLocationAtIndex = function (program, name, index) {
+        
+        var gl = this.gl;
+        
+        program.attributeLocations[index] = gl.getAttribLocation(program, name);
+        gl.enableVertexAttribArray(program.attributeLocations[index]);
+        
+        return program.attributeLocations;
+    }
+    
     this.setUniformLocations = function (program, uniformNames) {
         
         var gl = this.gl;
@@ -89,78 +99,14 @@ export default function WebGL2() {
         return program.attributeBuffers;
     }
     
-    this.setAttributeBuffer = function (program, bufferName, data) {
+    
+    this.setVertexAttributePointerAtIndex = function (program, bufferIndex, components, offset) {
         
-        var gl = this.gl;
-        var index = program.attributeBuffers.length;
-        
-        program.attributeBuffers[index] = gl.createBuffer();
-        gl.bindBuffer(gl.ARRAY_BUFFER, program.attributeBuffers[index]);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(data), gl.DYNAMIC_COPY);
-
-        return program.attributeBuffers;
-    }
-	   
-
-    this.setAttributeBuffers = function (program, bufferNames, data) {
-        
-        var gl = this.gl;
-        program.attributeBuffers = [];
-        
-        for (var i = 0; i < bufferNames.length; i++) {
-            program.attributeBuffers[i] = gl.createBuffer();
-            gl.bindBuffer(gl.ARRAY_BUFFER, program.attributeBuffers[i]);
-            
-            if (data) {
-                gl.bufferData(gl.ARRAY_BUFFER, data, gl.DYNAMIC_COPY);
-            }    
-            //DEBUG: Setting initial positions and random velocities for particles
-            else if (i == 0) {
-                var particle_positions = [];
-              
-                var num_particles = 1000000;
-                var angleOffset = 2.0 * Math.PI / num_particles;
-                var sqrt_num_particles = Math.sqrt(num_particles);
-
-                 for (var x = -1.0; x < 1.0; x) {
-                     var temp_x = (2.0/sqrt_num_particles);
-                    for (var y = -1.0; y < 1.0; y) {
-                     var temp_y = (2.0/sqrt_num_particles);
-
-                        particle_positions.push(x);
-                        particle_positions.push(y);
-                        particle_positions.push(0.0);
-                        particle_positions.push(1.0);
-                        y+= temp_y;
-                    }
-                     x+= temp_x;
-
-                }
-                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(particle_positions), gl.DYNAMIC_COPY);
-            }
-            else if (i == 1 || i == 2) {
-                var particle_velocites = [];
-
-                var num_particles = 1000000;
-                var sqrt_num_particles = Math.sqrt(num_particles);
-                var angleOffset = 2.0 * Math.PI / num_particles;
-
-                 for (var x = 0; x < sqrt_num_particles; x++) {
-                    for (var y = 0; y < sqrt_num_particles; y++) {
-
-                        particle_velocites.push((Math.random()*2.0-1.0)/1000.0);
-                        particle_velocites.push((Math.random()*2.0-1.0)/1000.0);
-                        particle_velocites.push((Math.random()*2.0-1.0)/1000.0);
-                        particle_velocites.push(1.0);
-                    }
-
-                }
-                gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(particle_velocites), gl.DYNAMIC_COPY);
-            }            
-            
-        }  
-        
-        return program.attributeBuffers;
+        var gl = this.gl;     
+        gl.bindBuffer(gl.ARRAY_BUFFER, program.attributeBuffers[bufferIndex]);
+        //components per iteration, data is 32bit floats, don't normalize the data
+        gl.vertexAttribPointer(program.attributeLocations[bufferIndex],
+                           components, gl.FLOAT, gl.FALSE, 0, offset);
     }
     
     this.setVertexAttributePointers = function (program, bufferIndices) {
@@ -172,9 +118,7 @@ export default function WebGL2() {
             //4 components per iteration, data is 32bit floats, don't normalize the data
             gl.vertexAttribPointer(program.attributeLocations[bufferIndices[i]],
                                4, gl.FLOAT, gl.FALSE, 0, 0);
-        }  
-        
-        return program.uniformLocations;
+        }
     }
     
     this.swapAttributeBuffers = function (programs, bufferIndices) {

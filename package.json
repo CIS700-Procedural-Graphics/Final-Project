@@ -18,6 +18,10 @@
     "simple-git": "^1.65.0",
     "gh-pages-deploy": "^0.4.2",
     "obj-mtl-loader": "^0.0.5",
-    "glm-js": "^0.0.6-c"
+    "glm-js": "^0.0.6-c",
+    "primitive-sphere": "^3.0.0",
+    "primitive-cube": "^2.0.1",
+    "primitive-torus": "^1.0.4",
+    "jquery": "^3.2.1"
   }
 }
