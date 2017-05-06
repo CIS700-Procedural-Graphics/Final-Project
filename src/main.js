@@ -4,10 +4,27 @@ import Framework from './framework'
 import Grid, {GridCell} from './grid.js'
 import Player from './player.js'
 
+var atMenu = true;
+var menuMesh;
+var atGameOver = false;
+var gameOverMesh;
+
+var finishCube;
 var player, playerPromise;
-var grid, gridDimension = 5.0;
+var grid, gridDimension = 4.0;
 var allMeshes = new Set();
-var fw; //framework for restart
+var fw; //framework for nextLevel
+
+//falling animation
+var prevCell;
+var fallingMeshes = new Set();
+class FallingMesh {
+    constructor(cell) {
+      this.cell = cell;
+      this.velocity = 0.0;
+      this.accel = -0.01;
+    }
+}
 
 //raymarching
 var mouse = {x: -1, y: 1}; //set the mouse at the top left corner of screen
@@ -19,47 +36,25 @@ var moved = false;
 var listener = new THREE.AudioListener();
 var audioLoader = new THREE.AudioLoader();
 var backgroundMusic = new THREE.Audio(listener);
+var thudSound = new THREE.Audio(listener);
+
 
 //http://www.iquilezles.org/www/articles/palettes/palettes.htm
 //http://dev.thi.ng/gradients/
 //three variables to change: 
-
-//d for RED
 //everything else is set
 function palette(colors) {
   var a, b, c, d;
-
   a = new THREE.Vector3(0.55+Math.random()*0.1, 0.25+Math.random()*0.05, 0.1+Math.random()*0.05); //RED and GREEN ranges
   b = new THREE.Vector3(0.3, 0.25, 0.0); //everything remains same
   c = new THREE.Vector3(0.5, 0.5, 0.0);
   d = new THREE.Vector3(-0.05+Math.random()*0.1, 0.0, 0.0); //RED ranges
 
   /*
-  switch(option) {
-    case 0:
-        a = new THREE.Vector3(0.5, 0.5, 0.5);
-        b = new THREE.Vector3(0.3, 0.3, 0.3);
-        c = new THREE.Vector3(1.0, 1.0, 1.0);
-        d = new THREE.Vector3(0.0, 0.1, 0.2);
-        break;
-    case 1:
-        a = new THREE.Vector3(0.5, 0.5, 0.5);
-        b = new THREE.Vector3(0.3, 0.3, 0.3);
-        c = new THREE.Vector3(1.0, 1.0, 1.0);
-        d = new THREE.Vector3(0.3, 0.2, 0.2);
-        break;
-    case 2:
-        a = new THREE.Vector3(0.5, 0.5, 0.5);
-        b = new THREE.Vector3(0.3, 0.3, 0.3);
-        c = new THREE.Vector3(0.5, 0.5, 0.5);
-        d = new THREE.Vector3(0.1, 0.1, 0.0);
-        break;
-    default:
-        a = new THREE.Vector3(0.5, 0.5, 0.5); //stay the same
-        b = new THREE.Vector3(0.3, 0.3, 0.3); //stay the same
-        c = new THREE.Vector3(1.0, 1.0, 1.0); //stay the same
-        d = new THREE.Vector3(0.3, 0.2, 0.2);
-  }
+  a = new THREE.Vector3(0.5, 0.5, 0.5);
+  b = new THREE.Vector3(0.3, 0.3, 0.3);
+  c = new THREE.Vector3(1.0, 1.0, 1.0);
+  d = new THREE.Vector3(0.0, 0.1, 0.2);
   */
 
   for (var t = 0; t <= 1.0; t += 0.2) {
@@ -82,42 +77,22 @@ function onLoad(framework) {
   var stats = framework.stats;
   var controls = framework.controls;
 
-  var directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
-  directionalLight.color.set(0xffffff);
-  //directionalLight.color.setHSL(0.1, 1, 0.95);
-  directionalLight.position.set(-10, 50, 20);
-  //directionalLight.position.multiplyScalar(10);
-  //directionalLight.castShadow = true;
-  scene.add(directionalLight);
-
-  /*
-  //shadows
-  renderer.shadowMapEnabled = true;
-  renderer.shadowMapSoft = true;
-  renderer.shadowCameraNear = 1;
-  renderer.shadowCameraFar = 1000;
-  renderer.shadowCameraFov = 50;
-  renderer.shadowMapBias = 0.0039;
-  renderer.shadowMapDarkness = 0.9;
-  renderer.shadowMapWidth = 2048;
-  renderer.shadowMapHeight = 2048;
-  */
-
   //https://threejs.org/examples/?q=out#webgl_postprocessing_outline
   //prevents click from counting as a move when user is rotating camera
   controls.addEventListener( 'change', function() { moved = true; } );
   document.addEventListener( 'mousedown', function () { moved = false; }, false );
   document.addEventListener( 'mouseup', function() {
-    if(!moved)
-      //console.log("up");
-      checkClick(framework);
+    if (atMenu) removeMenu(framework);
+    if (atGameOver) removeGameOver(framework);
+    if(!moved) checkClick(framework);
+    moved = false;
   });
 
   // when the mouse moves, call the given function
   document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 
   //FINISH LINE CUBE
-  var cellMaterials = [ 
+  var finishCubeMaterials = [ 
       new THREE.MeshBasicMaterial({color: 0xee6b5e}),
       new THREE.MeshBasicMaterial({color: 0xee6b5e}), 
       new THREE.MeshBasicMaterial({color: 0xfaee9e}),
@@ -125,17 +100,18 @@ function onLoad(framework) {
       new THREE.MeshBasicMaterial({color: 0xfaaf5b}), 
       new THREE.MeshBasicMaterial({color: 0xfaaf5b}) 
   ]; 
-  var cellMaterial = new THREE.MeshFaceMaterial(cellMaterials);
-  var cell = new THREE.Mesh( new THREE.BoxGeometry(1,1,1), cellMaterial);
-  cell.position.x = 0.5;
-  cell.position.y = 0.5;
-  cell.position.z = 0.5;
-  cell.scale.x = 0.25;
-  cell.scale.y = 0.25;
-  cell.scale.z = 0.25;
-  //cell.receiveShadow = true;
-  framework.scene.add(cell);
-  restart(framework);
+  var finishCubeMaterial = new THREE.MeshFaceMaterial(finishCubeMaterials);
+  finishCube = new THREE.Mesh( new THREE.BoxGeometry(1,1,1), finishCubeMaterial);
+  finishCube.position.x = 0.5;
+  finishCube.position.y = 0.5;
+  finishCube.position.z = 0.5;
+  finishCube.scale.x = 0.25;
+  finishCube.scale.y = 0.25;
+  finishCube.scale.z = 0.25;
+  framework.scene.add(finishCube);
+
+  //sets up menu and grid and player
+  addMenu(framework);
 
   // global ambient audio
   audioLoader.load( './sounds/ambient.mp3', function( buffer ) {
@@ -145,13 +121,73 @@ function onLoad(framework) {
     backgroundMusic.play();
   });
 
+  audioLoader.load( './sounds/book.mp3', function( buffer ) {
+    thudSound.setBuffer( buffer );
+    thudSound.setVolume(1.0);
+  });
 }
 
 
-function restart(framework) {
+function addMenu(framework) {
+
+  //SETUP MENU
+  atMenu = true;
+  var menuGeometry = new THREE.PlaneGeometry( 7, 7, 1, 1);;
+  menuGeometry.applyMatrix( new THREE.Matrix4().makeTranslation( 0, 0, -5 ) );
+  var menuMaterial = new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load('images/menu.png'), transparent: true});
+  menuMesh = new THREE.Mesh( menuGeometry, menuMaterial );
+  framework.camera.add(menuMesh);
+  framework.scene.add(framework.camera);
+  framework.controls.autoRotate = true;
+  framework.controls.autoRotateSpeed = 2.0;
+
+  //sets up grid and player
+  nextLevel(framework);
+
+  //set PERSPECTIVE CAMERA for SPECIAL menu angle specifically
+  //use 30 60 90 rule so that camera is 30 degree inclination
+  var distFromCenter = Math.max(1.4*gridDimension, 8.4);
+  var height = distFromCenter * 0.866025;
+  var translation = distFromCenter * 0.5;
+  framework.camera.position.set(gridDimension/2.0 - translation, height, gridDimension/2.0 + translation);
+  framework.camera.lookAt(new THREE.Vector3(gridDimension/2.0, 0.0, gridDimension/2.0));
+  framework.controls.target.set(gridDimension/2.0, 0.0, gridDimension/2.0);
+  framework.camera.zoom = 1.0;
+  framework.camera.updateProjectionMatrix(); //must be called after updating camera parameters
+}
+
+function removeMenu(framework) {
+  framework.controls.autoRotate = false;
+  framework.camera.remove(menuMesh);
+  atMenu = false;
+}
+
+function addGameOver(framework) {
+
+  //SETUP GAME OVER
+  var gameOverGeometry = new THREE.PlaneGeometry( 7, 7, 1, 1);;
+  gameOverGeometry.applyMatrix( new THREE.Matrix4().makeTranslation( 0, 0, -5 ) );
+  var gameOverMaterial = new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load('images/gameover.png'), transparent: true});
+  gameOverMesh = new THREE.Mesh( gameOverGeometry, gameOverMaterial );
+
+  gridDimension = 4.0;
+  atGameOver = true;
+  framework.camera.add(gameOverMesh);
+  framework.scene.add(framework.camera);
+  //controls.autoRotate = true;
+  //controls.autoRotateSpeed = 2.0;
+}
+
+function removeGameOver(framework) {
+  framework.camera.remove(gameOverMesh);
+  atGameOver = false;
+  addMenu(framework);
+}
+
+function nextLevel(framework) {
 
   //increase grid size for next level
-  //MUST TO THIS AT THE BEGINNING AND NOT END OF RESTART, 
+  //MUST TO THIS AT THE BEGINNING AND NOT END OF nextLevel, 
   //key press event uses gridDimension for checks
   gridDimension++;
 
@@ -163,27 +199,35 @@ function restart(framework) {
       //framework.renderer.deallocateObject( mesh );
   }
 
-  //set camera position
+  isectObj = null; //the object in the scene currently closest to the camera 
+  isectPrevMaterial = null;
+  moved = false;
+
+  /*
+  //set ORTHOGRAPHIC CAMERA
   //1.5 is a rough estimate of root(2), moves camera 45 degrees above horizon line for isometric view
-  framework.camera.position.set(2.0*gridDimension, 1.5*gridDimension, 2.0*gridDimension);
+  framework.camera.position.set(gridDimension/2.0+2.0*gridDimension, 1.41421*gridDimension, gridDimension/2.0+2.0*gridDimension);
   framework.camera.lookAt(new THREE.Vector3(gridDimension/2.0, 0.0, gridDimension/2.0));
   framework.controls.target.set(gridDimension/2.0, 0.0, gridDimension/2.0);
-  framework.camera.zoom = 450/gridDimension;
+  framework.camera.zoom = 400/gridDimension;
+  framework.camera.updateProjectionMatrix(); //must be called after updating camera parameters
+  */
+  
+  //set PERSPECTIVE CAMERA
+  //use 30 60 90 rule so that camera is 30 degree inclination
+  var distFromCenter = Math.max(0.8*gridDimension, 4.8);
+  var height = distFromCenter * 0.5;
+  var translation = distFromCenter / 0.866025;
+  framework.camera.position.set(gridDimension/2.0 - translation, height, gridDimension/2.0 + translation);
+  framework.camera.lookAt(new THREE.Vector3(gridDimension/2.0, 0.0, gridDimension/2.0));
+  framework.controls.target.set(gridDimension/2.0, 0.0, gridDimension/2.0);
+  framework.camera.zoom = 1.0;
   framework.camera.updateProjectionMatrix(); //must be called after updating camera parameters
 
-  //randomly pick a color pallette
+  //procedurally pick a color pallette
   var colorOption = Math.floor(Math.random()*3.0);
   var colors = [];
   palette(colors);
-  /*
-  colors.push(palette(0.00, colorOption));
-  colors.push(palette(0.20, colorOption));
-  colors.push(palette(0.40, colorOption));
-  colors.push(palette(0.60, colorOption));
-  colors.push(palette(0.80, colorOption));
-  colors.push(palette(1.00, colorOption));
-  */
-  //[ palette(0.0), palette(0.167), palette(0.333), palette(0.5), palette(0.666), palette(0.833) ];
 
   //GRID AND LEVEL GENERATION
   grid = new Grid(framework.scene, gridDimension, new THREE.Vector3(gridDimension-1, 0, gridDimension-1), colors);
@@ -205,9 +249,14 @@ function restart(framework) {
       cell.position.x = x+0.5;
       cell.position.y = -0.5;
       cell.position.z = z+0.5;
-      //cell.receiveShadow = true;
       framework.scene.add(cell);
       allMeshes.add(cell);
+
+      //for falling blocks animation
+      if (x == gridDimension-1 && z == gridDimension-1) {
+        prevCell = cell;
+      }
+
     }
   }
 
@@ -218,103 +267,90 @@ function restart(framework) {
           resolve();
       }
   }); 
-  
-  //player.cube.castShadow = true;
+
   framework.scene.add(player.cube);
   allMeshes.add(player.cube);
 }
 
+
 function checkClick(framework) {
 
-  //create ray with origin at the mouse position, direction as camera direction
+  if (player.isAnimating) {
+    return;
+  }
+
+  //PERSPECTIVE CAMERA
+  var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5); //z = 0.5 IMPORTANT!
+  vector.unproject(framework.camera);
+  var direction = new THREE.Vector3(0, 0, -1).transformDirection(framework.camera.matrixWorld);
+  var raycaster = new THREE.Raycaster();
+  raycaster.set( framework.camera.position, vector.sub( framework.camera.position ).normalize() );
+  
+  /*
+  //ORTHOGRAPHIC CAMERA
   var vector = new THREE.Vector3(mouse.x, mouse.y, -1); //z = -1 IMPORTANT!
   vector.unproject(framework.camera);
   var direction = new THREE.Vector3(0, 0, -1).transformDirection(framework.camera.matrixWorld);
   var raycaster = new THREE.Raycaster();
   raycaster.set(vector, direction);
+  */
 
   // create an array containing all objects in the scene with which the ray intersects
   var intersects = raycaster.intersectObjects(framework.scene.children);
 
-  if (intersects.length > 0 && intersects[0].object != player.cube)
+  if (intersects.length > 0 && intersects[0].object != player.cube && intersects[0].object != finishCube)
   {
     isectObj = intersects[0].object;
-    var keyCode = '0';
-    if (isectObj.position.x == player.position.x+0.5-1 && isectObj.position.z == player.position.z+0.5) 
+    if (isectObj.position.x == player.position.x+0.5-1 && isectObj.position.z == player.position.z+0.5 &&
+      (player.position.x - 1 >= 0 && player.faceXNegative.equals(grid.gridArray[player.position.x - 1][player.position.z].color) ||
+        intersects[0].object.geometry.type == "PlaneGeometry")) 
     {
-      keyCode = '38';
+      //equivalent to up arrow
+      player.rotateZCounter();
+      dropCellAnimation(prevCell);
+      prevCell = isectObj;
     }
-    else if (isectObj.position.x == player.position.x+0.5+1 && isectObj.position.z == player.position.z+0.5) {
-      keyCode = '40';
+    else if (isectObj.position.x == player.position.x+0.5+1 && isectObj.position.z == player.position.z+0.5 &&
+      (player.position.x + 1 < gridDimension && player.faceXPositive.equals(grid.gridArray[player.position.x + 1][player.position.z].color) ||
+        intersects[0].object.geometry.type == "PlaneGeometry")) {
+      //equivalent to down arrow
+      player.rotateZClockwise();
+      dropCellAnimation(prevCell);
+      prevCell = isectObj;
     }
-    else if (isectObj.position.x == player.position.x+0.5 && isectObj.position.z == player.position.z+0.5+1) {
-      keyCode = '37';
+    else if (isectObj.position.x == player.position.x+0.5 && isectObj.position.z == player.position.z+0.5+1 && 
+      (player.position.z + 1 < gridDimension && player.faceZPositive.equals(grid.gridArray[player.position.x][player.position.z + 1].color) ||
+        intersects[0].object.geometry.type == "PlaneGeometry")) {
+      //equivalent to left arrow
+      player.rotateXCounter();
+      dropCellAnimation(prevCell);
+      prevCell = isectObj;
     }
-    else if (isectObj.position.x == player.position.x+0.5 && isectObj.position.z == player.position.z+0.5-1) {
-      keyCode = '39';
+    else if (isectObj.position.x == player.position.x+0.5 && isectObj.position.z == player.position.z+0.5-1 &&
+      (player.position.z - 1 >= 0 && player.faceZNegative.equals(grid.gridArray[player.position.x][player.position.z - 1].color) ||
+      intersects[0].object.geometry.type == "PlaneGeometry")) {
+      //equivalent to right arrow
+      player.rotateXClockwise();
+      dropCellAnimation(prevCell);
+      prevCell = isectObj;
     }
-
-    if (keyCode == '38') {
-      // up arrow
-      if (player.position.x - 1 >= 0 && player.faceXNegative.equals(grid.gridArray[player.position.x - 1][player.position.z].color)) {
-        player.rotateZCounter();
-      }
-    }
-    else if (keyCode == '40') {
-      // down arrow
-      if (player.position.x + 1 < gridDimension && player.faceXPositive.equals(grid.gridArray[player.position.x + 1][player.position.z].color)) {
-        player.rotateZClockwise();
-      }
-    }
-    else if (keyCode == '37') {
-      // left arrow
-      if (player.position.z + 1 < gridDimension && player.faceZPositive.equals(grid.gridArray[player.position.x][player.position.z + 1].color)) {
-        player.rotateXCounter();
-      }
-    }
-    else if (keyCode == '39') {
-       // right arrow
-      if (player.position.z - 1 >= 0 && player.faceZNegative.equals(grid.gridArray[player.position.x][player.position.z - 1].color)) {
-        player.rotateXClockwise();
-      }
-    }
-
   } 
+
 }
 
-document.onkeydown = checkKey;
-function checkKey(e) {
-    //if player is still animating, ignore keyPress
-    if (player.isAnimating) {
-      return;
-    }
+function dropCellAnimation(prevCell) {
+  var planeGeometry = new THREE.PlaneGeometry( 1, 1, 1, 1);
+  var planeMaterial = new THREE.MeshBasicMaterial({color: 0xffffff, transparent:true, opacity:0.0});
+  var plane = new THREE.Mesh( planeGeometry, planeMaterial );
+  var quat = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(1, 0, 0), -Math.PI/2.0);
+  var mat4 = new THREE.Matrix4().makeRotationFromQuaternion(quat);
+  mat4.premultiply(new THREE.Matrix4().makeTranslation(prevCell.position.x, 0, prevCell.position.z));
+  plane.applyMatrix(mat4);
+  fw.scene.add(plane);
+  allMeshes.add(plane);
 
-    e = e || window.event;
-    if (e.keyCode == '38') {
-      // up arrow
-      if (player.position.x - 1 >= 0 && player.faceXNegative.equals(grid.gridArray[player.position.x - 1][player.position.z].color)) {
-        player.rotateZCounter();
-      }
-    }
-    else if (e.keyCode == '40') {
-      // down arrow
-      if (player.position.x + 1 < gridDimension && player.faceXPositive.equals(grid.gridArray[player.position.x + 1][player.position.z].color)) {
-        player.rotateZClockwise();
-      }
-    }
-    else if (e.keyCode == '37') {
-      // left arrow
-      if (player.position.z + 1 < gridDimension && player.faceZPositive.equals(grid.gridArray[player.position.x][player.position.z + 1].color)) {
-        player.rotateXCounter();
-      }
-    }
-    else if (e.keyCode == '39') {
-       // right arrow
-      if (player.position.z - 1 >= 0 && player.faceZNegative.equals(grid.gridArray[player.position.x][player.position.z - 1].color)) {
-        player.rotateXClockwise();
-      }
-    }
-    //console.log(player.position);
+  grid.gridArray[prevCell.position.x-0.5][prevCell.position.z-0.5].hasFell = true;
+  fallingMeshes.add(new FallingMesh(prevCell));
 }
 
 
@@ -333,69 +369,145 @@ function onDocumentMouseMove( event )
 // called on frame updates
 function onUpdate(framework) {
 
-  Promise.all([playerPromise]).then(values => { 
-    if (player.isAnimating) {
-      player.animate();
-    }  
+  if (atMenu) {
+    framework.controls.update(); //update camera rotation
+    return;
+  }
 
-    if (player.position.x == 0 && player.position.z == 0) {
-      restart(fw);
+  Promise.all([playerPromise]).then(values => { 
+
+    //nextLevel the game
+    if (player.position.x == 0 && player.position.z == 0)
+      nextLevel(fw);
+
+    if (player.isAnimating) {
+
+      player.animate(grid);
+
+      //if the player just finished animating, and it lands on a cell, play thud sound
+      if (!player.isAnimating && !grid.gridArray[player.position.x][player.position.z].hasFell) {
+        thudSound.play();
+      }
+      //if the player just finished, and it doesn't land on cell, make it fall
+      else if (!player.isAnimating && grid.gridArray[player.position.x][player.position.z].hasFell){
+        fallingMeshes.add(new FallingMesh(player.cube));
+      }
+
+      if (isectObj) {
+        //need to repeatedly update cell selection
+        isectObj.material = isectPrevMaterial;
+        isectObj = null;
+      }
+
     }
 
   });
 
-  //RAYMARCHING
-  //https://stemkoski.github.io/Three.js/Mouse-Over.html
-  //https://github.com/mrdoob/three.js/issues/5587
-  //http://stackoverflow.com/questions/20361776/orthographic-camera-and-pickingray
+  //moves all meshes falling in scene
+  for (var fm of fallingMeshes) {
+      fm.cell.position.y += fm.velocity;
+      fm.velocity += fm.accel;
+      //GAME OVER CASE
+      if (!atGameOver && fm.cell === player.cube && fm.cell.position.y < -50) {
+        addGameOver(framework);
+      }
+  }
 
-  //create ray with origin at the mouse position, direction as camera direction
-  var vector = new THREE.Vector3(mouse.x, mouse.y, -1); //z = -1 IMPORTANT!
-  vector.unproject(framework.camera);
-  var direction = new THREE.Vector3(0, 0, -1).transformDirection(framework.camera.matrixWorld);
-  var raycaster = new THREE.Raycaster();
-  raycaster.set(vector, direction);
+  //if mouse is not dragging
+  if (!moved) {
 
-  // create an array containing all objects in the scene with which the ray intersects
-  var intersects = raycaster.intersectObjects(framework.scene.children);
+    //RAYMARCHING
+    //https://stemkoski.github.io/Three.js/Mouse-Over.html
+    //https://github.com/mrdoob/three.js/issues/5587
+    //http://stackoverflow.com/questions/20361776/orthographic-camera-and-pickingray
 
-  if (intersects.length > 0)
-  {
-    //if the closest object isectObj is not the currently stored intersection object
-    if (intersects[0].object != player.cube && intersects[0].object != isectObj) 
+    //PERSPECTIVE CAMERA
+    var vector = new THREE.Vector3(mouse.x, mouse.y, 0.5); //z = 0.5 IMPORTANT!
+    vector.unproject(framework.camera);
+    var direction = new THREE.Vector3(0, 0, -1).transformDirection(framework.camera.matrixWorld);
+    var raycaster = new THREE.Raycaster();
+    raycaster.set( framework.camera.position, vector.sub( framework.camera.position ).normalize() );
+
+    /*
+    //ORTHOGRAPHIC CAMERA
+    var vector = new THREE.Vector3(mouse.x, mouse.y, -1); //z = -1 IMPORTANT!
+    vector.unproject(framework.camera);
+    var direction = new THREE.Vector3(0, 0, -1).transformDirection(framework.camera.matrixWorld);
+    var raycaster = new THREE.Raycaster();
+    raycaster.set(vector, direction);
+    */
+
+    // create an array containing all objects in the scene with which the ray intersects
+    var intersects = raycaster.intersectObjects(framework.scene.children);
+
+    if (intersects.length > 0)
+    {
+      //if the closest object isectObj is not the currently stored intersection object
+      if (intersects[0].object != player.cube && intersects[0].object != finishCube && intersects[0].object != isectObj) 
+      {
+        //restore previous intersection object (if it exists) to its original color
+        if (isectObj) {
+          isectObj.material = isectPrevMaterial;
+        }
+        //store reference to closest object as current intersection object
+        isectObj = intersects[0].object;
+        //store material of closest object (for later restoration)
+        isectPrevMaterial = isectObj.material;
+
+        var cellMaterial;
+        if (isectObj.geometry.type == "PlaneGeometry") {
+          cellMaterial = new THREE.MeshBasicMaterial({color: 0xA8A8A8});
+        }
+        else if ( (isectObj.position.x == player.position.x+0.5 && isectObj.position.z == player.position.z+0.5) ||
+                  (isectObj.position.x == player.position.x+0.5-1 && isectObj.position.z == player.position.z+0.5 &&
+                    player.position.x - 1 >= 0 && player.faceXNegative.equals(grid.gridArray[player.position.x - 1][player.position.z].color)) ||
+                  (isectObj.position.x == player.position.x+0.5+1 && isectObj.position.z == player.position.z+0.5 &&
+                    player.position.x + 1 < gridDimension && player.faceXPositive.equals(grid.gridArray[player.position.x + 1][player.position.z].color)) ||
+                  (isectObj.position.x == player.position.x+0.5 && isectObj.position.z == player.position.z+0.5+1 && 
+                    player.position.z + 1 < gridDimension && player.faceZPositive.equals(grid.gridArray[player.position.x][player.position.z + 1].color)) ||
+                  (isectObj.position.x == player.position.x+0.5 && isectObj.position.z == player.position.z+0.5-1 &&
+                    player.position.z - 1 >= 0 && player.faceZNegative.equals(grid.gridArray[player.position.x][player.position.z - 1].color)) ) {
+
+          //set a new material for closest object
+          var cellMaterials = [ 
+              new THREE.MeshBasicMaterial({color: 0x606060}),
+              new THREE.MeshBasicMaterial({color: 0x606060}), 
+              new THREE.MeshBasicMaterial({color: 0xA8A8A8}),
+              new THREE.MeshBasicMaterial({color: 0x383838}), 
+              new THREE.MeshBasicMaterial({color: 0x808080}), 
+              new THREE.MeshBasicMaterial({color: 0x808080}) 
+          ]; 
+          cellMaterial = new THREE.MeshFaceMaterial(cellMaterials);
+        }
+        else {
+          //set a new material for closest object
+          var cellMaterials = [ 
+              new THREE.MeshBasicMaterial({color: 0x606060}),
+              new THREE.MeshBasicMaterial({color: 0x606060}), 
+              new THREE.MeshBasicMaterial({color: 0x383838}),
+              new THREE.MeshBasicMaterial({color: 0x383838}), 
+              new THREE.MeshBasicMaterial({color: 0x808080}), 
+              new THREE.MeshBasicMaterial({color: 0x808080}) 
+          ]; 
+          cellMaterial = new THREE.MeshFaceMaterial(cellMaterials);
+        }
+
+        isectObj.material = cellMaterial;
+      }
+    } 
+    else
     {
       //restore previous intersection object (if it exists) to its original color
-      if (isectObj) {
+      if (isectObj)  {
         isectObj.material = isectPrevMaterial;
       }
-      //store reference to closest object as current intersection object
-      isectObj = intersects[0].object;
-      //store color of closest object (for later restoration)
-      isectPrevMaterial = isectObj.material;
-      //set a new color for closest object
-      var cellMaterials = [ 
-          new THREE.MeshBasicMaterial({color: 0x606060}),
-          new THREE.MeshBasicMaterial({color: 0x606060}), 
-          new THREE.MeshBasicMaterial({color: 0xeeeeee}),
-          new THREE.MeshBasicMaterial({color: 0x383838}), 
-          new THREE.MeshBasicMaterial({color: 0x808080}), 
-          new THREE.MeshBasicMaterial({color: 0x808080}) 
-      ]; 
-      var cellMaterial = new THREE.MeshFaceMaterial(cellMaterials);
-      isectObj.material = cellMaterial;
+      //remove previous intersection object reference
+      //by setting current intersection object to "nothing"
+      isectObj = null;
     }
-  } 
-  else
-  {
-    //restore previous intersection object (if it exists) to its original color
-    if (isectObj)  {
-      isectObj.material = isectPrevMaterial;
-    }
-    //remove previous intersection object reference
-    //by setting current intersection object to "nothing"
-    isectObj = null;
+
   }
-    
+
 }
 
 // when the scene is done initializing, it will call onLoad, then on frame updates, call onUpdate

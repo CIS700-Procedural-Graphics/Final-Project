@@ -4,6 +4,7 @@ export class GridCell {
 	constructor() {
 		this.isMarked = false;
 		this.color = new THREE.Color(0, 0, 0);
+		this.hasFell = false;
 	}
 }
 

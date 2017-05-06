@@ -1,14 +1,5 @@
 const THREE = require('three')
 
-var listener = new THREE.AudioListener();
-var audioLoader = new THREE.AudioLoader();
-var thudSound = new THREE.Audio(listener);
-// global ambient audio
-audioLoader.load( './sounds/book.mp3', function( buffer ) {
-    thudSound.setBuffer( buffer );
-    thudSound.setVolume(1.0);
-});
-
 //bias function for more realistic animation
 function bias(b, t) {
     return Math.pow(t, Math.log(b) / Math.log(0.5));
@@ -41,12 +32,12 @@ export default class Player {
         this.rotation = new THREE.Quaternion();
 
         this.cubeMaterials = [ 
-          new THREE.MeshBasicMaterial({color:colors[0], transparent:true, opacity:1.0}),
-          new THREE.MeshBasicMaterial({color:colors[1], transparent:true, opacity:1.0}), 
-          new THREE.MeshBasicMaterial({color:colors[2], transparent:true, opacity:1.0}),
-          new THREE.MeshBasicMaterial({color:colors[3], transparent:true, opacity:1.0}), 
-          new THREE.MeshBasicMaterial({color:colors[4], transparent:true, opacity:1.0}), 
-          new THREE.MeshBasicMaterial({color:colors[5], transparent:true, opacity:1.0}) 
+          new THREE.MeshBasicMaterial({color:colors[0]}),
+          new THREE.MeshBasicMaterial({color:colors[1]}), 
+          new THREE.MeshBasicMaterial({color:colors[2]}),
+          new THREE.MeshBasicMaterial({color:colors[3]}), 
+          new THREE.MeshBasicMaterial({color:colors[4]}), 
+          new THREE.MeshBasicMaterial({color:colors[5]}) 
         ]; 
         this.cubeMaterial = new THREE.MeshFaceMaterial(this.cubeMaterials);
         this.cube = new THREE.Mesh(new THREE.BoxGeometry(1,1,1), this.cubeMaterial);
@@ -63,13 +54,6 @@ export default class Player {
     }
 
     rotateZClockwise() {
-        /*
-        this.position.x += 1;
-        applyRotation(this.rotation, new THREE.Vector3(0, 0, 1), -Math.PI/2.0);
-        this.cube.rotation.set(0, 0, 0);
-        this.cube.setRotationFromQuaternion(this.rotation);
-        this.cube.position.set(this.cube.position.x + 1.0, this.cube.position.y, this.cube.position.z);
-        */
         this.isAnimating = true;
         this.animateType = 0;
 
@@ -86,13 +70,6 @@ export default class Player {
     };
 
     rotateZCounter() {
-        /*
-        this.position.x += -1;
-        applyRotation(this.rotation, new THREE.Vector3(0, 0, 1), Math.PI/2.0);
-        this.cube.rotation.set(0, 0, 0);
-        this.cube.setRotationFromQuaternion(this.rotation);
-        this.cube.position.set(this.cube.position.x - 1.0, this.cube.position.y, this.cube.position.z);
-        */
         this.isAnimating = true;
         this.animateType = 1;
 
@@ -108,13 +85,6 @@ export default class Player {
     };
 
     rotateXCounter() {
-        /*
-        this.position.z += 1;
-        applyRotation(this.rotation, new THREE.Vector3(1, 0, 0), Math.PI/2.0);
-        this.cube.rotation.set(0, 0, 0);
-        this.cube.setRotationFromQuaternion(this.rotation);
-        this.cube.position.set(this.cube.position.x, this.cube.position.y, this.cube.position.z + 1.0);
-        */
         this.isAnimating = true;
         this.animateType = 2;
 
@@ -130,13 +100,6 @@ export default class Player {
     };
 
     rotateXClockwise() {
-        /*
-        this.position.z += -1;
-        applyRotation(this.rotation, new THREE.Vector3(1, 0, 0), -Math.PI/2.0);
-        this.cube.rotation.set(0, 0, 0);
-        this.cube.setRotationFromQuaternion(this.rotation);
-        this.cube.position.set(this.cube.position.x, this.cube.position.y, this.cube.position.z - 1.0);
-        */
         this.isAnimating = true;
         this.animateType = 3;
 
@@ -151,11 +114,12 @@ export default class Player {
         this.faceZNegative = tempColor;
     };
 
-    animate() {
+    animate(grid) {
 
+        //if animation is finished
         if (this.t >= 1.0) {
 
-            thudSound.play();
+            //thudSound.play();
 
             this.isAnimating = false;
             this.t = 0.0;
@@ -196,11 +160,8 @@ export default class Player {
             return;
         }
 
-        //this.cube.position.set(0, 0, 0);
-        //this.cube.rotation.set(0, 0, 0);
+        //reset cube to origin
         this.cube.matrix = new THREE.Matrix4().makeTranslation(0, 0, 0);
-        //this.cube.updateMatrix();
-
         //original rotation
         var originalRot = new THREE.Matrix4().makeRotationFromQuaternion(this.rotation);
 
@@ -240,6 +201,7 @@ export default class Player {
                 animateMat.premultiply(new THREE.Matrix4().makeTranslation(0, -0.5, -0.5));
                 break;
         }
+        //apply animation rotation to original rotation
         originalRot.premultiply(animateMat);
         //apply original translation
         originalRot.premultiply(new THREE.Matrix4().makeTranslation(this.position.x + 0.5, 0.5, this.position.z + 0.5));
