@@ -91,7 +91,7 @@ function onLoad(framework) {
   // when the mouse moves, call the given function
   document.addEventListener( 'mousemove', onDocumentMouseMove, false );
 
-  //FINISH LINE CUBE
+  //FINISH CUBE
   var finishCubeMaterials = [ 
       new THREE.MeshBasicMaterial({color: 0xee6b5e}),
       new THREE.MeshBasicMaterial({color: 0xee6b5e}), 
@@ -215,9 +215,9 @@ function nextLevel(framework) {
   
   //set PERSPECTIVE CAMERA
   //use 30 60 90 rule so that camera is 30 degree inclination
-  var distFromCenter = Math.max(0.8*gridDimension, 4.8);
+  var distFromCenter = Math.max(1.1*gridDimension, 7.7);
   var height = distFromCenter * 0.5;
-  var translation = distFromCenter / 0.866025;
+  var translation = distFromCenter * 0.866025;
   framework.camera.position.set(gridDimension/2.0 - translation, height, gridDimension/2.0 + translation);
   framework.camera.lookAt(new THREE.Vector3(gridDimension/2.0, 0.0, gridDimension/2.0));
   framework.controls.target.set(gridDimension/2.0, 0.0, gridDimension/2.0);
