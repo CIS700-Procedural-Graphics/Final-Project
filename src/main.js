@@ -87,16 +87,37 @@ var config = {
         
     },
     playSong : false,
-    loadSong : false,
+    loadSong : function() {
+        uploadFiles();
+        config.object = 0;
+    },
     sampleSong : function() {
+        
+        var client = new XMLHttpRequest();
+        client.open('GET', '/sample/Insane.lrc');
+        client.onreadystatechange = function() {
+            
+          if (client.readyState == 4 && client.status == 200)
+          {
+            if (client.responseText)
+             {                             
+                 var file = client.responseText;
+                 parseLyricFile(file);
+                //console.log(results);
+              }
+           }
+         };
+
+        client.send();
+        
         if ("undefined" === typeof audio) {
             audio = new Audio('/sample/Insane.mp3');
         } else {
             audio.src = '/sample/Insane.mp3';
         }
+        //initPlayer();
+        config.object = 0;
         audio.play();
-        //uploadFiles();
-        //config.object = 0;
     }
 }
   
@@ -108,12 +129,16 @@ function uploadFiles() {
     if (fileInput.files.length && musicInput.files.length) {
 
         var musicFile = musicInput.files[0];
-        audio = document.getElementById('song');
-        audio.src = URL.createObjectURL(musicFile);
-        initPlayer();
+        if ("undefined" === typeof audio) {
+            audio = document.getElementById('song');
+        } else {
+            audio.src = URL.createObjectURL(musicFile);
+        }
+        //initPlayer();
 
         var reader = new FileReader();
         var lyricFile = fileInput.files[0];
+        console.log(lyricFile);
         $(reader).on('load', processFile);
         reader.readAsText(lyricFile);
         audio.play();
@@ -123,41 +148,46 @@ function uploadFiles() {
 }
 
 function processFile(e) {
-    console.log(e);
-    var file = e.target.result,
-        results;
-        
+    var file = e.target.result;
+    
     if (file && file.length) {
-        results = file.split("\n");
-        obj_lyrics_time = [];
-        obj_lyrics_string = [];
-        
-        for (var i = 0; i < results.length; i++) {
-                     
-            var re = /\[(\d\d\:\d\d\.\d\d)\](.*)/;
-            var lyricLine = results[i];
-            var lyricArray = lyricLine.match(re);
-            
-            if (lyricArray == null){
-                continue;
-            }
-
-            var reTime = /(\d\d)\:(\d\d\.\d\d)/;
-            var time = lyricArray[1].match(reTime);
-            var timeInSeconds = parseFloat(time[1]) * 60 + parseFloat(time[2]);
-            var lyric = lyricArray[2];
-            
-            if (lyric == "")
-                continue;
-            
-            obj_lyrics_dict[timeInSeconds] = lyric;
-            
-            obj_lyrics_time.push(timeInSeconds);
-            obj_lyrics_string.push(lyric);
-
-        }
+        parseLyricFile(file);
     }
 }
+
+
+function parseLyricFile(file) {
+    
+    var results = file.split("\n");
+    obj_lyrics_time = [];
+    obj_lyrics_string = [];
+
+    for (var i = 0; i < results.length; i++) {
+
+        var re = /\[(\d\d\:\d\d\.\d\d)\](.*)/;
+        var lyricLine = results[i];
+        var lyricArray = lyricLine.match(re);
+
+        if (lyricArray == null){
+            continue;
+        }
+
+        var reTime = /(\d\d)\:(\d\d\.\d\d)/;
+        var time = lyricArray[1].match(reTime);
+        var timeInSeconds = parseFloat(time[1]) * 60 + parseFloat(time[2]);
+        var lyric = lyricArray[2];
+
+        if (lyric == "")
+            continue;
+
+        obj_lyrics_dict[timeInSeconds] = lyric;
+
+        obj_lyrics_time.push(timeInSeconds);
+        obj_lyrics_string.push(lyric);
+
+    }
+}
+
 
 var audio, freqData;
 
@@ -205,12 +235,7 @@ function setUpGUI(framework) {
     gui.add(config, 'sampleSong'). name('Play Sample Song');
     gui.add(config, 'chooseLyricFile'). name('Choose Lyric file');
     gui.add(config, 'chooseSongFile'). name('Choose Song file');
-    gui.add(config, 'loadSong'). name('Load New Song').onChange(function(value) {
-
-        uploadFiles();
-        config.object = 0;
-        framework.camera.reset();
-    });
+    gui.add(config, 'loadSong'). name('Load New Song');
     
     gui.add(config, 'playSong').name("Play/Pause Song").onChange(function(value) {
 
@@ -236,7 +261,7 @@ function setUpGUI(framework) {
 	
     f1.add(config, 'mouse').name("Activate mouse").onChange(function(value) {
 
-        config.camera_move = false;
+        framework.camera.active = false;
         if (value) {
           config.mouse = value;
         } else {
@@ -252,7 +277,6 @@ function setUpGUI(framework) {
 
         config.mouse = false;
         if (value) {
-            config.camera_move = value;
             framework.camera.active = value;
         } else {
             //framework.camera.reset();

@@ -1,6 +1,9 @@
 # Particle Lyric
 
 Demo: https://msoudy.github.io/Final-Project/
+- Click on "Play Sample Song" to see the particle system in action.
+
+Youtube Demo Video: https://youtu.be/0ajr7b2Dp4o
 
 Lyric Files: https://syair.info/
 
@@ -36,7 +39,7 @@ Specification
 - Mesh form of the English alphabet including special characters
 Each letter is mapped on to a 5x5 2D array of 0 and 1s, where for each cell assigned with 1 a sphere mesh is created. The following diagram illustrates how the letter ‘A’  is mapped to a 2D array.
 
-  ![](./images/grid1.png)
+  ![](./images/grid.png)
   
 - Lyric file (LRC) parser and mp3 loader
     - Parse each line in the lyric file and store the time stamp and corresponding lyric line into a dictionary to be accessible later
@@ -84,8 +87,13 @@ Timeline:
 Results:
 ----
 
-![](./images/particles.png)
+![](./images/results1.png)
 
+![](./images/results2.png)
+
+![](./images/results3.png)
+
+![](./images/results4.png)
 
 Evaluation:
 -----
