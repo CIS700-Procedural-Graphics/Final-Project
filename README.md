@@ -44,7 +44,7 @@ Our goal for the final project of CIS 700-006 is to procedurally generate an int
 - Map stiching
 	- Depending on implementation, the modularity of maps will allow for larger contiguous segments to be connected
 - Parameterized map generation
-* Allows for user to control the number of areas generated, as well as some other factors
+	- Allows for user to control the number of areas generated, as well as some other factors
 
 ## Results
 
