@@ -192,13 +192,14 @@ To add more detail to the terrain, I decided to explore some interesting techniq
 
 **Ridged Value Noise:** It is a way of adding sharp ridges in an otherwise smooth value noise. The value of noise is in the range of [-1,1]. Absolute of noise flips the negative part to positive, creating a sharp discontinuity at 0. Subtracting this value from 1.0 inverts the resulting *graph*, producing sharp edges when viewed from top. The first image below is value noise and the second one is the corresponding ridged noise. I tried combining this with the original noise, but the results weren't convincing.
 
-![](images/presentation/value.PNG)
-![](images/presentation/value_ridged.PNG)
+![](images/presentation/value.png)
+
+![](images/presentation/value_ridged.png)
 
 
 **Distorting textures using sine function:** It is a widely used method, where one inputs the noise value to the sine function. The results of this were also not very convincing. It looks like a marble texture which in no way could help me add details to the terrain texture.
 
-![](images/presentation/sine_noise.PNG)
+![](images/presentation/sine_noise.png)
 
 
 
@@ -208,16 +209,19 @@ Ridged noise and sine distortion having failed, I decided to give voronoi diagra
 
 >In mathematics, a Voronoi diagram is a partitioning of a plane into regions based on distance to points in a specific subset of the plane. - Wikipedia
 
-The voronoi diagram generated using the nearest of the sampled points, looks like this:</br>
-![](images/presentation/voro.PNG)
+The voronoi diagram generated using the nearest of the sampled points, looks like this:
+
+![](images/presentation/voro.png)
 
 Multiple voronoi diagrams with closest (V0), second closest(V1), ... points can be computed simultaneously and combined to get interesting results.  
 
-V1 - V0 : </br>
-![](images/presentation/voro_diff.PNG)
+V1 - V0 :
 
-V1 x V0 : </br>
-![](images/presentation/voro_mul.PNG)
+![](images/presentation/voro_diff.png)
+
+V1 x V0 :
+
+![](images/presentation/voro_mul.png)
 
 > V1 x V0 when scaled down a lot, gives good enough details to add to the terrain. Currently, in the code, it is scaled down by 200 times. If finer details are needed, it can be scaled down more.
 
