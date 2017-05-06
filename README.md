@@ -1,4 +1,4 @@
-# CIS700 Procedural Graphics: Final Project
+# Voxel Run: Procedural Graphics Final Project
 
 ## Design Document:
 
@@ -88,12 +88,20 @@
 
     My original worry of making sure the player cannot cross though "walls" between generated paths quickly disappeared after I realized that even though the player can cross through "walls," it is very unlikely for the player to continue along the crossed path because the cube must be in a certain orientation/rotation. What I mean by this is that the bottom face of the cube may match with the grid cell after crossing through a "wall," but there are 4 possible ways the cube can be orientated, and only one orientation can allow the player to continue to move along the crossed path. And even if the player can move along the crossed path, the crossed path does not necessairly lead to the finish cell. As a result, I chose to ignore this case because it actually benefits my game by adding an extra layer of complexity: 3 out of the 4 times the player is able to cross through a "wall" will lead to a dead end due to the incorrect orientation of the cube.
 
-    * Color: Originally, I was hand-picking color gradients using IQ's idea of a color palette based on three cosine functions corresponding to R, G, and B. However, this limited the possibilities of color to a finite, hand-picked amount. I thought to myself, since R, G, and B are represented as cosine functions anyway, why not generate the color procedurally? I first decided what general color the procedurally generated gradients should be. Basing my decision on the computer graphics concept of a yellow key light (from sun), and a blue fill light (from sky), I wanted the grid colors to have a general red to yellow gradient since the background was nice shade of blue already. Playing around with the equations, I noticed that the R and G cosine functions should be similar, but not equivalent in phase to produce a yellow shade. The R and G cosine functions should have high amplitude so that there is a visible change in color gradient, or else the 6 face colors of the cube will be too similar in hue. The B cosine function should generally be close to 0.1 because when B is too high, it causes the red to turn purple and yellow to turn brown, and when B is 0, the shades of red and yellow do not seem realistic enough (there is no such thing as perfectly red/green with no blue in real life). I also made sure that the R, G, and B functions do not get exceed the 0 to 1 range given the y-displacement and amplitude because this will cause some section of the color gradient to receive a consistent contribution of R, G, or B, making the gradient sections less distinctive for the 6 face colors. Here is a general visualization of how my procedural color gradient generator looks like:
+    * Color: Originally, I was hand-picking color gradients using IQ's idea of a color palette based on three cosine functions corresponding to R, G, and B. However, this limited the possibilities of color to a finite, hand-picked amount. I thought to myself, since R, G, and B are represented as cosine functions anyway, why not generate the color procedurally? I first decided what general color the procedurally generated gradients should be. Basing my decision on the computer graphics concept of a yellow key light (from sun), and a blue fill light (from sky), I wanted the grid colors to have a general red to yellow gradient since the background was nice shade of blue already. Playing around with the equations, I noticed that the R and G cosine functions should be similar, but not equivalent in phase to produce a yellow shade. The R and G cosine functions should have high amplitude so that there is a visible change in color gradient, or else the 6 face colors of the cube will be too similar in hue. The B cosine function should generally be close to 0.1 because when B is too high, it causes the red to turn purple and yellow to turn brown, and when B is 0, the shades of red and yellow do not seem realistic enough (there is no such thing as perfectly red/green with no blue in real life). I also made sure that the R, G, and B functions do not get exceed the 0 to 1 range given the y-displacement and amplitude because this will cause some section of the color gradient to receive a consistent contribution of R, G, or B, making the gradient sections less distinctive for the 6 face colors. Here is a visualization of how my procedural color gradient generator looks like:
 
     ![](./images/ref6.png)
 
-    * Animation: 
-    
+    * Animation: In order for the cube rotations to make sense in the eyes of the viewer, there should be animation. The cube shouldn't "jump" from grid cell to grid cell. Rather, there should be some smooth transition. I originally thought of LERPing the start and final positions of the cube flip, and SLURPing the start and final quaternion rotations of the cube flip. To my surprise, the cube center does not remain at the same height when flipped, thus LERPing the start and final positions (which are at the same y height) would not work. 
+
+    ![](./images/ref7.png)
+
+    SLURPing the start and final quaternions does work for rotation, but SLURPING at an axis of rotation that is not the cube center (but a cube edge) requires extra translation transformation. I decided to manually use a T*R*T matrix transformation every time onUpdate is called, where the R matrix is a SLURP of the two quaternions. After getting the animation to work, I felt as though something was missing. The cube did not have character. I decided to add a Toolbox Function I learned, the gain function, to distort the speed at which the cube rotates given a certain t value between 0 and 1. The first GIF is an animation of a cube WITHOUT the gain function applied, and the second GIF is an animation of a cube WITH the gain function.
+
+    ![](./images/ref8.gif)
+
+    ![](./images/ref9.gif)
+
     * Raymarching: My good pal Adam suggested to use ray marching 
 
   - ### Structure
@@ -119,12 +127,12 @@
     * Special thanks to Rachel Hwang, Adam Mally, Sally Kong, Trung Le, and Austin Eng for being so supportive throughout the semester, and especially throughout this project!
 
     * Gaussian Distribution
-      https://en.wikipedia.org/wiki/Gaussian_function#Two-dimensional_Gaussian_function
-      https://en.wikipedia.org/wiki/Normal_distribution#/media/File:Empirical_Rule.PNG
+      ** https://en.wikipedia.org/wiki/Gaussian_function#Two-dimensional_Gaussian_function
+      ** https://en.wikipedia.org/wiki/Normal_distribution#/media/File:Empirical_Rule.PNG
 
     * Colors
-      http://www.iquilezles.org/www/articles/palettes/palettes.htm
-      http://dev.thi.ng/gradients/
+      ** http://www.iquilezles.org/www/articles/palettes/palettes.htm
+      ** http://dev.thi.ng/gradients/
 
 
 
