@@ -1,7 +1,7 @@
 # CIS700 Procedural Graphics: Final Project
 
 
-## Final Report 
+# Final Report 
 
 Below details the various segments as my final report broken down into the following sections:
 
@@ -12,20 +12,20 @@ Below details the various segments as my final report broken down into the follo
 - Acknowledgements 
 
 
-# Updated Design Document 
+## Updated Design Document 
 
-You can find an updated version of my design document in the [documentation] (https://github.com/MegSesh/Final-Project/blob/master/documentation/updateddesigndoc.docx) folder 
+You can find an updated version of my design document in the [documentation](https://github.com/MegSesh/Final-Project/blob/master/documentation/updateddesigndoc.docx) folder 
 
-# Results 
+## Results 
 
 The final result of my project: 
 
-A video demo can be viewed [here] (https://youtu.be/nWGSon8ULzI). 
+A video demo can be viewed [here](https://youtu.be/nWGSon8ULzI). 
 
 ![alt text](https://github.com/MegSesh/Final-Project/blob/master/documentation/final.png "Final")
 
 
-# Evaluation 
+## Evaluation 
 
 My project took many turns throughout the 3 milestones, however, I believe I reached part of the way with what I wanted to accomplish. The metaballs assignment was one of my most enjoyed assignments all semester, and I felt inspired to do more with it. While I first started with the idea of creating a metaball music fountain, I ended up aspiring for a more static, well-composited image rather than something dynamic. The inspiration not only came from the image below, but actually stems from an old childhood experience of mine. The mall I used to visit with my family as a kid had a small art store that sold what I used to call "magic paintings". The reason they were so "magical" was because parts of it were animated - which was especially noticeable if the painting had some sort of body of water. I was always curious to know how they were created and wanted to create one of my own. 
 
@@ -57,7 +57,7 @@ Focusing on composition in my first milestone is what geared me to change the di
     - Incorporating spawn position, velocity and accceleration in the setupMetaballs() function allowed me to start animating them
 
 
-- To add more to the composition, and start making the animated metaball look like it was falling into a body of water, I added a [water shader] (https://threejs.org/examples/?q=ocean#webgl_shaders_ocean) from Three.JS examples.
+- To add more to the composition, and start making the animated metaball look like it was falling into a body of water, I added a [water shader](https://threejs.org/examples/?q=ocean#webgl_shaders_ocean) from Three.JS examples.
 
 
 Results of animating the metaball 
@@ -120,10 +120,10 @@ The result:
 ![alt text](https://github.com/MegSesh/Final-Project/blob/master/documentation/textureuv.png "texture uv")
 
 
-After reading IQ's [blog] (http://iquilezles.org/www/articles/texturerepetition/texturerepetition.htm) on texture repetition, I changed my approach to surround that, and created shaders that incorporated some of his ideas as well as triplanar mapping. The main idea behind this was to repeat a texture many times across a surface, but blend them together in such a way that it seemed to span the entire surface correctly. This produced a better result than before, even though there was still a visible appearance of repetition of the texture. 
+After reading IQ's [blog](http://iquilezles.org/www/articles/texturerepetition/texturerepetition.htm) on texture repetition, I changed my approach to surround that, and created shaders that incorporated some of his ideas as well as triplanar mapping. The main idea behind this was to repeat a texture many times across a surface, but blend them together in such a way that it seemed to span the entire surface correctly. This produced a better result than before, even though there was still a visible appearance of repetition of the texture. 
 
 
-# Future Work
+## Future Work
 
 Given more time, here's a list of features that I would have liked to add or reiterate on:
 
@@ -135,7 +135,7 @@ Given more time, here's a list of features that I would have liked to add or rei
 - Procedurally place rock and foliage obj's around the terrain and water 
 - Composite the scene to better emulate the image 
 
-# Acknowledgements
+## Acknowledgements
 
 Below is a list of all resources I consulted while working on this project:
 
@@ -174,7 +174,7 @@ Below is a list of all resources I consulted while working on this project:
 
 - https://threejs.org/examples/?q=ocean#webgl_shaders_ocean 
 
-
+====================================================================
 
 ## Milestone 2
 
