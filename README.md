@@ -1,11 +1,15 @@
 # Pruitt Igoe
 
+This report builds upon the design document uploaded.
+
+## Results:
+
 You can see the demo running 
 ### [HERE](https://www.youtube.com/watch?v=D61TlRlmYOQ)
 
-This report builds upon the design document uploaded.
+IMAGES
 
-## Results
+## Evaluation
 
 Because of time constraints, different design decisions were taken when completing the project:
 
@@ -28,6 +32,10 @@ Because of time constraints, different design decisions were taken when completi
 
 * I built an entire interactive application engine that uses an entity-component architecture and offers various OpenGL features: framebuffer objects (FBOs), floating point textures with mipmaps, stencil operations, and a set of useful material features. Also, shaders are recompiled in runtime if the source files change, which greatly simplify development.
 
+* This framework also offers a very simple approach to building shader passes. In the end, these were not used.
+
+* Originally, I wanted to use deferred rendering, but in the end I decided it didn't really add anything useful to the demo except extraneous complexity, as few lights are needed.
+
 * The application is compiled with static libraries, so only an executable is needed, along with it resource images/shader files. Ideally, these should be compressed with a packaging algorithm in the executable.
 
 * Camera choreography is built with a set of camera controllers managed by a state machine.
@@ -40,7 +48,6 @@ Because of time constraints, different design decisions were taken when completi
 
 * The raymarched water is probably the most interesting shader, as it modifies the normal on the fly to generate the droplet wave.
 
-
 ### Technical problems
 * The heightmap generation is not optimized and takes some time. There are various ways to improve this: a) multithreading the code or b) building the heightmap and the envelope mesh on a compute shader. b) is the most optimized approach, and I will implement this as a side project.
 
@@ -48,7 +55,21 @@ Because of time constraints, different design decisions were taken when completi
 
 * The volumetric rendering of the light pillar works, but the alpha blending of the material diminishes the effect. Lack of time for tweaking this effect is the reason, and I expect this to be can be vastly improved.
 
-* 
+* OpenGL features are always hard to implement and debug, so a lot of time was spent in the framework.
+
+### Personal evaluation
+While I think that this project is technically good, I'm not completely pleased with the resulting choreography, mostly because of the lack of terrain color variation, the naïveness of the underworld pillar/mountain (and lack of buildup for the pillar).
+
+I do, however, like the overall shot composition and animation, and the feelings that communicates.
+
+
+### Future work
+
+I want to continue this work and think it is a good proof of concept. I do not know if it is convenient to switch back to the old music, but it is worth reviewing it.
+
+* The iterative raymarching approach 
+
+
 
 ### References
 
