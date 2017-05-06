@@ -1,5 +1,181 @@
 # CIS700 Procedural Graphics: Final Project
 
+
+## Final Report 
+
+Below details the various segments as my final report broken down into the following sections:
+
+- Updated Design Document
+- Results
+- Evaluation
+- Future Work
+- Acknowledgements 
+
+
+# Updated Design Document 
+
+You can find an updated version of my design document in the [documentation] (https://github.com/MegSesh/Final-Project/blob/master/documentation/updateddesigndoc.docx) folder 
+
+# Results 
+
+The final result of my project: 
+
+A video demo can be viewed [here] (https://youtu.be/nWGSon8ULzI). 
+
+![alt text](https://github.com/MegSesh/Final-Project/blob/master/documentation/final.png "Final")
+
+
+# Evaluation 
+
+My project took many turns throughout the 3 milestones, however, I believe I reached part of the way with what I wanted to accomplish. The metaballs assignment was one of my most enjoyed assignments all semester, and I felt inspired to do more with it. While I first started with the idea of creating a metaball music fountain, I ended up aspiring for a more static, well-composited image rather than something dynamic. The inspiration not only came from the image below, but actually stems from an old childhood experience of mine. The mall I used to visit with my family as a kid had a small art store that sold what I used to call "magic paintings". The reason they were so "magical" was because parts of it were animated - which was especially noticeable if the painting had some sort of body of water. I was always curious to know how they were created and wanted to create one of my own. 
+
+
+![alt text](https://github.com/MegSesh/Final-Project/blob/master/documentation/referenceImages/facefountainforest.jpg "Image 1")
+
+
+**Milestone One:**
+
+Focusing on composition in my first milestone is what geared me to change the direction of my project. I also started refactoring the metaball homework framework so that I could sprout metaballs in specified locations with specified velocities and accelerations. This took a couple of iterations to get right as well as to incorporate some simple optimizations. Recapping my first milestone below:
+
+
+- Metaball.js:
+
+    - Specified spawn location, velocity, and acceleration for each Metaball in the Metaball class 
+    - Modified the Metaball update() function to reset the animation from the spawn location and incorporate deltaT, rather than just reversing the velocity at the boundaries.
+
+
+- MarchingCubes.js
+
+    - An isosurface is created whenever the field function for a metaball crosses a certain threshold, called isolevel. This field function describes the total influence of each metaball for a given point. Originally, the field function we used for homework was: 
+
+        f(point) = (metaball radius)^2 / (distance from metaball to the point)^2
+
+    While I tried experimenting with others functions, I decided to keep this one as it produced more of the result I wanted. In order to emulate some sort of ground base that the metaballs could interact with, I added a ground plane of influence by increasing the radius value for the points of the voxel nearer to the ground. 
+
+    - In order to optimize some of the mathematical calculations I utilized built-in functions such as distanceToSquared (thanks Trung for the suggestion!) to calculate the field function. I also tried to be smarter about memory allocation with variables.
+
+    - Incorporating spawn position, velocity and accceleration in the setupMetaballs() function allowed me to start animating them
+
+
+- To add more to the composition, and start making the animated metaball look like it was falling into a body of water, I added a [water shader] (https://threejs.org/examples/?q=ocean#webgl_shaders_ocean) from Three.JS examples.
+
+
+Results of animating the metaball 
+
+![alt text](https://github.com/MegSesh/Final-Project/blob/master/documentation/milestone1_images/1.png "Image 1")
+
+![alt text](https://github.com/MegSesh/Final-Project/blob/master/documentation/milestone1_images/2.png "Image 2")
+
+![alt text](https://github.com/MegSesh/Final-Project/blob/master/documentation/milestone1_images/3.png "Image 3")
+
+
+
+**Milestone Two:**
+
+Milestone two consisted mostly of fixing my errors in milestone one and getting more of the major compositional pieces in so that my scene could start coming together. 
+
+The most blatant error was that I couldn't get more than one metaball to move towards the ground plane of influence. Despite placing more in the scene, they wouldn't move. I realized that I was incorrectly incorporating deltaT in my integration calculation. I had to send deltaT from main.js to constantly update the metaball movement. I originally had set this in the Metaball class itself, however, realized this was incorrect since you want all the metaballs in the scene to be animated according to the same deltaT rather than each having their own. In other words, deltaT should be scene based, not metaball specific. 
+
+Fixing this error allowed me to sprout more metaballs to start making it look more like a waterfall. Adding a perlin noise based terrain on the GPU and a skybox also brought the scene more together as seen below. 
+
+
+The results of milestone two:
+
+![alt text](https://github.com/MegSesh/Final-Project/blob/master/documentation/milestone2_images/1.png "Image 1")
+
+
+
+**Final Stretch:**
+
+The biggest challenge I faced in this final milestone was bringing the scene to life. This involved several key items:
+
+    1. Testing the performance of the metaball animation with more and more metaballs. 
+    2. Adding more objects to the scene
+    3. Correctly implementing texture mapping on the terrain and the objects.
+
+
+*Metaball Animation/Performance*
+
+Up until now I had been manually specifying spawn locations, velocities and accelerations for the metaballs. In this milestone, I reconfigured this to be automated such that the metaballs sprouted randomnly but within a specified range that would update along with the voxel grid length. This made tuning parameters a lot easier. It also simplified my code greatly, and allowed me to test with more and more metaballs - from 10 to 100 to create a fuller looking waterfall. 
+
+
+Another performance change I made was to move the Perlin noise terrain generation implementation from the GPU back to the CPU. Because the terrain wasn't animated in any way, there was no real advantage to putting it on the GPU. 
+
+
+*Objects and Texture Mapping*
+
+While properly adding more objects to the scene had its own challenges (in terms of parsing .obj files), the biggest one was being able to texture map them as well as the noise generated terrain. The inspiration image essentially has a huge grassy green field with a human head covered in the grass and foliage as well. Texture mapping the terrain had to be treated differently since manipulating the positions based on noise meant that the normals had been distorted as well, and had to be recalculated separately in order for texture mapping to work. 
+
+
+I tried a multitude of texture mapping techniques. I tried re-calculating the normals according to the same perlin noise functions and creating UV coordinates from those, however, the grass texture I used still ended up being distorted. I also tried multiplying the UV's with an offset, however, this just essentially produced a color based on the texture as can be seen below.
+
+
+The texture used:
+
+![alt text](https://github.com/MegSesh/Final-Project/blob/master/src/assets/grass1.bmp "grass uv")
+
+
+The result: 
+
+![alt text](https://github.com/MegSesh/Final-Project/blob/master/documentation/textureuv.png "texture uv")
+
+
+After reading IQ's [blog] (http://iquilezles.org/www/articles/texturerepetition/texturerepetition.htm) on texture repetition, I changed my approach to surround that, and created shaders that incorporated some of his ideas as well as triplanar mapping. The main idea behind this was to repeat a texture many times across a surface, but blend them together in such a way that it seemed to span the entire surface correctly. This produced a better result than before, even though there was still a visible appearance of repetition of the texture. 
+
+
+# Future Work
+
+Given more time, here's a list of features that I would have liked to add or reiterate on:
+
+- Reiterate on the look and flow of the metaballs to be more fluid like (one idea was to have varying voxel grid width sizes)
+- Implement procedural grass on the terrain and on the lion's head
+- Implement fog and wind animation that would animate the grass 
+- Texture the metaballs to be the same color as the water shader 
+- Animate some effect that made the metaballs look like it was colliding with the water
+- Procedurally place rock and foliage obj's around the terrain and water 
+- Composite the scene to better emulate the image 
+
+# Acknowledgements
+
+Below is a list of all resources I consulted while working on this project:
+
+
+**Inspiration**
+
+- http://www.ro.me/tech/metaball-playground 
+- http://www.ew-fountains.com/wp-content/uploads/2015/02/swarovski4.jpg
+
+
+**Metaball Implementation**
+
+- http://jamie-wong.com/2016/07/06/metaballs-and-webgl/
+- https://threejs.org/examples/webgl_marchingcubes.html 
+
+
+**Texture Mapping**
+
+- https://gamedev.stackexchange.com/questions/64598/what-are-some-ways-to-texture-map-a-terrain 
+- http://iquilezles.org/www/articles/texturerepetition/texturerepetition.htm
+- https://www.shadertoy.com/view/4tsGzf 
+- http://stackoverflow.com/questions/18880715/texture-splatting-with-three-js/18994814#18994814
+- http://stemkoski.github.io/Three.js/Shader-Heightmap-Textures.html
+
+
+**Other**
+- https://github.com/stemkoski/stemkoski.github.com/tree/master/Three.js/images
+
+
+**Music**
+
+- https://www.soundjay.com/river-sounds-1.html 
+- http://stackoverflow.com/questions/9419263/playing-audio-with-javascript 
+
+**Water**
+
+- https://threejs.org/examples/?q=ocean#webgl_shaders_ocean 
+
+
+
 ## Milestone 2
 
 To start off, this is (somewhat) the look I'm trying to achieve:
