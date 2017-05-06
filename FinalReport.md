@@ -180,7 +180,7 @@ Value noise is a noise generation technique much like Perlin noise. Value noise 
 
 I modelled a terrain using ridged value noise in the vertex shader for testing the texture. Mapping the noise to the terrain gave the following result:
 
-<img src="images/m1-texture2.PNG" height="400" />
+![](images/m1-texture2.PNG)
 
 The presence of snow is determined by a combination of the height and the noise value at any point. The noise derivatives are used along with the noise to obtain the erosion/sliding of snow. I could not find much literature explaining the math behind the implementation of such effects, so I tweaked the values until it worked the way I thought it should. The derivative, in a way, should give the slope (change in noise) at the point. So, assuming it will show up more at high altitudes, it should flow down. Animating the implementation with time shows some such behavior. But I am not completely sure if that is how it really works.
 
@@ -192,13 +192,13 @@ To add more detail to the terrain, I decided to explore some interesting techniq
 
 **Ridged Value Noise:** It is a way of adding sharp ridges in an otherwise smooth value noise. The value of noise is in the range of [-1,1]. Absolute of noise flips the negative part to positive, creating a sharp discontinuity at 0. Subtracting this value from 1.0 inverts the resulting *graph*, producing sharp edges when viewed from top. The first image below is value noise and the second one is the corresponding ridged noise. I tried combining this with the original noise, but the results weren't convincing.
 
-<img src="images/presentation/value.PNG" height="400" />
-<img src="images/presentation/value_ridged.PNG" height="400" />
+![](images/presentation/value.PNG)
+![](images/presentation/value_ridged.PNG)
 
 
 **Distorting textures using sine function:** It is a widely used method, where one inputs the noise value to the sine function. The results of this were also not very convincing. It looks like a marble texture which in no way could help me add details to the terrain texture.
 
-<img src="images/presentation/sine_noise.PNG" height="400" />
+![](images/presentation/sine_noise.PNG)
 
 
 
@@ -209,15 +209,15 @@ Ridged noise and sine distortion having failed, I decided to give voronoi diagra
 >In mathematics, a Voronoi diagram is a partitioning of a plane into regions based on distance to points in a specific subset of the plane. - Wikipedia
 
 The voronoi diagram generated using the nearest of the sampled points, looks like this:</br>
-<img src="images/presentation/voro.PNG" height="400" />
+![](images/presentation/voro.PNG)
 
 Multiple voronoi diagrams with closest (V0), second closest(V1), ... points can be computed simultaneously and combined to get interesting results.  
 
 V1 - V0 : </br>
-<img src="images/presentation/voro_diff.PNG" height="400" />
+![](images/presentation/voro_diff.PNG)
 
 V1 x V0 : </br>
-<img src="images/presentation/voro_mul.PNG" height="400" />
+![](images/presentation/voro_mul.PNG)
 
 > V1 x V0 when scaled down a lot, gives good enough details to add to the terrain. Currently, in the code, it is scaled down by 200 times. If finer details are needed, it can be scaled down more.
 
