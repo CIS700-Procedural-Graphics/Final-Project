@@ -1,112 +1,166 @@
-# CIS700 Procedural Graphics: Final Project
+# Voxel Run: Procedural Graphics Final Project
 
-Time to show off your new bag of procedural tricks by creating one polished final project. For this assignment you will have four weeks to create and document a portfolio piece that demonstrates your mastery of procedural thinking and implementation. You may work in groups of up to three (working alone is fine too). You may use any language / platform you choose for this assignment (given our approval if it’s not JavaScript/WebGL or C++/OpenGL).
+## Design Document:
 
-As usual with this class, we want to encourage you to take this opportunity to explore and experiment. To get you started, however, we’ve provided a few open-ended prompts below. Interesting and complex visuals are the goal in all of these prompts, but they encourage focus on different aspects of proceduralism.
+  - ### Introduction
+    * Always wanted to make a technically challenging and aesthetically pleasing puzzle game. Had this game idea written down, and has been sitting there for a solid year or so. Want to actually make this game happen. 
 
-## Prompts:
+  - ### Goal
+    * Create a challenging, addictive, isometric puzzle game using simple geometry and gradient colors. 
 
-- ### A classic 4k demo
-  * In the spirit of the demo scene, create an animation that fits into a 4k executable that runs in real-time. Feel free to take inspiration from the many existing demos. Focus on efficiency and elegance in your implementation.
-  * Examples: [cdak by Quite & orange](https://www.youtube.com/watch?v=RCh3Q08HMfs&list=PLA5E2FF8E143DA58C)
+  - ### Inspiration
+    * Monument Valley 
 
-- ### A forgery
-  * Taking inspiration from a particular natural phenomenon or distinctive set of visuals, implement a detailed, procedural recreation of that aesthetic. This includes modeling, texturing and object placement within your scene. Does not need to be real-time. Focus on detail and visual accuracy in your implementation.
-  * Examples:
-    - [Snail](https://www.shadertoy.com/view/ld3Gz2), [Journey](https://www.shadertoy.com/view/ldlcRf), Big Hero 6 Wormhole: [Image 1](http://2.bp.blogspot.com/-R-6AN2cWjwg/VTyIzIQSQfI/AAAAAAAABLA/GC0yzzz4wHw/s1600/big-hero-6-disneyscreencaps.com-10092.jpg) , [Image 2](https://i.stack.imgur.com/a9RGL.jpg)
+    ![](./images/ref1.jpg)
+    
+    * Euclidean Lands 
 
-- ### A game level
-  * Like generations of game makers before us, create a game which generates an  navigable environment (eg. a roguelike dungeon, platforms) and some sort of goal or conflict (eg. enemy agents to avoid or items to collect). Must run in real-time. Aim to create an experience that will challenge players and vary noticeably in different playthroughs, whether that means complex dungeon generation, careful resource management or a sophisticated AI model. Focus on designing a system that will generate complex challenges and goals.
-  * Examples: Spore, Dwarf Fortress, Minecraft, Rogue
+    ![](./images/ref2.jpg)
 
-- ### An animated environment / music visualizer
-  * Create an environment full of interactive procedural animation. The goal of this project is to create an environment that feels responsive and alive. Whether or not animations are musically-driven, sound should be an important component. Focus on user interactions, motion design and experimental interfaces.
-  * Examples: [Panoramical](https://www.youtube.com/watch?v=gBTTMNFXHTk), [Bound](https://www.youtube.com/watch?v=aE37l6RvF-c)
-- ### Own proposal
-  * You are of course **welcome to propose your own topic**. Regardless of what you choose, you and your team must research your topic and relevant techniques and come up with a detailed plan of execution. You will meet with some subset of the procedural staff before starting implementation for approval. 
+    * Skyward 
+    
+    ![](./images/ref3.jpg)
 
-**Final grading will be individual** and will be based on both the final product and how well you were able to achieve your intended effect according to your execution plan. Plans change of course, and we don’t expect you to follow your execution plan to a T, but if your final project looks pretty good, but you cut corners and only did 30% of what you outlined in your design doc, you will be penalized.
+  - ### Specification
+    * This procedurally-generated puzzle game has a simple objective: flip a cube from grid cell to grid cell until you reach the finish cell. Each grid cell can be one of six colors corresponding to the six distinct face colors of the cube. What makes this game challenging is that the current cell the cube is on must have the same color as the bottom face of the cube. Once the cube lands on a grid cell, the cell color turns grey and the player cannot go back. There will only be one path to the finish, so the player must plan his or her moves accordingly.
 
-But overall, have fun! This is your opportunity to work on whatever procedural project inspires you. The best way to ensure a good result is to pick something you’re passionate about. :)
+  - ### Techniques
+    * The main technical challenge is generating each level. I have to make sure that each level has only one solution, and the path from start to finish is not a simple and straightforward line. In order to check that each level has only one solution, the alternative and incorrect paths cannot cannot provide the cube a way to walk back on the correct path. In a sense, this is a graph theory problem, where each vertex is a grid cell, and each edge is a possible path from grid cell to grid cell. As long as there are no cycles, there can only be one solution. Generating a windy and complicated solution is another beast to handle. Currently considering a Perlin Worms algorithm to generate the solution to each level, but this is subject to change. As the levels progress, the grid size will become bigger, making the level much harder. However, my algorithm should be flexible enough to generate a reasonable path for each grid size.
 
-## Timeline
+  - ### Structure
+    * Player Class: Class containing the state of the player, including the six faces and the direction the cube is facing.
+    * Grid Class: Class containing the grid of grid cells, and a level generator to compute a reasonable puzzle for the player.
+    * Main Class: Puts Cube and Grid class together, orchestrating the interaction between the two classes.
 
-- 4/08	Design doc due / Have met with procedural staff
-- 4/18	Milestone 1 (short write-up + demo)
-- 4/25	Milestone 2 (short write-up + demo)
-- 5/3	Final presentations (3-5 pm, Siglab), final reports due
+  - ### Timeline
+    * April 18, 2017: Finish setting up the player and grid, be able to generate a path from start to finish, but do not have to fill in alternative paths yet.
+    * April 25, 2017: Finish level generator with only a single solution to each level. Alternative, incorrect paths should be misleading to make the game difficult.
+    * May 3, 2017: Polishing up the project. Fixing bugs, adding sound effects and animation, adjusting color pallette and aesthetics.
 
-## Design Doc
+## Milestones:
 
-Your design doc should follow the following template. Note, each section can be pretty short, but cover them all! This will serve as valuable documentation when showing this project off in the future AND doing a good job will make it much easier for you to succeed, so please take this seriously.
+  - ### Milestone 1
+    * Finished setting up the player and grid class, where the player is able to rotate the cube using the arrow keys. For the player class, ran into the same problem with the turtle class in L-Systems project, where rotating the turtle using rotation.x, rotation.y, rotation.z has some issues. Still have to fix this by using quaternions instead. For the grid class, used Depth First Search to generate the whole level, instead of generating one single path. This part is currently operating, but will add more complexity to the Depth First Search level generation to make it more interesting.
 
-### Design Doc Template:
+  - ### Milestone 2
+    * Fixed cube rotation by using quaternions instead of mesh.rotation. Found out that it is because there is a local rotation and world rotation for each THREE.Mesh that can be easily mixed up. Better to just use matricies in a scene graph style. Adjusted camera placement so that it is centered at the grid center, no matter what the dimensions of the grid is. Made multiple checks so that the cube can only flip if the color of the cube face that is going to face down matches the grid cell color. Added levels, where after crossing the finish cell, a new level appears with an increase in grid dimension. Realized that the plain Depth First Search level generation is too simple because on the edge of the grid, there is a 50 percent chance that it remains on the edge of the grid. Often the level generated has an easy path along the edge to the finish cell. Added a Gaussian Distribution Function to weigh the cells closer to the center more, so that the Depth First Search generator tends to go toward the center, making the level more complicated.
 
-- #### Introduction
-  * What motivates this project?
-- #### Goal
-  * What do you intend to achieve with this project?
-- #### Inspiration/reference: 
-  * Attach some materials, visual or otherwise you intend as reference
-- #### Specification:
-  * Outline the main features of your project
-- #### Techniques:
-  * What are the main technical/algorithmic tools you’ll be using? Give an overview, citing  specific papers/articles
-- #### Design:
-  * How will your program fit together? Make a simple free-body diagram illustrating the pieces.
-- #### Timeline:
-  * Create a week-by-week set of milestones for each person in your group.
+  - ### Milestone 3
+    * Added a finish cell cube, or else a new player of the game doesn't know where the finish line is. Realized that the Depth First Search and Gaussian Distribution function level generator still does not work quite as expected. Now the level generator tends to go in a snake path, toward the center of the grid, then toward the edge, then toward the center again. Added a "throughput" that starts off as 1.0 and slowly decreases to 0.0 the more often the generator walks straight. This makes the paths generated more twisty and complicated. Added animation so that, to the player, it makes sense how the cube is flipping. Used a gain function to make the animation more realistic and lively. Added sound effects so that when the cube impacts on the ground, there is a "thump," and also added dream-like background music. Used raymarching so that the user no longer has to use arrow keys to move the cube. Instead, the user can use his or her mouse to select the grid cell to move to. Used cosine waves to procedurally generate the color for each level.
 
-
-Along with your final project demo, you will submit a final report, in which you will update correct your original design doc as needed and add a few post-mortem items.
-
-## Milestones
-
-To keep you honest / on-track, we will be checking on your progress at weekly intervals, according to milestones you’ll define at the outset (pending our approval). For each of the two milestones prior to the final submission, you will submit a short write up explaining whether or not you individually achieved your goals (specifying the files where the work happened), along with a link to a demo / images. These don’t have to be super polished -- we just want to see that you’re getting things done.
-
-Example:
-
-“Milestone 1:
-	Adam:
-Made some procedural terrain code in src/terrain.js. Implemented 3D simplex noise to do it. Also applied coloring via custom shader based on this cool paper X (see src/shaders/dirt.glsl). IMAGE
-
-Austin: 
-I managed to set up my voronoi diagram shader (see src/shaders/voronoi.glsl). 
-Experimented with different scattering techniques. It’s working with the euclidean distance metric. I’m using it in src/main.js to color stones. IMAGE
-
-Rachel:
-I tried really hard to make my toon shader work (src/shaders/toon.glsl), but I still have a bug! T_T BUGGY IMAGE. DEMO LINK”
+  - ### Final Tweaks
+    * Changed the color of the raymarching grid cell selection depending if it is a movable grid cell or not. Realized that the game is too easy because the player can always move back if he makes a mistake, and there is no game over case. Made it so that once the user steps off a grid cell, the grid cell falls into an abyss. No more take-back-sies. If the user is stuck, he or she must take his or her own life by jumping into the abyss. Then it is game over. Added a start menu and game over screen so that there actually is a clear/definite start and end to the game. Made it so that not only does the grid dimension increase as the levels get harder, but also adjusted the throughput value so that the level generated paths are more twisty as the levels get harder. Changed the camera from orthographic to perspective in order to give depth to the grid cells falling.
 
 ## Final Report
 
-In addition to your demo, you will create a final report documenting your project overall. This document should be clear enough to explain the value and details of your project to a random computer graphics person with no knowledge of this class.
+  - ### Introduction
+    * I always wanted to make a technically challenging, yet aesthetically pleasing puzzle game. I had this particular game idea written down, and it had been sitting on my desk for a solid year or so. Took this procedural final project as an opportunity to make this game actually happen and come to life.
 
-### Final Report Template:
+  - ### Goal
+    * Create a challenging, addictive, isometric puzzle game using simple geometry and gradient colors. 
 
-- #### Updated design doc: 
-  * All the sections of your original design doc, corrected if necessary
-- #### Results:
-  * Provide images of your finished project
-- #### Evaluation (this is a big one!):
-  * How well did you do? What parameters did you tune along the way? Include some WIP shots that compare intermediate results to your final. Explain why you made the decisions you did.
-- #### Future work:
-  * Given more time, what would you add/improve
-- #### Acknowledgements:
-  * Cite _EVERYTHING_. Implemented a paper? Used some royalty-free music? Talked to classmates / a professor in a way that influenced your project? Attribute everything!
+  - ### Inspiration
+    * Monument Valley 
 
-## Logistics
+    ![](./images/ref1.jpg)
+    
+    * Euclidean Lands 
 
-Like every prior project, your code will be submitted via github. Fork the empty final project repo and start your code base from there. Take this as an opportunity to practice using git properly in a team setting if you’re a new user.  For each weekly submission, provide a link to your pull request. Your repo will contain all the code and documentation associated with your project. The readme for your repo will eventually be your final report. At the top level, include a folder called “documentation”, where you’ll put your design doc and milestone write-ups.
+    ![](./images/ref2.jpg)
 
-Don’t wait to merge your code! Seriously, there be dragons. Try to have a working version including all your code so that compatibility and merge issues don’t sneak up on you near the end.
+    * Skyward
+    
+    ![](./images/ref3.jpg)
 
-## Grading
+  - ### Specification
+    * This procedurally-generated puzzle game has a simple objective: flip a cube from grid cell to grid cell until you reach the finish cell. Each grid cell can be one of six colors corresponding to the six distinct face colors of the cube. What makes this game challenging is that the current grid cell the cube is on must have the same color as the bottom face of the cube. Once the cube lands on a grid cell, the previous grid cell falls into an abyss and the player cannot go back. The player must plan his or her moves accordingly. In essence, this game is a maze without walls. 
 
-- 15% Design Doc (graded as a group)
-- 15% Milestone 1 (graded as a group)
-- 15% Milestone 2 (graded as a group)
-- 55% Final demo + report (graded individually)
+  - ### Techniques
+    * Level Generation: 
+      * Started off with a Depth First Search level generation algorithm where a simulated cube walks on a random path until all its neighboring grid cells are visited. Then the cube takes a step back, and checks if there are any neighboring grid cells that are not visited. If so, the cube walks on a random path again. This repeats until the simulated cube reaches its starting position. An emergent behavior that came out of this algorithm was that very frequently, a generated path would continue along the edge of the grid. This is because on an edge of a grid, there are only two possible directions the simulated cube can move: along the edge again, or toward the center of the grid. Since I weighed both choices equally, a grid-edge path was very common. In order to fix this, I tried using a Gaussian Distribution Function to weigh the choices of the simulated cube unequally; the grid cells near the center of the grid will have higher probability of being chosen. I picked the variance based on the empirical rule of the normal distribution, where the grid dimensions span from (mean-2sigma) to (mean+2sigma).
 
-NOTE: We’ve been pretty lax about our late policy throughout the semester, but our margins on the final project are tight, therefore late submissions will NOT be accepted. If you have a significant reason for being unable to complete your goals, talk to us, and we’ll discuss getting you an incomplete and figure out an adjusted work plan with your group.
+      ![](./images/ref4.png)
+
+      ![](./images/ref5.png)
+
+      * I ran into another problem with this modification of the Depth First Search level generation algorithm. Because I picked such a large variance, the probability of the center grid cells is significantly higher than the edge grid cells. This ended up causing my simulated cube to walk straight toward the center of the grid, then around the center of the grid until there are no more unvisited grid cells, then along the grid edges. Again, grid-edge paths became very common. I decided to pick a smaller variance and this fixed the problem. 
+
+      * The next emergent behavior I noticed was that the paths generated were too straight. I applied what I learned in Advanced Computer Graphics of a throughput variable that starts off at 1.0 and decreases over time to 0.0. Now, every time the simulated cube walks in the same direction as the previous step, the throughput variable is decreased by a factor of 0.5 and then multipled to the probability of the upcoming same-direction grid cell choice. In other words, the more consecutive straightforward steps the simulated cube takes, the least likely the next step will be straightforwarc. I later realized that depending on the throughput factor, the paths can be more or less twisty. I decided to have a smaller throughput factor at the start of the game and slowly increase it in each proceeding level.
+
+      * My original worry of making sure the player cannot cross though "walls" between generated paths quickly disappeared after I realized that even though the player can cross through "walls," it is very unlikely for the player to continue along the crossed path because the cube must be in a certain orientation/rotation. What I mean by this is that the bottom face of the cube may match with the grid cell after crossing through a "wall," but there are 4 possible ways the cube can be orientated, and only one orientation can allow the player to continue to move along the crossed path. And even if the player can move along the crossed path, the crossed path does not necessairly lead to the finish cell. As a result, I chose to ignore this case because it actually benefits my game by adding an extra layer of complexity: 3 out of the 4 times crossinb through a "wall" will lead to a dead end due to the incorrect orientation of the cube.
+
+    * Color: 
+      * Originally, I was hand-picking color gradients using IQ's idea of a color palette based on three cosine functions corresponding to R, G, and B. However, this limited the possibilities of color to a finite, hand-picked amount. I thought to myself, since R, G, and B are represented as cosine functions anyway, why not generate the color procedurally? I first decided what general color the procedurally generated gradients should be. Basing my decision on the computer graphics concept of a yellow key light (from sun), and a blue fill light (from sky), I wanted the grid colors to have a general red to yellow gradient since the background was nice shade of blue already. Playing around with the equations, I noticed that the R and G cosine functions should be similar, but not equivalent in phase to produce a yellow shade. The R and G cosine functions should have high amplitude so that there is a visible change in color gradient, or else the 6 face colors of the cube will be too similar in hue. The B cosine function should generally be close to 0.1 because when B is too high, it causes the red to turn purple and yellow to turn brown, and when B is 0, the shades of red and yellow do not seem realistic enough (there is no such thing as perfectly red/green with no blue in real life). I also made sure that the R, G, and B functions do not get exceed the 0 to 1 range given the y-displacement and amplitude because this will cause some section of the color gradient to receive a consistent contribution of R, G, or B, making the gradient sections less distinctive for the 6 face colors. Here is a visualization of how my procedural color gradient generator looks like:
+
+      ![](./images/ref6.png)
+
+    * Animation: 
+      * In order for the cube rotations to make sense in the eyes of the viewer, there should be animation. The cube shouldn't "jump" from grid cell to grid cell. Rather, there should be some smooth transition. I originally thought of LERPing the start and final positions of the cube flip, and SLURPing the start and final quaternion rotations of the cube flip. To my surprise, the cube center does not remain at the same height when flipped, thus LERPing the start and final positions (which are at the same y height) would not work. 
+
+      ![](./images/ref7.png)
+
+      * SLURPing the start and final quaternions works for rotation about the center of an object, but SLURPING at an axis of rotation that is not the cube center (but a cube edge) requires extra translation transformation. I decided to manually use a T*R*T matrix transformation every time onUpdate is called, where the R matrix is a SLURP of the two quaternions. After getting the animation to work, I felt as though something was missing. The cube did not have character. I decided to add a Toolbox Function I learned, the gain function, to distort the speed at which the cube rotates, given a certain t value between 0 and 1. The first GIF below is an animation of a cube WITHOUT the gain function applied, and the second GIF below is an animation of a cube WITH the gain function.
+
+      ![](./images/ref8.gif)
+
+      ![](./images/ref9.gif)
+
+    * Raymarching: 
+      * Originally I thought that fixing the camera rotation to a specific angle and allowing the user to view the back faces of the cube by hovering over the cube with a mouse was a good idea. That way, the arrow keys can stay in the same orientation. My good ol' pal Adam suggested to use ray marching to select a grid cell to move the cube instead. Then the user can rotate the grid to his or her discretion, while viewing all sides of the cube. That was a great idea. Thanks Adam! In the onUpdate function, I raymarch a ray originating at the mouse with a direction of the camera forward vector to find the closest intersected object. If the intersected object is a grid cell, then I highlight the top face light gray or dark gray, depending on if it is a valid move or not.
+
+      ![](./images/raymarch.gif)
+
+  - ### Structure
+    * Player Class: Class containing the state of the player, including the six faces and the direction the cube is facing.
+    * Grid Class: Class containing the grid of grid cells, and a level generator to compute a reasonable puzzle for the player.
+    * Main Class: Puts Cube and Grid class together, orchestrating the interaction between the two classes. Also handles the logic for the game.
+
+  - ### Timeline
+    * April 18, 2017: Finish setting up the player and grid, be able to generate a path from start to finish, but do not have to fill in alternative paths yet.
+    * April 25, 2017: Finish level generator with only a single solution to each level. Alternative, incorrect paths should be misleading to make the game difficult.
+    * May 3, 2017: Polishing up the project. Fixing bugs, adding sound effects and animation, adjusting color pallette and aesthetics.
+
+  - ### Results:
+
+    ![](./images/result1.png)
+
+    ![](./images/result2.png)
+
+    ![](./images/result3.png)
+
+  - ### Evaluation:
+    * Overall, I feel like I have come a long way. I started this project thinking it will be almost impossible to generate the types of levels I imagined, but I took clever approaches and applied a lot of what I learned to solve difficult situations, such as keeping track of which face color is facing which direction in the world without the need of a rotation matrix but only 6 variables, fixing the unwanted emergent behavior of the Depth First Search level generator, and applying color and toolbox functions to make the game more aesthetically pleasing. 
+
+    There were many tweaks that had to be made throughout the process. I changed the camera from orthographic to perspective in order to give depth to the falling grid cells, added a finish cube or else a new player doesn't know where the finish line is, used raymarching so that the user no longer has to use arrow keys to move the cube, used cosine waves to procedurally generate the color for each level, and changed the color of the raymarching grid cell selection depending if it is a movable grid cell or not. I also realized that the game is too easy because the player can always move back if he makes a mistake, and there is no game over case. I then made it so that once the user steps off a grid cell, the grid cell falls into an abyss. No more take-back-sies. If the user is stuck, he or she must take his or her own life by jumping into the abyss. Then it is game over. I also added a start menu and game over screen so that there actually is a clear/definite start and end to the game. Lastly, I modified the game design so that not only does the grid dimension increase as the levels get harder, but throughput factor decreases so that the level generated paths are more twisty as the levels get harder. 
+
+    ![](./images/WIP1.png)
+
+    ![](./images/WIP2.png)
+
+  - ### Future work:
+    * Given more time, I would add more complexity to the game, such as not only making the level a 2D grid. Instead, the cube can walk on walls and ceilings, as long as the cube face colors are matching both surfaces at the corner of the wall. In addition, I would want to add a way for users to keep track of their thought process, such as being able to add "flags" on the grid surface, similar to Minesweeper. This would keep the interest of the players rather than having them give up when the grid dimension becomes too big.
+
+  - ### Acknowledgements:
+    * Special thanks to Rachel Hwang, Adam Mally, Sally Kong, Trung Le, and Austin Eng for being so supportive throughout the semester, and especially throughout this project!
+
+    * Gaussian Distribution
+      * https://en.wikipedia.org/wiki/Gaussian_function#Two-dimensional_Gaussian_function
+      * https://en.wikipedia.org/wiki/Normal_distribution#/media/File:Empirical_Rule.PNG
+
+    * Colors
+      * http://www.iquilezles.org/www/articles/palettes/palettes.htm
+      * http://dev.thi.ng/gradients/
+
+    * Raymarching
+      * https://stemkoski.github.io/Three.js/Mouse-Over.html
+      * https://github.com/mrdoob/three.js/issues/5587
+      * http://stackoverflow.com/questions/20361776/orthographic-camera-and-pickingray
+
+    * Mouse Detection
+      * https://threejs.org/examples/?q=out#webgl_postprocessing_outline
+
+    * Camera Orbit Controls
+      * https://searchcode.com/codesearch/view/58375664/
+
 
 
