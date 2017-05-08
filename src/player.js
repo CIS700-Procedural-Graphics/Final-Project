@@ -57,26 +57,17 @@ export default class Player {
         this.isAnimating = true;
         this.animateType = 0;
 
-        //faceYPositive -> faceXNegative
-        //faceXNegative -> faceYNegative
-        //faceYNegative -> faceXPositive
-        //faceXPositive -> faceYPositive
         var tempColor = new THREE.Color(this.faceYPositive);
         this.faceYPositive = new THREE.Color(this.faceXNegative);
         this.faceXNegative = new THREE.Color(this.faceYNegative);
         this.faceYNegative = new THREE.Color(this.faceXPositive);
         this.faceXPositive = tempColor;
-        
     };
 
     rotateZCounter() {
         this.isAnimating = true;
         this.animateType = 1;
 
-        //faceYPositive -> faceXPositive
-        //faceXPositive -> faceYNegative
-        //faceYNegative -> faceXNegative
-        //faceXNegative -> faceYPositive
         var tempColor = new THREE.Color(this.faceYPositive);
         this.faceYPositive = new THREE.Color(this.faceXPositive);
         this.faceXPositive = new THREE.Color(this.faceYNegative);
@@ -88,10 +79,6 @@ export default class Player {
         this.isAnimating = true;
         this.animateType = 2;
 
-        //faceYPositive -> faceZNegative
-        //faceZNegative -> faceYNegative
-        //faceYNegative -> faceZPositive
-        //faceZPositive -> faceYPositive
         var tempColor = new THREE.Color(this.faceYPositive);
         this.faceYPositive = new THREE.Color(this.faceZNegative);
         this.faceZNegative = new THREE.Color(this.faceYNegative);
@@ -103,10 +90,6 @@ export default class Player {
         this.isAnimating = true;
         this.animateType = 3;
 
-        //faceYPositive -> faceZPositive
-        //faceZPositive -> faceYNegative
-        //faceYNegative -> faceZNegative
-        //faceZNegative -> faceYPositive
         var tempColor = new THREE.Color(this.faceYPositive);
         this.faceYPositive = new THREE.Color(this.faceZPositive);
         this.faceZPositive = new THREE.Color(this.faceYNegative);

@@ -9,9 +9,9 @@ var menuMesh;
 var atGameOver = false;
 var gameOverMesh;
 
-var finishCube;
+var finishCube = new THREE.Mesh();
 var player, playerPromise;
-var grid, gridDimension = 4.0;
+var grid, gridDimension = 2.0;
 var allMeshes = new Set();
 var throughputFactor = 0.9;
 
@@ -37,7 +37,7 @@ var listener = new THREE.AudioListener();
 var audioLoader = new THREE.AudioLoader();
 var backgroundMusic = new THREE.Audio(listener);
 var thudSound = new THREE.Audio(listener);
-
+var collectSound = new THREE.Audio(listener);
 
 //http://www.iquilezles.org/www/articles/palettes/palettes.htm
 //http://dev.thi.ng/gradients/
@@ -48,20 +48,12 @@ function palette(colors) {
   c = new THREE.Vector3(0.5, 0.5, 0.5); //frequency remains same
   d = new THREE.Vector3(-0.05+Math.random()*0.1, 0.0, 0.0); //shift red phase a little away from green to make yellow
 
-  /*
-  a = new THREE.Vector3(0.5, 0.5, 0.5);
-  b = new THREE.Vector3(0.3, 0.3, 0.3);
-  c = new THREE.Vector3(1.0, 1.0, 1.0);
-  d = new THREE.Vector3(0.0, 0.1, 0.2);
-  */
-
   for (var t = 0; t <= 1.0; t += 0.2) {
     colors.push(new THREE.Color(
     a.x + b.x*Math.cos( 6.28318*(c.x*t+d.x) ), 
     a.y + b.y*Math.cos( 6.28318*(c.y*t+d.y) ), 
     a.z + b.z*Math.cos( 6.28318*(c.z*t+d.z) )).offsetHSL(0, -0.2, 0));
   }
-  
 }
 
 
@@ -70,8 +62,8 @@ function onLoad(framework) {
   var scene = framework.scene;
   var camera = framework.camera;
   var renderer = framework.renderer;
-  var gui = framework.gui;
-  var stats = framework.stats;
+  //var gui = framework.gui;
+  //var stats = framework.stats;
   var controls = framework.controls;
 
   //https://threejs.org/examples/?q=out#webgl_postprocessing_outline
@@ -114,19 +106,23 @@ function onLoad(framework) {
   audioLoader.load( './sounds/ambient.mp3', function( buffer ) {
     backgroundMusic.setBuffer( buffer );
     backgroundMusic.setLoop(true);
-    backgroundMusic.setVolume(1.0);
+    backgroundMusic.setVolume(0.3);
     backgroundMusic.play();
   });
 
   audioLoader.load( './sounds/book.mp3', function( buffer ) {
     thudSound.setBuffer( buffer );
-    thudSound.setVolume(1.0);
+    thudSound.setVolume(0.5);
+  });
+
+  audioLoader.load( './sounds/collect.mp3', function( buffer ) {
+    collectSound.setBuffer( buffer );
+    collectSound.setVolume(1.0);
   });
 }
 
 
 function addMenu(framework) {
-
   //SETUP MENU
   atMenu = true;
   var menuGeometry = new THREE.PlaneGeometry( 7, 7, 1, 1);;
@@ -142,7 +138,7 @@ function addMenu(framework) {
   nextLevel(framework);
 
   //set PERSPECTIVE CAMERA for SPECIAL menu angle specifically
-  //use 30 60 90 rule so that camera is 30 degree inclination
+  //use 30 60 90 rule so that camera is 60 degree inclination
   var distFromCenter = Math.max(1.4*gridDimension, 8.4);
   var height = distFromCenter * 0.866025;
   var translation = distFromCenter * 0.5;
@@ -160,20 +156,17 @@ function removeMenu(framework) {
 }
 
 function addGameOver(framework) {
-
   //SETUP GAME OVER
   var gameOverGeometry = new THREE.PlaneGeometry( 7, 7, 1, 1);;
   gameOverGeometry.applyMatrix( new THREE.Matrix4().makeTranslation( 0, 0, -5 ) );
   var gameOverMaterial = new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load('images/gameover.png'), transparent: true});
   gameOverMesh = new THREE.Mesh( gameOverGeometry, gameOverMaterial );
 
-  gridDimension = 4.0;
+  gridDimension = 2.0;
   throughputFactor = 0.9;
   atGameOver = true;
   framework.camera.add(gameOverMesh);
   framework.scene.add(framework.camera);
-  //controls.autoRotate = true;
-  //controls.autoRotateSpeed = 2.0;
 }
 
 function removeGameOver(framework) {
@@ -185,7 +178,7 @@ function removeGameOver(framework) {
 function nextLevel(framework) {
 
   //increase grid size for next level
-  //MUST TO THIS AT THE BEGINNING AND NOT END OF nextLevel, 
+  //MUST TO THIS AT THE BEGINNING, 
   //key press event uses gridDimension for checks
   gridDimension++;
   throughputFactor = Math.max(throughputFactor - 0.1, 0.4);
@@ -355,8 +348,7 @@ function dropCellAnimation(prevCell, framework) {
 
 function onDocumentMouseMove( event ) 
 {
-  //the following line would stop any other event handler from firing
-  //(such as the mouse's TrackballControls)
+  //the following line would stop any other event handler from firing (such as the mouse's TrackballControls)
   //event.preventDefault();
   
   // update the mouse variable
@@ -368,6 +360,8 @@ function onDocumentMouseMove( event )
 // called on frame updates
 function onUpdate(framework) {
 
+  finishCube.rotation.y += Math.PI/180.0;
+
   if (atMenu) {
     framework.controls.update(); //update camera rotation
     return;
@@ -376,28 +370,27 @@ function onUpdate(framework) {
   Promise.all([playerPromise]).then(values => { 
 
     //nextLevel the game
-    if (player.position.x == 0 && player.position.z == 0)
+    if (player.position.x == 0 && player.position.z == 0) {
+      collectSound.play();
       nextLevel(framework);
+      return;
+    }
 
     if (player.isAnimating) {
-
       player.animate(grid);
-
-      //if the player just finished animating, and it lands on a cell, play thud sound
-      if (!player.isAnimating && !grid.gridArray[player.position.x][player.position.z].hasFell) {
+      //if the player just finished animating, and it lands on a cell that is not (0,0), play thud sound
+      if (!player.isAnimating && !grid.gridArray[player.position.x][player.position.z].hasFell && !(player.position.x == 0 && player.position.z == 0) ) {
         thudSound.play();
       }
       //if the player just finished, and it doesn't land on cell, make it fall
       else if (!player.isAnimating && grid.gridArray[player.position.x][player.position.z].hasFell){
         fallingMeshes.add(new FallingMesh(player.cube));
       }
-
+      //need to repeatedly update cell selection
       if (isectObj) {
-        //need to repeatedly update cell selection
         isectObj.material = isectPrevMaterial;
         isectObj = null;
       }
-
     }
 
   });
@@ -457,6 +450,7 @@ function onUpdate(framework) {
         if (isectObj.geometry.type == "PlaneGeometry") {
           cellMaterial = new THREE.MeshBasicMaterial({color: 0xA8A8A8});
         }
+        //movable grid cell
         else if ( (isectObj.position.x == player.position.x+0.5 && isectObj.position.z == player.position.z+0.5) ||
                   (isectObj.position.x == player.position.x+0.5-1 && isectObj.position.z == player.position.z+0.5 &&
                     player.position.x - 1 >= 0 && player.faceXNegative.equals(grid.gridArray[player.position.x - 1][player.position.z].color)) ||
@@ -471,19 +465,19 @@ function onUpdate(framework) {
           var cellMaterials = [ 
               new THREE.MeshBasicMaterial({color: 0x606060}),
               new THREE.MeshBasicMaterial({color: 0x606060}), 
-              new THREE.MeshBasicMaterial({color: 0xA8A8A8}),
+              new THREE.MeshBasicMaterial({color: 0xA8A8A8}), //light gray
               new THREE.MeshBasicMaterial({color: 0x383838}), 
               new THREE.MeshBasicMaterial({color: 0x808080}), 
               new THREE.MeshBasicMaterial({color: 0x808080}) 
           ]; 
           cellMaterial = new THREE.MeshFaceMaterial(cellMaterials);
         }
+        //unmovable grid cell
         else {
-          //set a new material for closest object
           var cellMaterials = [ 
               new THREE.MeshBasicMaterial({color: 0x606060}),
               new THREE.MeshBasicMaterial({color: 0x606060}), 
-              new THREE.MeshBasicMaterial({color: 0x383838}),
+              new THREE.MeshBasicMaterial({color: 0x383838}), //dark grey
               new THREE.MeshBasicMaterial({color: 0x383838}), 
               new THREE.MeshBasicMaterial({color: 0x808080}), 
               new THREE.MeshBasicMaterial({color: 0x808080}) 
@@ -493,15 +487,13 @@ function onUpdate(framework) {
 
         isectObj.material = cellMaterial;
       }
+
     } 
     else
     {
       //restore previous intersection object (if it exists) to its original color
-      if (isectObj)  {
-        isectObj.material = isectPrevMaterial;
-      }
+      if (isectObj) isectObj.material = isectPrevMaterial;
       //remove previous intersection object reference
-      //by setting current intersection object to "nothing"
       isectObj = null;
     }
 
