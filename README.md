@@ -1,112 +1,153 @@
-# CIS700 Procedural Graphics: Final Project
+# Particle Lyric
 
-Time to show off your new bag of procedural tricks by creating one polished final project. For this assignment you will have four weeks to create and document a portfolio piece that demonstrates your mastery of procedural thinking and implementation. You may work in groups of up to three (working alone is fine too). You may use any language / platform you choose for this assignment (given our approval if it’s not JavaScript/WebGL or C++/OpenGL).
+Demo: https://msoudy.github.io/Final-Project/
+- Click on "Play Sample Song" to see the particle system in action.
 
-As usual with this class, we want to encourage you to take this opportunity to explore and experiment. To get you started, however, we’ve provided a few open-ended prompts below. Interesting and complex visuals are the goal in all of these prompts, but they encourage focus on different aspects of proceduralism.
+Youtube Demo Video: https://youtu.be/0ajr7b2Dp4o
 
-## Prompts:
+Lyric Files: https://syair.info/
 
-- ### A classic 4k demo
-  * In the spirit of the demo scene, create an animation that fits into a 4k executable that runs in real-time. Feel free to take inspiration from the many existing demos. Focus on efficiency and elegance in your implementation.
-  * Examples: [cdak by Quite & orange](https://www.youtube.com/watch?v=RCh3Q08HMfs&list=PLA5E2FF8E143DA58C)
+Introduction
+----
 
-- ### A forgery
-  * Taking inspiration from a particular natural phenomenon or distinctive set of visuals, implement a detailed, procedural recreation of that aesthetic. This includes modeling, texturing and object placement within your scene. Does not need to be real-time. Focus on detail and visual accuracy in your implementation.
-  * Examples:
-    - [Snail](https://www.shadertoy.com/view/ld3Gz2), [Journey](https://www.shadertoy.com/view/ldlcRf), Big Hero 6 Wormhole: [Image 1](http://2.bp.blogspot.com/-R-6AN2cWjwg/VTyIzIQSQfI/AAAAAAAABLA/GC0yzzz4wHw/s1600/big-hero-6-disneyscreencaps.com-10092.jpg) , [Image 2](https://i.stack.imgur.com/a9RGL.jpg)
+I find it satisfying to watch thousands of particles floating in space and morphing into different shapes. You can almost make a visual representation of anything with a particle system, and watching several examples of particle simulations, like “A Particle Dream” has inspired me to work on a particle simulation.
 
-- ### A game level
-  * Like generations of game makers before us, create a game which generates an  navigable environment (eg. a roguelike dungeon, platforms) and some sort of goal or conflict (eg. enemy agents to avoid or items to collect). Must run in real-time. Aim to create an experience that will challenge players and vary noticeably in different playthroughs, whether that means complex dungeon generation, careful resource management or a sophisticated AI model. Focus on designing a system that will generate complex challenges and goals.
-  * Examples: Spore, Dwarf Fortress, Minecraft, Rogue
+Goal
+-----
 
-- ### An animated environment / music visualizer
-  * Create an environment full of interactive procedural animation. The goal of this project is to create an environment that feels responsive and alive. Whether or not animations are musically-driven, sound should be an important component. Focus on user interactions, motion design and experimental interfaces.
-  * Examples: [Panoramical](https://www.youtube.com/watch?v=gBTTMNFXHTk), [Bound](https://www.youtube.com/watch?v=aE37l6RvF-c)
-- ### Own proposal
-  * You are of course **welcome to propose your own topic**. Regardless of what you choose, you and your team must research your topic and relevant techniques and come up with a detailed plan of execution. You will meet with some subset of the procedural staff before starting implementation for approval. 
-
-**Final grading will be individual** and will be based on both the final product and how well you were able to achieve your intended effect according to your execution plan. Plans change of course, and we don’t expect you to follow your execution plan to a T, but if your final project looks pretty good, but you cut corners and only did 30% of what you outlined in your design doc, you will be penalized.
-
-But overall, have fun! This is your opportunity to work on whatever procedural project inspires you. The best way to ensure a good result is to pick something you’re passionate about. :)
-
-## Timeline
-
-- 4/08	Design doc due / Have met with procedural staff
-- 4/18	Milestone 1 (short write-up + demo)
-- 4/25	Milestone 2 (short write-up + demo)
-- 5/3	Final presentations (3-5 pm, Siglab), final reports due
-
-## Design Doc
-
-Your design doc should follow the following template. Note, each section can be pretty short, but cover them all! This will serve as valuable documentation when showing this project off in the future AND doing a good job will make it much easier for you to succeed, so please take this seriously.
-
-### Design Doc Template:
-
-- #### Introduction
-  * What motivates this project?
-- #### Goal
-  * What do you intend to achieve with this project?
-- #### Inspiration/reference: 
-  * Attach some materials, visual or otherwise you intend as reference
-- #### Specification:
-  * Outline the main features of your project
-- #### Techniques:
-  * What are the main technical/algorithmic tools you’ll be using? Give an overview, citing  specific papers/articles
-- #### Design:
-  * How will your program fit together? Make a simple free-body diagram illustrating the pieces.
-- #### Timeline:
-  * Create a week-by-week set of milestones for each person in your group.
+Given a LRC file (lyric file) and an MP3 file create a lyric video using particles which can be altered through various GUI parameters, such as mouse position attract/repel forces, and modification of particle attributes, such as color, speed, size and mass.
 
 
-Along with your final project demo, you will submit a final report, in which you will update correct your original design doc as needed and add a few post-mortem items.
+Inspiration/reference:
+------
 
-## Milestones
+WebGL2 Particles using Transform Feedback - https://pwambach.github.io/webgl2-particles/
+A Particle Dream - v1.0 — https://youtu.be/YB2u2WhZjxU
+WebGL FBO Particle System — https://youtu.be/HtF2qWKM_go
+GPU Accelerated Particles (Javascript, WebGL) — https://youtu.be/lJe5zEr4b0Q
 
-To keep you honest / on-track, we will be checking on your progress at weekly intervals, according to milestones you’ll define at the outset (pending our approval). For each of the two milestones prior to the final submission, you will submit a short write up explaining whether or not you individually achieved your goals (specifying the files where the work happened), along with a link to a demo / images. These don’t have to be super polished -- we just want to see that you’re getting things done.
+Specification
+--------------
 
-Example:
+- Particle system on the GPU allowing the simulation of thousands of particles where each particle has the following attributes
+    - Position
+    - Velocity
+    - Acceleration
+    - Mass
+    - Target Position (usually position of mesh vertex)
+    
+- Mesh form of the English alphabet including special characters
+Each letter is mapped on to a 5x5 2D array of 0 and 1s, where for each cell assigned with 1 a sphere mesh is created. The following diagram illustrates how the letter ‘A’  is mapped to a 2D array.
 
-“Milestone 1:
-	Adam:
-Made some procedural terrain code in src/terrain.js. Implemented 3D simplex noise to do it. Also applied coloring via custom shader based on this cool paper X (see src/shaders/dirt.glsl). IMAGE
-
-Austin: 
-I managed to set up my voronoi diagram shader (see src/shaders/voronoi.glsl). 
-Experimented with different scattering techniques. It’s working with the euclidean distance metric. I’m using it in src/main.js to color stones. IMAGE
-
-Rachel:
-I tried really hard to make my toon shader work (src/shaders/toon.glsl), but I still have a bug! T_T BUGGY IMAGE. DEMO LINK”
-
-## Final Report
-
-In addition to your demo, you will create a final report documenting your project overall. This document should be clear enough to explain the value and details of your project to a random computer graphics person with no knowledge of this class.
-
-### Final Report Template:
-
-- #### Updated design doc: 
-  * All the sections of your original design doc, corrected if necessary
-- #### Results:
-  * Provide images of your finished project
-- #### Evaluation (this is a big one!):
-  * How well did you do? What parameters did you tune along the way? Include some WIP shots that compare intermediate results to your final. Explain why you made the decisions you did.
-- #### Future work:
-  * Given more time, what would you add/improve
-- #### Acknowledgements:
-  * Cite _EVERYTHING_. Implemented a paper? Used some royalty-free music? Talked to classmates / a professor in a way that influenced your project? Attribute everything!
-
-## Logistics
-
-Like every prior project, your code will be submitted via github. Fork the empty final project repo and start your code base from there. Take this as an opportunity to practice using git properly in a team setting if you’re a new user.  For each weekly submission, provide a link to your pull request. Your repo will contain all the code and documentation associated with your project. The readme for your repo will eventually be your final report. At the top level, include a folder called “documentation”, where you’ll put your design doc and milestone write-ups.
-
-Don’t wait to merge your code! Seriously, there be dragons. Try to have a working version including all your code so that compatibility and merge issues don’t sneak up on you near the end.
-
-## Grading
-
-- 15% Design Doc (graded as a group)
-- 15% Milestone 1 (graded as a group)
-- 15% Milestone 2 (graded as a group)
-- 55% Final demo + report (graded individually)
-
-NOTE: We’ve been pretty lax about our late policy throughout the semester, but our margins on the final project are tight, therefore late submissions will NOT be accepted. If you have a significant reason for being unable to complete your goals, talk to us, and we’ll discuss getting you an incomplete and figure out an adjusted work plan with your group.
+  ![](./images/grid.png)
+  
+- Lyric file (LRC) parser and mp3 loader
+    - Parse each line in the lyric file and store the time stamp and corresponding lyric line into a dictionary to be accessible later
+- Synchronize played song with lyrics simulated on screen
+    - Given the current time in the song, the lyric that should be simulated using particles is first fetched from the dictionary generated by the lyric parser and each letter in the lyric is converted into meshes where each particle is assigned to a specific vertex in the mesh
 
 
+Techniques
+-----------
+
+The particle simulation is created on the GPU using a process called transform feedback which allows capturing data from the vertex shader and storing it in buffers to be used again in the next iteration. This is required to keep track of the previous attributes of particles such as position, velocity, acceleration and mass.
+
+Detailed explanation: 
+
+Two shader programs (particles program & draw program) are created; one to perform any calculations for the position, velocity, acceleration and mass of the particles and the other to draw the particles. Before the draw call for the particles program, the rasterizer is disabled since no drawing is required and transform feedback is initiated. After the draw call, transform feedback returns the results from the particles program vertex shader (outPos, outVel, outAcc, outMass) which are stored in buffers. The rasterizer is then re-enabled and the draw program is used to draw the points. Finally, the attribute buffers of the particles shader are swapped with the buffers from transform feedback to be used as input in the next iteration.
+
+The following references were used to help implement transform feedback:
+
+- Transform feedback in OpenGL: https://open.gl/feedback
+- Transform Feedback simple example: https://www.ibiblio.org/e-notes/webgl/gpu/bounce.htm
+- Transform Feedback with particles: https://www.ibiblio.org/e-notes/webgl/gpu/lorenz_ft.htm
+- Transform Feedback firework example: https://github.com/WebGLSamples/WebGL2Samples/blob/master/samples/transform_feedback_separated_2.html
+
+Design
+----
+
+![](./images/chart.png)
+
+
+Inspiration/References:
+----------------------
+- A Particle Dream - v1.0 — https://youtu.be/YB2u2WhZjxU
+- WebGL FBO Particle System — https://youtu.be/HtF2qWKM_go
+- GPU Accelerated Particles (Javascript, WebGL) — https://youtu.be/lJe5zEr4b0Q
+
+
+Timeline:
+----
+
+- Week 1 - Create Particle Simulation on the GPU
+- Week 2 - Move particles to target mesh positions  to from mesh shape
+- Week 3 - Synchronize song lyrics using particles given an input lyric & music file
+
+
+Results:
+----
+
+![](./images/results1.png)
+
+![](./images/results2.png)
+
+![](./images/results3.png)
+
+![](./images/results4.png)
+
+Evaluation:
+-----
+
+Originally I intended to create a music video with particles by simulating 3d objects which relate to a specific song. However, altering the purpose of my project to be more of a tool for users to use in the future was a better approach. Simulating lyrics synchronized with a song is not only satisfying to watch but can also be useful. Users can use this tool to create lyric videos of their songs to upload on youtube in minutes by screen recording the particle simulation. They can modify the look and feel of the particles by changing the mesh shape of the letters (cube, sphere, torus) and the various parameters of the particles.
+
+The following image represents the particle simulation I had before. I simulated a walking Doberman. Although, this is appealing, the novelty of the experience wears off and the things you can add to extend the particle simulation is limited compared to simulating music lyrics with particles. Not only do hundreds of new songs come out every day, the amount of features that can be added to help customize the lyrics and the surrounding scene are endless.
+
+![](./images/doberman.png)
+
+Changing the project has opened many doors for me. Putting aside all the alterations that can be added to the lyrics themselves, I can include different backgrounds simulated with particles or include a list of general obj’s which can be added by the user at specific times in the song. The list can also be generated based on the word list of the song lyrics.
+
+Overall, I felt constricted with what I can do by just creating a single enjoyable experience for a specific song. I preferred to create a project that users can come back to; a project I can expand in many different ways and one that would prove to be useful to many people in the future. In the simplest scenario, it can be used during karaoke sessions.
+
+Future Work:
+----
+
+Improvements:
+
+- Rewrite algorithm which aligns the lyric to the center to accomodate for any number of words by automatically resizing font size, and possibly allowing user to change alignment attributes, such as alignment type, line spacing, line max width & height
+- Reduce the number of if statements in shader file to improve performance
+- Create GUI from scratch to give it a unique look, instead of using dat.GUI library
+
+Additional features:
+
+- Playback controls to uploaded song, including fast-forward and rewind
+- Integration of Spotify player, so that user doesn't need to upload songs
+- Script to automatically fetch lyric file from websites that supply lyric files. This would work well with Spotify as song name and artist can be extracted from Spotify
+- Vibrate particles with the beat of the song
+- Allow users to change font and font attributes
+- Allow simulation recording and download of lyric video
+- Add different backgrounds to choose from (could also be simulated with particles) 
+- Provide users with a list of obj’s to add at specfic times in the song
+- Automatically show a list of relevant obj’s based on the word list of the song lyrics
+- Support for different languages
+
+
+Acknowledgments:
+-----
+
+- WebGL fundamentals: https://webgl2fundamentals.org/webgl/lessons/webgl-fundamentals.html
+
+- WebGL resizing canvas: https://webgl2fundamentals.org/webgl/lessons/webgl-resizing-the-canvas.html
+
+- Transform Feedback simple example: https://www.ibiblio.org/e-notes/webgl/gpu/bounce.htm
+
+- Transform Feedback with particles: https://www.ibiblio.org/e-notes/webgl/gpu/lorenz_ft.htm
+
+- WebGL necessary helper functions: https://webgl2fundamentals.org/webgl/lessons/webgl-boilerplate.html
+
+- Transform feedback in OpenGL: https://open.gl/feedback
+
+- Transform Feedback firework example: https://github.com/WebGLSamples/WebGL2Samples/blob/master/samples/transform_feedback_separated_2.html
+
+- Particle Simulation WebGL 2: https://github.com/pwambach/webgl2-particles
+
+- Agent behaviors: http://natureofcode.com/book/chapter-6-autonomous-agents/
