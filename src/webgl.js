@@ -87,6 +87,20 @@ export default function WebGL2() {
         return program.uniformLocations;
     }
     
+    this.setUniformLocationsAtIndices = function (program, uniformNames, uniformIndices) {
+        
+        var gl = this.gl;
+        
+        if ("undefined" === typeof program.uniformLocations)
+            program.uniformLocations = [];
+        
+        for (var i = 0; i < uniformNames.length; i++) {
+            program.uniformLocations[uniformIndices[i]] = gl.getUniformLocation(program, uniformNames[i]);
+        }  
+        
+        return program.uniformLocations;
+    }
+    
     this.setAttributeBufferAtIndex = function (program, bufferIndex, data) {
         
         var gl = this.gl;
@@ -109,6 +123,22 @@ export default function WebGL2() {
                            components, gl.FLOAT, gl.FALSE, 0, offset);
     }
     
+    
+    this.setVertexAttributePointerAtIndices = function (program, bufferIndices, componentsArray, offset) {
+        
+        var gl = this.gl;  
+        
+        for (var i = 0; i < bufferIndices.length; i++) {
+            
+            var index = bufferIndices[i];
+            gl.bindBuffer(gl.ARRAY_BUFFER, program.attributeBuffers[index]);
+            //components per iteration, data is 32bit floats, don't normalize the data
+            gl.vertexAttribPointer(program.attributeLocations[index],
+                           componentsArray[i], gl.FLOAT, gl.FALSE, 0, offset);
+        }       
+        
+    }
+    
     this.setVertexAttributePointers = function (program, bufferIndices) {
         
         var gl = this.gl;
@@ -120,6 +150,32 @@ export default function WebGL2() {
                                4, gl.FLOAT, gl.FALSE, 0, 0);
         }
     }
+           
+    this.bindBufferBase = function (program, indices) {
+        
+        var gl = this.gl;
+        
+        for (var i = 0; i < indices.length; i++) {
+            
+            var index = indices[i];
+            gl.bindBufferBase(gl.TRANSFORM_FEEDBACK_BUFFER, index, program.attributeBuffers[index]);
+            
+        }
+        
+    }
+    
+    this.clearBufferBase = function (program, indices) {
+        
+        var gl = this.gl;
+        
+        for (var i = 0; i < indices.length; i++) {
+            
+            var index = indices[i];
+            gl.bindBufferBase(gl.TRANSFORM_FEEDBACK_BUFFER, index, null);
+            
+        }
+        
+    }
     
     this.swapAttributeBuffers = function (programs, bufferIndices) {
                 
@@ -130,4 +186,5 @@ export default function WebGL2() {
         }  
         
     }
+
 }

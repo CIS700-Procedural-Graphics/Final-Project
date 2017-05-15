@@ -410,16 +410,36 @@ function setUpWebGL(framework) {
 
    // framework.webgl.setAttributeBuffers(programs[program.DRAW],["inPos","inVel"],new Float32Array(4*num_particles));
 
-    framework.webgl.setUniformLocations(programs[program.PARTICLES],[
-        "u_time","u_resolution","u_mouse","u_model","u_view","u_projection",
-        "u_projectionView","u_color1","u_color2","u_mouseClicked",
-        "u_particleSpeed","u_particleNoise","u_particleSize","u_forceRadius"
-    ]);
-    framework.webgl.setUniformLocations(programs[program.DRAW],[
-        "u_time","u_resolution","u_mouse","u_model","u_view","u_projection",
-        "u_projectionView","u_color1","u_color2","u_mouseClicked",
-        "u_particleSpeed","u_particleNoise","u_particleSize","u_forceRadius"
-    ]);
+    
+    var programParticlesUniforms = [
+                                        "u_time","u_mouse","u_mouseClicked",
+                                        "u_particleSpeed","u_particleNoise",
+                                        "u_forceRadius"
+                                    ];
+    
+    var programParticlesIndices = [uniform.TIME,uniform.MOUSE,uniform.MOUSECLICKED,
+                                   uniform.PARTICLESPEED,uniform.PARTICLENOISE,uniform.FORCERADIUS];
+    
+    framework.webgl.setUniformLocationsAtIndices(programs[program.PARTICLES],
+                                                programParticlesUniforms,
+                                                programParticlesIndices);
+    
+    var programDrawUniforms = [
+                                    "u_model",
+                                    "u_projectionView","u_color1","u_color2",
+                                    "u_particleSize"
+                            ];
+    
+    var programDrawIndices = [
+                                uniform.MODEL,
+                                uniform.PROJECTIONVIEW,uniform.COLOR1,uniform.COLOR2,
+                                uniform.PARTICLESIZE
+                             ];
+    
+ 
+    framework.webgl.setUniformLocationsAtIndices(programs[program.DRAW],
+                                                programDrawUniforms,
+                                                programDrawIndices);
   
     
     var transformFeedback = gl.createTransformFeedback();
@@ -525,36 +545,20 @@ function onUpdate(framework) {
     var camera = framework.camera;
     var controls = framework.controls;
     
-   updateLyricOnScreen(framework);
+    updateLyricOnScreen(framework);
     
     if (obj_change) {
         obj_change = false;
         changeOBJ(framework, config.object);
     }
     
-    var ndcX = (( controls.xOffset - canvas.offsetLeft ) / canvas.clientWidth) * 2 - 1;
-    var ndcY = (1 - (( controls.yOffset - canvas.offsetTop ) / canvas.clientHeight)) * 2 - 1;
-    var worldPoint = glm.inverse(camera.getViewProj())['*'](glm.vec4(ndcX,ndcY,1.0,1.0))['*'](camera.farClip);
-
-    var dir = camera.eye['-'](glm.vec3(worldPoint.x,worldPoint.y,worldPoint.z));
-    dir = glm.normalize(dir);    
-    
-    var point = controls.camera.eye;
-
-    //raymarch to get mouse postion close to particles
-    //not the best solution, but works for now
-    while (Math.abs(point.z) > 2.0 && Math.abs(point.z) < 500.0) {
-        point = point['-'](dir);
-    }
-    
-    worldPoint = glm.vec4(point.x, point.y, point.z, 1);
-    
+    var worldPoint = controls.getWorldPoint();
+  
     var mouse_type = -1;
     
     if (config.mouse && controls.drag == 1) {   
         mouse_type = config.force;   
     }
-    
     
     var gl = framework.webgl.gl;
     gl.clearColor(0, 0, 0, 1);
@@ -562,33 +566,21 @@ function onUpdate(framework) {
     gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 
     gl.useProgram(programs[program.PARTICLES]);
-
     
-    framework.webgl.setVertexAttributePointerAtIndex(programs[program.PARTICLES], varying.POSTION,4, 0);
-    framework.webgl.setVertexAttributePointerAtIndex(programs[program.PARTICLES], varying.VELOCITY,4, 0);
-    framework.webgl.setVertexAttributePointerAtIndex(programs[program.PARTICLES], varying.ACCELERATION,4, 0);
-    framework.webgl.setVertexAttributePointerAtIndex(programs[program.PARTICLES], varying.MASS,1, 0);
-    framework.webgl.setVertexAttributePointerAtIndex(programs[program.PARTICLES], varying.OBJPOS,4, 0);
-    
+    framework.webgl.setVertexAttributePointerAtIndices(
+        programs[program.PARTICLES], 
+        [varying.POSTION,varying.VELOCITY, varying.ACCELERATION, varying.MASS, varying.OBJPOS],
+        [4,4,4,1,4]
+    );
     
     //bind the transform feedback buffers
-    gl.bindBufferBase(gl.TRANSFORM_FEEDBACK_BUFFER, varying.POSTION, programs[program.DRAW].attributeBuffers[varying.POSTION]);
-    gl.bindBufferBase(gl.TRANSFORM_FEEDBACK_BUFFER, varying.VELOCITY, programs[program.DRAW].attributeBuffers[varying.VELOCITY]); 
-    gl.bindBufferBase(gl.TRANSFORM_FEEDBACK_BUFFER, varying.ACCELERATION, programs[program.DRAW].attributeBuffers[varying.ACCELERATION]); 
-    gl.bindBufferBase(gl.TRANSFORM_FEEDBACK_BUFFER, varying.MASS, programs[program.DRAW].attributeBuffers[varying.MASS]); 
-
+    framework.webgl.bindBufferBase(
+        programs[program.DRAW],
+        [varying.POSTION,varying.VELOCITY, varying.ACCELERATION, varying.MASS]
+    );
     
     gl.uniform1f(programs[program.PARTICLES].uniformLocations[uniform.TIME], frame);
-    gl.uniform2f(programs[program.PARTICLES].uniformLocations[uniform.RESOLUTION], gl.canvas.width, gl.canvas.height);
     gl.uniform4f(programs[program.PARTICLES].uniformLocations[uniform.MOUSE], worldPoint.x,worldPoint.y,worldPoint.z,worldPoint.w);
-    gl.uniformMatrix4fv(programs[program.PARTICLES].uniformLocations[uniform.MODEL], false, new Float32Array(glmMatToArray(camera.getModel())));
-    gl.uniformMatrix4fv(programs[program.PARTICLES].uniformLocations[uniform.VIEW], false, glmMatToArray(glmMatToArray(camera.getView())));
-    gl.uniformMatrix4fv(programs[program.PARTICLES].uniformLocations[uniform.PROJECTION], false, new Float32Array(glmMatToArray(camera.getProjection())));
-    gl.uniformMatrix4fv(programs[program.PARTICLES].uniformLocations[uniform.PROJECTIONVIEW], false, glmMatToArray(camera.getViewProj()));
-    var color1 = hexToRgb(config.mesh_color1);
-    var color2 = hexToRgb(config.mesh_color2);
-    gl.uniform4f(programs[program.PARTICLES].uniformLocations[uniform.COLOR1], color1.r/255,color1.g/255,color1.b/255,1.0);
-    gl.uniform4f(programs[program.PARTICLES].uniformLocations[uniform.COLOR2], color2.r/255,color2.g/255,color2.b/255,1.0); 
     gl.uniform1f(programs[program.PARTICLES].uniformLocations[uniform.MOUSECLICKED], mouse_type);
     gl.uniform1f(programs[program.PARTICLES].uniformLocations[uniform.PARTICLESPEED], config.particle_speed);
     gl.uniform1f(programs[program.PARTICLES].uniformLocations[uniform.PARTICLENOISE], config.particle_noise);
@@ -603,25 +595,17 @@ function onUpdate(framework) {
 
     gl.disable(gl.RASTERIZER_DISCARD);
     //clear transform feedback buffer binding
-    gl.bindBufferBase(gl.TRANSFORM_FEEDBACK_BUFFER, varying.POSTION, null);
-    gl.bindBufferBase(gl.TRANSFORM_FEEDBACK_BUFFER, varying.VELOCITY, null);
-    gl.bindBufferBase(gl.TRANSFORM_FEEDBACK_BUFFER, varying.ACCELERATION, null);
-    gl.bindBufferBase(gl.TRANSFORM_FEEDBACK_BUFFER, varying.MASS, null);
+    framework.webgl.clearBufferBase(programs[program.DRAW],
+                                  [varying.POSTION,varying.VELOCITY, varying.ACCELERATION, varying.MASS])
 
     //draw the points from draw program
     gl.useProgram(programs[program.DRAW]);
-    gl.uniform1f(programs[program.DRAW].uniformLocations[uniform.TIME], frame);
-    gl.uniform2f(programs[program.DRAW].uniformLocations[uniform.RESOLUTION], gl.canvas.width, gl.canvas.height);
-    gl.uniform4f(programs[program.DRAW].uniformLocations[uniform.MOUSE],worldPoint.x,worldPoint.y,worldPoint.z,worldPoint.w);
     gl.uniformMatrix4fv(programs[program.DRAW].uniformLocations[uniform.MODEL], false, new Float32Array(glmMatToArray(camera.getModel())));
-    gl.uniformMatrix4fv(programs[program.DRAW].uniformLocations[uniform.VIEW], false, glmMatToArray(glmMatToArray(camera.getView())));
-    gl.uniformMatrix4fv(programs[program.DRAW].uniformLocations[uniform.PROJECTION], false, new Float32Array(glmMatToArray(camera.getProjection())));
     gl.uniformMatrix4fv(programs[program.DRAW].uniformLocations[uniform.PROJECTIONVIEW], false, glmMatToArray(camera.getViewProj()));
+    var color1 = hexToRgb(config.mesh_color1);
+    var color2 = hexToRgb(config.mesh_color2);
     gl.uniform4f(programs[program.DRAW].uniformLocations[uniform.COLOR1], color1.r/255,color1.g/255,color1.b/255,1.0);
     gl.uniform4f(programs[program.DRAW].uniformLocations[uniform.COLOR2], color2.r/255,color2.g/255,color2.b/255,1.0);   
-    gl.uniform1f(programs[program.DRAW].uniformLocations[uniform.MOUSECLICKED], mouse_type);
-    gl.uniform1f(programs[program.DRAW].uniformLocations[uniform.PARTICLESPEED], config.particle_speed);
-    gl.uniform1f(programs[program.DRAW].uniformLocations[uniform.PARTICLENOISE], config.particle_noise);
     gl.uniform1f(programs[program.DRAW].uniformLocations[uniform.PARTICLESIZE], config.particle_size);
     
     gl.enable(gl.DEPTH_TEST);

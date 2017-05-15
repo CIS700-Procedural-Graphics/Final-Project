@@ -1,15 +1,9 @@
 #version 300 es
- 
-uniform float u_time;
-uniform vec2 u_resolution;
-uniform vec4 u_mouse;
+
 uniform mat4 u_model;
-uniform mat4 u_view;
-uniform mat4 u_projection;
 uniform mat4 u_projectionView;
 uniform vec4 u_color1;
 uniform vec4 u_color2;
-uniform float u_mouseClicked;
 uniform float u_particleSize;
 
 in vec4 inPos;

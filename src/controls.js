@@ -98,6 +98,28 @@ function pan(event, controls) {
     
 }
 
+function getWorldPoint(canvas, controls) {
+        
+    var camera = controls.camera;
+    
+    var ndcX = (( controls.xOffset - canvas.offsetLeft ) / canvas.clientWidth) * 2 - 1;
+    var ndcY = (1 - (( controls.yOffset - canvas.offsetTop ) / canvas.clientHeight)) * 2 - 1;
+    var worldPoint = glm.inverse(camera.getViewProj())['*'](glm.vec4(ndcX,ndcY,1.0,1.0))['*'](camera.farClip);
+
+    var dir = camera.eye['-'](glm.vec3(worldPoint.x,worldPoint.y,worldPoint.z));
+    dir = glm.normalize(dir);    
+    
+    var point = controls.camera.eye;
+
+    //raymarch to get mouse postion close to particles
+    //not the best solution, but works for now
+    while (Math.abs(point.z) > 2.0 && Math.abs(point.z) < 500.0) {
+        point = point['-'](dir);
+    }
+    
+    return glm.vec4(point.x, point.y, point.z, 1);
+}
+
 
 export default function Controls(canvas, cam) { 
        
@@ -108,8 +130,13 @@ export default function Controls(canvas, cam) {
         xOffset: 0,
         yOffset: 0,
         totalX: 90,
-        camera: cam
+        camera: cam,
+        getWorldPoint: function() {
+            return getWorldPoint(canvas, controls);
+        }
     };
+    
+
 
     canvas.setAttribute("tabindex", 0);
     canvas.addEventListener('DOMMouseScroll', function(e) { 
