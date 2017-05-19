@@ -1,6 +1,7 @@
 const THREE = require('three'); // older modules are imported like this. You shouldn't have to worry about this much
+const SHOW = true;
 const HIDE = true;
-const MODELLING = true;
+const MODELLING = false;
 
 require('three-lut')
 
@@ -233,7 +234,6 @@ function onLoad(framework) {
 
   // TODO: Superformula Flower Generater -------------/
 
-
   // WATER ------------------------/
   waterMaterial.uniforms.light.value = directionalLight.position;
   var waterGeo = new THREE.PlaneGeometry(options.water.width, 
@@ -265,6 +265,7 @@ function onLoad(framework) {
     stones[i].position.set(Math.cos(angle) * radius, 0, Math.sin(angle) * radius);
     stones[i].scale.set(size, size, size);
     scene.add(stones[i]);
+  }
 
   // SKY BOX ----------------------/
   // // GROUND
