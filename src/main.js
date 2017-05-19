@@ -1,7 +1,6 @@
 const THREE = require('three'); // older modules are imported like this. You shouldn't have to worry about this much
-const SHOW = true;
 const HIDE = true;
-const MODELLING = false;
+const MODELLING = true;
 
 require('three-lut')
 
@@ -38,6 +37,7 @@ var options = {
   }
 }
 
+// Subdivision
 var modifer = new THREE.SubdivisionModifier(2);
 
 var stoneOptions = {
@@ -88,7 +88,6 @@ var waterMaterial = new THREE.ShaderMaterial({
     },
     direction: {
       type: "v2v",
-      // Random generated directions generated in matlab...
       value: [new THREE.Vector2(0, 1), 
               new THREE.Vector2(1, 0),
               new THREE.Vector2(1, 1),
@@ -97,7 +96,9 @@ var waterMaterial = new THREE.ShaderMaterial({
               new THREE.Vector2(1, 1),
               new THREE.Vector2(1, 1),
               new THREE.Vector2(1, 1)]
-    }
+    },
+    normalSampler: { type: "t", value: null },
+    mirrorSampler: { type: "t", value: null }
   },
   // wireframe: true,
   vertexShader: require('./shaders/water-vert.glsl'),
@@ -233,8 +234,6 @@ function onLoad(framework) {
   // TODO: Superformula Flower Generater -------------/
 
 
-
-if (SHOW) {
   // WATER ------------------------/
   waterMaterial.uniforms.light.value = directionalLight.position;
   var waterGeo = new THREE.PlaneGeometry(options.water.width, 
@@ -247,15 +246,12 @@ if (SHOW) {
   waterMesh.position.set(0, 0, 0);
   scene.add(waterMesh);
 
-
-if (!HIDE) {
   // GREEN BOX ----------------------------/
   var boxGeo = new THREE.BoxGeometry(10, 10, 10);
   var boxMat = new THREE.MeshLambertMaterial({color: 0x42f465});
   var boxMesh = new THREE.Mesh(boxGeo, boxMat);
   boxMesh.position.set(0, 10, 0);
   scene.add(boxMesh);
-}
 
   // STONES ------------------------/
   var radius = 150;
@@ -269,8 +265,6 @@ if (!HIDE) {
     stones[i].position.set(Math.cos(angle) * radius, 0, Math.sin(angle) * radius);
     stones[i].scale.set(size, size, size);
     scene.add(stones[i]);
-  }
-}
 
   // SKY BOX ----------------------/
   // // GROUND
