@@ -35,6 +35,7 @@ var meshes = {
   sky : null, 
   boat : null,
   displayBoat : true,
+  boat_speed : 1,
   num_rocks : 32,
   number_rocks : 32,
   rocks : []
@@ -58,6 +59,7 @@ var materials = {
 
 var rain = {
   density : 0.05,
+  rain_speed: 0.1,
   direction : new THREE.Vector3(0,-1,0),
   width : 2 * variables.radius,
   depth : 2 * variables.radius,
@@ -136,9 +138,9 @@ function onUpdate(framework) {
       if (time == 10000) {
         time = 0;
       }
-      updateCamera(framework.viewpoint, framework.camera, variables.spline, variables.circle, time % 10000, meshes.boat);
+      updateCamera(framework.viewpoint, framework.camera, variables.spline, variables.circle, meshes.boat_speed * time % 10000, meshes.boat);
       // framework.controls.target.set(framework.camera.position);
-      particleSys.update(0.1);
+      particleSys.update(rain.rain_speed);
     } 
   }
 }
@@ -149,9 +151,15 @@ function setUpGUI(framework, scene, gui) {
     else options.music.pause();
   });
 
+  gui.add(framework, 'viewpoint', 0, 2).step(1);
+
   gui.add(options, 'isPaused').onChange(function(value) {
     framework.paused = value;
   });
+
+  var s = gui.addFolder('Speed');
+  s.add(rain, 'rain_speed', 0, 1);
+  s.add(meshes, 'boat_speed', 0, 10);
 
   // var r = gui.addFolder('Camera Parameters');
   // r.add(variables, 'smoothness', );
