@@ -56,7 +56,7 @@ function init(callback, update) {
     framework.camera = camera;
     framework.renderer = renderer;
     // framework.controls = controls;
-    framework.viewpoint = 0;
+    framework.viewpoint = 1;
     framework.paused = false;
     // 0 : person
     // 1 : above
