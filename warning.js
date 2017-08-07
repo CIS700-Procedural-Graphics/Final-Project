@@ -1,6 +1,6 @@
 $(document).ready(function() {
     var os = navigator.platform;
-    if (os === 'Linux i686' || os === 'Linux armv7l') {
+    if (os.substring(0, 5) === 'Linux') {
         alert("Please note that this graphics packages may not run properly on Linux");
     }
 });
